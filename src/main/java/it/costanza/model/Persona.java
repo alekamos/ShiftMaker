@@ -12,7 +12,6 @@ public class Persona {
     private int numeroTurniNotte;
     private double mediaDistanzaTemporaleTurno;
     private ArrayList<Date> indisponibilitaList;
-    private ArrayList<Date> insponibilitaRicercaList;
 
 
     public Persona(String nome, ArrayList<Date> indisponibilitaList) {
@@ -60,13 +59,7 @@ public class Persona {
         this.mediaDistanzaTemporaleTurno = mediaDistanzaTemporaleTurno;
     }
 
-    public ArrayList<Date> getInsponibilitaRicercaList() {
-        return insponibilitaRicercaList;
-    }
 
-    public void setInsponibilitaRicercaList(ArrayList<Date> insponibilitaRicercaList) {
-        this.insponibilitaRicercaList = insponibilitaRicercaList;
-    }
 
     public int getNumeroTurniGiorno() {
         return numeroTurniGiorno;

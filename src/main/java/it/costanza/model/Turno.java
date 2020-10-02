@@ -16,6 +16,13 @@ public class Turno {
         this.ruoloTurno = ruoloTurno;
     }
 
+    public Turno(Date data, String tipoTurno, String ruoloTurno,Persona personaInTurno) {
+        this.data = data;
+        this.tipoTurno = tipoTurno;
+        this.ruoloTurno = ruoloTurno;
+        this.personaInTurno = personaInTurno;
+    }
+
     public Date getData() {
         return data;
     }
