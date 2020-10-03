@@ -152,7 +152,7 @@ public class MainTurni {
 
         ArrayList<Turno> listaTurniPreCaricati = new ArrayList<>();
 
-        Persona cmg = new Persona("MGC", null);
+        Persona mgc = new Persona("MGC", null);
         Persona bai = new Persona("BAI", null);
         Persona bet = new Persona("BET", null);
         Persona car = new Persona("CAR", null);
@@ -169,7 +169,7 @@ public class MainTurni {
 
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_1,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_URGENTISTA,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_URGENTISTA,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_RICERCA,mad));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.NOTTE,Const.RUOLO_REPARTO_1,let));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.NOTTE,Const.RUOLO_REPARTO_2,bai));
@@ -195,14 +195,14 @@ public class MainTurni {
         listaTurniPreCaricati.add(new Turno(getData(10,9),Const.NOTTE,Const.RUOLO_REPARTO_1,bet));
         listaTurniPreCaricati.add(new Turno(getData(10,9),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
 
-        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_2,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,10),Const.NOTTE,Const.RUOLO_REPARTO_1,urg));
         listaTurniPreCaricati.add(new Turno(getData(10,10),Const.NOTTE,Const.RUOLO_REPARTO_2,let));
 
         listaTurniPreCaricati.add(new Turno(getData(10,11),Const.GIORNO,Const.RUOLO_REPARTO_1,bet));
         listaTurniPreCaricati.add(new Turno(getData(10,11),Const.GIORNO,Const.RUOLO_REPARTO_2,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_2,dan));
 
         listaTurniPreCaricati.add(new Turno(getData(10,16),Const.NOTTE,Const.RUOLO_REPARTO_1,bai));
@@ -223,7 +223,7 @@ public class MainTurni {
 
         listaTurniPreCaricati.add(new Turno(getData(10,24),Const.GIORNO,Const.RUOLO_REPARTO_1,let));
         listaTurniPreCaricati.add(new Turno(getData(10,24),Const.GIORNO,Const.RUOLO_REPARTO_2,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
 
         listaTurniPreCaricati.add(new Turno(getData(10,25),Const.GIORNO,Const.RUOLO_REPARTO_1,mad));
@@ -234,7 +234,7 @@ public class MainTurni {
         listaTurniPreCaricati.add(new Turno(getData(10,30),Const.NOTTE,Const.RUOLO_REPARTO_1,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,30),Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
 
-        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_2,let));
         listaTurniPreCaricati.add(new Turno(getData(10,31),Const.NOTTE,Const.RUOLO_REPARTO_1,pol));
         listaTurniPreCaricati.add(new Turno(getData(10,31),Const.NOTTE,Const.RUOLO_REPARTO_2,car));

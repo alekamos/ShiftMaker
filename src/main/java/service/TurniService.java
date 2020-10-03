@@ -8,7 +8,8 @@ public class TurniService {
 
 
 
-    public Run doRun(ArrayList<Turno> turniGiaAssergnati,ArrayList<Turno> turniMese,ArrayList<Persona> persone){
+    public Run
+    doRun(ArrayList<Turno> turniGiaAssergnati,ArrayList<Turno> turniMese,ArrayList<Persona> persone) throws  ExceptionCustom {
 
 
 
@@ -18,26 +19,39 @@ public class TurniService {
         boolean isDisponibile = false;
         boolean isTurnoLibero = false;
         boolean isTurnoFattibile = false;
+        boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
         boolean personaDaPiazzare = true;
         boolean isNotGiaInTurno = false;
+        boolean isNotGiaInTurnoAssegnati = false;
+
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
 
         //cicliamo su tutte i turni
 
         for (Turno turno : turniMese) {
+            int giri = 0;
 
-            System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno());
+
 
             personaDaPiazzare = true;
             isDisponibile = false;
             isTurnoFattibile = false;
             isNotGiaInTurno = false;
+            isNotGiaInTurnoAssegnati = false;
+            isTurnoSuccessivoSeAssegnatoFattibile = false;
 
             while (personaDaPiazzare) {
+                giri++;
+
+                if(giri>500){
+                    ExceptionCustom e = new ExceptionCustom();
+                    e.setMessage("Turno fallito sul giorno"+turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno());
+                    throw e;
+                }
 
 
                 //scelgo una persona a casa
-                Persona randomPersona = getRandomPersona(persone);
+                Persona candidato = getRandomPersona(persone);
                 //System.out.println("Scelta persona:"+randomPersona.getNome());
 
                 //true se il turno è libero
@@ -46,31 +60,43 @@ public class TurniService {
 
                 //controllo 1 la persona è disponibile
                 if(isTurnoLibero) {
-                    isDisponibile = checkDisponibilita(randomPersona, turno);
+                    isDisponibile = checkDisponibilita(candidato, turno);
                     //System.out.println(randomPersona.getNome()+" e disponibile? "+isDisponibile);
                 }
 
                 //controllo che non sia gia in turno come altro reparto
                 if (isDisponibile && isTurnoLibero) {
-                    isNotGiaInTurno = checkIsNotGiaInTurno(randomPersona, turno, turniMese);
+                    isNotGiaInTurno = checkIsNotGiaInTurno(candidato, turno, turniMese);
                     //System.out.println(randomPersona.getNome()+" e isNotGiaInTurno? "+isNotGiaInTurno);
                 }
 
-                if (isDisponibile && isNotGiaInTurno && isTurnoLibero) {
+                //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
+                if (isDisponibile && isTurnoLibero && isNotGiaInTurno) {
+                    isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turno, turniGiaAssergnati);
+                }
+
+
+                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isNotGiaInTurnoAssegnati) {
                     //controllo che il turno precedente non abbia fatto notte o giorno
-                    isTurnoFattibile = checkFattibilitaTurno(randomPersona, turno, turniMese);
+                    isTurnoFattibile = checkFattibilitaTurno(candidato, turno, turniMese);
                     //System.out.println(randomPersona.getNome()+" e isTurnoFattibile? "+isTurnoFattibile);
+                }
+
+
+                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
+                    isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato,turno,turniMese,turniGiaAssergnati);
                 }
 
 
 
 
                 //se sono valide le conidizoni precedenti mettilo in turno
-                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile) {
-                    turno.setPersonaInTurno(randomPersona);
+                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
+                    turno.setPersonaInTurno(candidato);
                     turniFinale.add(turno);
                     personaDaPiazzare = false;
-                    System.out.println("Messa persona: "+randomPersona.getNome());
+                    //System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno()+" Messa persona: "+candidato.getNome());
+
 
 
                 }
@@ -79,11 +105,26 @@ public class TurniService {
                         Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati,turno.getData(),turno.getTipoTurno(),turno.getRuoloTurno());
                         turno.setPersonaInTurno(personaAssegnata);
                         turniFinale.add(turno);
-                        System.out.println("Turno assegnato a: "+personaAssegnata.getNome());
+                        //System.out.println();
+                        //System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno()+" Turno assegnato a: "+personaAssegnata.getNome());
                         personaDaPiazzare = false;
-                    }else
+                    }else {
+                        String motivazione = "";
+                        if(!isDisponibile)
+                            motivazione = motivazione+" Non disponibile,";
+                        if(!isNotGiaInTurno)
+                            motivazione = motivazione+" Gia in turno";
+                        if(!isTurnoFattibile)
+                            motivazione = motivazione+" Il turno non è fattibile";
+                        if(!isTurnoSuccessivoSeAssegnatoFattibile)
+                            motivazione = motivazione+" Nel turno successivo è assegnato e non può";
+
+                        //System.out.println("Non posso mettere:" + candidato.getNome() + " Perchè "+motivazione);
                         personaDaPiazzare = true;
+                    }
                 }
+
+
             }
 
 
@@ -113,7 +154,7 @@ public class TurniService {
 
         ArrayList<Turno> listaTurniPreCaricati = new ArrayList<>();
 
-        Persona cmg = new Persona("MGC", null);
+        Persona mgc = new Persona("MGC", null);
         Persona bai = new Persona("BAI", null);
         Persona bet = new Persona("BET", null);
         Persona car = new Persona("CAR", null);
@@ -126,11 +167,11 @@ public class TurniService {
         Persona urg = new Persona("URG", null);
 
 
-        //listaTurniPreCaricati.add(new Turno(getData(10,19), Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
+        listaTurniPreCaricati.add(new Turno(getData(10,19), Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
 
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_1,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_URGENTISTA,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_URGENTISTA,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_RICERCA,mad));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.NOTTE,Const.RUOLO_REPARTO_1,let));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.NOTTE,Const.RUOLO_REPARTO_2,bai));
@@ -156,14 +197,14 @@ public class TurniService {
         listaTurniPreCaricati.add(new Turno(getData(10,9),Const.NOTTE,Const.RUOLO_REPARTO_1,bet));
         listaTurniPreCaricati.add(new Turno(getData(10,9),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
 
-        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_2,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,10),Const.NOTTE,Const.RUOLO_REPARTO_1,urg));
         listaTurniPreCaricati.add(new Turno(getData(10,10),Const.NOTTE,Const.RUOLO_REPARTO_2,let));
 
         listaTurniPreCaricati.add(new Turno(getData(10,11),Const.GIORNO,Const.RUOLO_REPARTO_1,bet));
         listaTurniPreCaricati.add(new Turno(getData(10,11),Const.GIORNO,Const.RUOLO_REPARTO_2,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_2,dan));
 
         listaTurniPreCaricati.add(new Turno(getData(10,16),Const.NOTTE,Const.RUOLO_REPARTO_1,bai));
@@ -184,7 +225,7 @@ public class TurniService {
 
         listaTurniPreCaricati.add(new Turno(getData(10,24),Const.GIORNO,Const.RUOLO_REPARTO_1,let));
         listaTurniPreCaricati.add(new Turno(getData(10,24),Const.GIORNO,Const.RUOLO_REPARTO_2,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
 
         listaTurniPreCaricati.add(new Turno(getData(10,25),Const.GIORNO,Const.RUOLO_REPARTO_1,mad));
@@ -195,7 +236,7 @@ public class TurniService {
         listaTurniPreCaricati.add(new Turno(getData(10,30),Const.NOTTE,Const.RUOLO_REPARTO_1,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,30),Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
 
-        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_1,cmg));
+        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_1,mgc));
         listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_2,let));
         listaTurniPreCaricati.add(new Turno(getData(10,31),Const.NOTTE,Const.RUOLO_REPARTO_1,pol));
         listaTurniPreCaricati.add(new Turno(getData(10,31),Const.NOTTE,Const.RUOLO_REPARTO_2,car));
@@ -240,6 +281,22 @@ public class TurniService {
             System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
         }
 
+        System.out.println("################### turni finali belli");
+        Date giornoCorrente = run.getCandidatoTurnoMese().get(0).getData();
+        for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
+
+            if(isSameDay(giornoCorrente,turnoFinaleGiorno.getData()))
+                System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome()+"\t");
+            else {
+                System.out.println();
+                System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t");
+            }
+            //System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
+            giornoCorrente = turnoFinaleGiorno.getData();
+        }
+
+
+        System.out.println("");
 
         for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
 
@@ -398,8 +455,77 @@ public class TurniService {
         }
 
 
-        return true;
+        return turnoLiberoIlGiornoPrima;
     }
+
+    private boolean checkFattibilitaTurnoDebug(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
+
+        Date giornoPrima = aumentaTogliGiorno(turno.getData(), -1);
+        ArrayList<Turno> listaTurniDellaGiornataPrecedenteDiurnoONotturno = null;
+        boolean turnoLiberoIlGiornoPrima = true;
+
+        //Se giorno controllo che il gg prima non abbia fatto notte
+        if (turno.getTipoTurno().equals(Const.GIORNO)) {
+            listaTurniDellaGiornataPrecedenteDiurnoONotturno = getTurniDelGiorno(turniMese, giornoPrima, Const.NOTTE);
+        }
+
+        if (turno.getTipoTurno().equals(Const.NOTTE)) {
+            listaTurniDellaGiornataPrecedenteDiurnoONotturno = getTurniDelGiorno(turniMese, giornoPrima, Const.NOTTE);
+        }
+
+        for (Turno turnoDelloStessoGiorno : listaTurniDellaGiornataPrecedenteDiurnoONotturno) {
+            if (turnoDelloStessoGiorno.getPersonaInTurno() != null)
+                if (turnoDelloStessoGiorno.getPersonaInTurno().getNome().equals(candidatoTurno.getNome())) {
+                    turnoLiberoIlGiornoPrima = false;
+                }
+        }
+
+
+        return turnoLiberoIlGiornoPrima;
+    }
+
+
+
+    /**
+     * Controlla che il giorno prima non abbia fatto notte
+     *
+     * @param candidatoTurno
+     * @param turno
+     * @param turniMese
+     * @return
+     */
+    private boolean checkFattibilitaTurnoSuccessivo(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese,ArrayList<Turno> turniAssegnati) {
+
+        Date gioroDopo = aumentaTogliGiorno(turno.getData(), 1);
+        ArrayList<Turno> listaTurniDellaGiornataSuccessivaGiorno = null;
+        ArrayList<Turno> listaTurniDellaGiornataSuccessivaNotte = null;
+        ArrayList<Turno> listaTurniDellaGiornata = new ArrayList<>();
+        boolean turnoLiberoIlGiornoDopo = true;
+
+
+        if (turno.getTipoTurno().equals(Const.NOTTE)) {
+            listaTurniDellaGiornataSuccessivaGiorno = getTurniDelGiorno(turniAssegnati, gioroDopo, Const.GIORNO);
+            listaTurniDellaGiornataSuccessivaNotte = getTurniDelGiorno(turniAssegnati, gioroDopo, Const.NOTTE);
+        }
+
+        //faccio merge
+        if (listaTurniDellaGiornataSuccessivaGiorno != null)
+            listaTurniDellaGiornata.addAll(listaTurniDellaGiornataSuccessivaGiorno);
+        if (listaTurniDellaGiornataSuccessivaNotte != null)
+            listaTurniDellaGiornata.addAll(listaTurniDellaGiornataSuccessivaNotte);
+
+        for (Turno turnoDelGiornoDopo : listaTurniDellaGiornata) {
+            if (turnoDelGiornoDopo.getPersonaInTurno() != null)
+                if (turnoDelGiornoDopo.getPersonaInTurno().getNome().equals(candidatoTurno.getNome())) {
+                    turnoLiberoIlGiornoDopo = false;
+                }
+        }
+        return turnoLiberoIlGiornoDopo;
+    }
+
+
+
+
 
     /**
      * Qui si controlla che:
@@ -413,18 +539,42 @@ public class TurniService {
     private boolean checkIsNotGiaInTurno(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
 
         ArrayList<Turno> listaTurniDellaGiornata = getTurniDelGiorno(turniMese, turno.getData());
-
+        boolean nonInTurno = true;
 
         for (Turno turnoDelloStessoGiorno : listaTurniDellaGiornata) {
             if (turnoDelloStessoGiorno.getPersonaInTurno() != null)
                 if (turnoDelloStessoGiorno.getPersonaInTurno().getNome().equals(candidatoTurno.getNome()))
-                    return false;
+                    nonInTurno = false;
         }
 
 
-        return true;
+        return nonInTurno;
     }
 
+
+    /**
+     * Qui si controlla che:
+     * Lo stesso giorno non hai già fatto un turno, così se fai notte non puoi fare giorno o sei fai giorno non sei sia urgentista che reparto
+     *
+     * @param candidatoTurno
+     * @param turno
+     * @param turniAssegnati
+     * @return
+     */
+    private boolean checkIsNotGiaInTurnoTraIPrenotati(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniAssegnati) {
+
+        ArrayList<Turno> listaTurniDellaGiornata = getTurniDelGiorno(turniAssegnati, turno.getData());
+        boolean nonInTurno = true;
+
+        for (Turno turnoDelloStessoGiorno : listaTurniDellaGiornata) {
+            if (turnoDelloStessoGiorno.getPersonaInTurno() != null)
+                if (turnoDelloStessoGiorno.getPersonaInTurno().getNome().equals(candidatoTurno.getNome()))
+                    nonInTurno = false;
+        }
+
+
+        return nonInTurno;
+    }
 
 
 

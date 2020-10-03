@@ -1,5 +1,6 @@
 package it.costanza;
 
+import it.costanza.model.ExceptionCustom;
 import it.costanza.model.Persona;
 import it.costanza.model.Run;
 import it.costanza.model.Turno;
@@ -19,17 +20,24 @@ public class MainEvoluti {
         //commando
 
 
-        //caricamento persone
-        ArrayList<Persona> persone = service.caricaPersone();
 
-        //caricamento turni
-        ArrayList<Turno> turniMese = service.caricaMese();
-
-        //caricamento turni gia assegnati
-        ArrayList<Turno> turniGiaAssergnati = service.caricaTurniAssegnati(2020,10);
 
         for (int i = 0; i < 50; i++) {
-            listaRun.add(service.doRun(turniGiaAssergnati, turniMese, persone));
+
+            try {
+                //caricamento persone
+                ArrayList<Persona> persone = service.caricaPersone();
+
+                //caricamento turni
+                ArrayList<Turno> turniMese = service.caricaMese();
+
+                //caricamento turni gia assegnati
+                ArrayList<Turno> turniGiaAssergnati = service.caricaTurniAssegnati(2020,10);
+                listaRun.add(service.doRun(turniGiaAssergnati, turniMese, persone));
+                System.out.println(i+" Turno concluso!");
+            }catch (ExceptionCustom e){
+                System.out.println(i+" Turno non concluso"+e.getMessage());
+            }
         }
 
         //ordino la lista
