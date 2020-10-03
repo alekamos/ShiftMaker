@@ -22,7 +22,7 @@ public class MainEvoluti {
 
 
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 3000; i++) {
 
             try {
                 //caricamento persone

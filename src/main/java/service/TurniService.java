@@ -306,7 +306,7 @@ public class TurniService {
         System.out.println("################### medie e sd");
         System.out.println("Turni: sd "+run.getSdTurni());
         System.out.println("TurniWe: sd "+run.getSdturniWe());
-        System.out.println("TurniGG: sd"+run.getSdTurniGG());
+        System.out.println("TurniGG: sd "+run.getSdTurniGG());
         System.out.println("TurniNotte: sd"+run.getSdTurniNotte());
 
     }
