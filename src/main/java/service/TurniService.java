@@ -3,6 +3,7 @@ package service;
 import com.sun.istack.internal.NotNull;
 import it.costanza.model.*;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class TurniService {
@@ -148,7 +149,7 @@ public class TurniService {
 
     }
 
-    public ArrayList<Turno> caricaTurniAssegnati(int year, int month) {
+    public ArrayList<Turno> caricaTurniAssegnati() {
 
 
 
@@ -167,7 +168,7 @@ public class TurniService {
         Persona urg = new Persona("URG", null);
 
 
-        listaTurniPreCaricati.add(new Turno(getData(10,19), Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
+
 
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_1,dan));
         listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
@@ -219,6 +220,8 @@ public class TurniService {
         listaTurniPreCaricati.add(new Turno(getData(10,18),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
         listaTurniPreCaricati.add(new Turno(getData(10,18),Const.NOTTE,Const.RUOLO_REPARTO_1,bet));
         listaTurniPreCaricati.add(new Turno(getData(10,18),Const.NOTTE,Const.RUOLO_REPARTO_2,mad));
+
+        //listaTurniPreCaricati.add(new Turno(getData(10,19), Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
 
         listaTurniPreCaricati.add(new Turno(getData(10,23),Const.NOTTE,Const.RUOLO_REPARTO_1,mad));
         listaTurniPreCaricati.add(new Turno(getData(10,23),Const.NOTTE,Const.RUOLO_REPARTO_2,mar));
@@ -279,43 +282,55 @@ public class TurniService {
      * @param run
      * @param turniCompleti se true stampa tutto, se no solo l'estratto
      */
-    public void stampaStatistiche(Run run,boolean turniCompleti){
+    public String stampaStatistiche(Run run,boolean turniCompleti){
+
+
+        String msg="";
 
         if(turniCompleti) {
-            System.out.println("################### turni finali");
+            msg = msg + "################### turni finali\r\n";
             for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-                System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
+                msg = msg + turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome()+"\r\n";
             }
 
 
-            System.out.println("################### turni finali belli");
+            msg = msg+  "################### turni finali belli\r\n";
             Date giornoCorrente = run.getCandidatoTurnoMese().get(0).getData();
             for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
 
                 if (isSameDay(giornoCorrente, turnoFinaleGiorno.getData()))
-                    System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t");
+                    msg = msg + turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t";
                 else {
-                    System.out.println();
-                    System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t");
+                    msg = msg + "\r\n";
+                    msg = msg + turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t";
                 }
-                //System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
+
                 giornoCorrente = turnoFinaleGiorno.getData();
             }
         }
 
 
-        System.out.println("");
+        msg = msg + "\r\n";
 
+        /**
+         * Contatori
+         */
+        msg = msg + "####### Contatori turni\r\n";
+        msg = msg + "NOM"+"\t"+"tot\t\t"+"we\t\t"+"gg\t\t"+"notte"+"\r\n";
         for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
 
-            System.out.println(run.getListaPersoneTurno().get(i).getNome() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte());
+            msg = msg + run.getListaPersoneTurno().get(i).getNome() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte()+"\r\n";
         }
 
-        System.out.println("################### medie e sd");
-        System.out.println("Turni: sd "+run.getSdTurni());
-        System.out.println("TurniWe: sd "+run.getSdturniWe());
-        System.out.println("TurniGG: sd  "+run.getSdTurniGG());
-        System.out.println("TurniNotte: sd"+run.getSdTurniNotte());
+
+        DecimalFormat df = new DecimalFormat("####0.00");
+        msg = msg + "####### medie e sd"+"\r\n";
+        msg = msg + "Tot sd\t\t\t"+df.format(run.getSdTurni())+"\r\n";
+        msg = msg + "We sd\t\t\t"+df.format(run.getSdturniWe())+"\r\n";
+        msg = msg + "GG sd\t\t\t"+df.format(run.getSdTurniGG())+"\r\n";
+        msg = msg + "Notte sd\t\t"+df.format(run.getSdTurniNotte())+"\r\n";
+
+        return msg;
 
     }
 
@@ -338,17 +353,16 @@ public class TurniService {
 
 
 
-        //System.out.println("################### statistiche");
-        //System.out.println("NOME" + "\t" + "TURNI" + "\t" + "TURNI WE" + "\t" + "TURNI GIORNO" + "\t" + "TURNI NOTTE");
+
         int[] turni = new int[persone.size()];
         int[] turniWe = new int[persone.size()];
-        int[] turniGG = new int[persone.size()];;
-        int[] turniNotte = new int[persone.size()];;
+        int[] turniGG = new int[persone.size()];
+        int[] turniNotte = new int[persone.size()];
+
 
         for (int i = 0; i < persone.size(); i++) {
 
 
-            //System.out.println(persone.get(i).getNome() + "\t" + persone.get(i).getNumeroTurni() + "\t" + persone.get(i).getNumeroTurniWe() + "\t" + persone.get(i).getNumeroTurniGiorno() + "\t" + persone.get(i).getNumeroTurniNotte());
             turni[i] = persone.get(i).getNumeroTurni();
             turniWe[i] = persone.get(i).getNumeroTurniWe();
             turniGG[i] = persone.get(i).getNumeroTurniGiorno();
@@ -369,15 +383,15 @@ public class TurniService {
         double sdTurniGg = getDeviazioneStandard(turniGG, mediaTurniGG);
         double sdTurniNotte = getDeviazioneStandard(turniNotte, mediaTurniNotte);
 
-/*
-        System.out.println("################### medie e sd");
-        System.out.println("Turni: media "+mediaTurni+" sd "+sdTurni);
-        System.out.println("TurniWe: media "+mediaTurniWe+" sd "+sdTurniWe);
-        System.out.println("TurniGG: media "+mediaTurniGG+" sd "+sdTurniGg);
-        System.out.println("TurniNotte: media "+mediaTurniNotte+" sd "+sdTurniNotte);
-*/
 
-        Run run = new Run(turniDelMese,persone,sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte,sdTurni+sdTurniWe+sdTurniGg+sdTurniNotte);
+        double[] sdOfsd = {sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte};
+        double sdDeviazioniStandard = getDeviazioneStandard(sdOfsd ,getMedia(sdOfsd));
+
+
+
+
+
+        Run run = new Run(turniDelMese,persone,sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte,sdTurni+sdTurniWe+sdTurniGg+sdTurniNotte,sdDeviazioniStandard);
         return run;
 
 
@@ -679,6 +693,79 @@ public class TurniService {
     }
 
 
+
+    public ArrayList<Persona> caricaPersoneMenoDisponibilita(){
+
+        ArrayList<Persona> listaPersone = new ArrayList<>();
+
+        ArrayList<Date> indisponibMgc = new ArrayList<>();
+        Persona mgc = new Persona("MGC", indisponibMgc);
+        listaPersone.add(mgc);
+
+        ArrayList<Date> indisponibBai = new ArrayList<>();
+        Persona bai = new Persona("BAI", indisponibBai);
+        listaPersone.add(bai);
+
+
+
+        ArrayList<Date> indisponibBet = new ArrayList<>();
+        Persona bet = new Persona("BET", indisponibBet);
+        listaPersone.add(bet);
+
+
+
+
+        ArrayList<Date> indisponibCar = new ArrayList<>();
+        Persona car = new Persona("CAR", indisponibCar);
+        listaPersone.add(car);
+
+
+
+
+        ArrayList<Date> indisponibMad = new ArrayList<>();
+        Persona mad = new Persona("MAD", indisponibMad);
+        listaPersone.add(mad);
+
+
+
+        ArrayList<Date> indisponibMar = new ArrayList<>();
+        Persona mar = new Persona("MAR", indisponibMar);
+        listaPersone.add(mar);
+
+
+        ArrayList<Date> indisponibLet = new ArrayList<>();
+
+        Persona let = new Persona("LET", indisponibLet);
+        listaPersone.add(let);
+
+
+
+
+        ArrayList<Date> indisponibPol = new ArrayList<>();
+        Persona pol = new Persona("POL", indisponibPol);
+        listaPersone.add(pol);
+
+
+
+        ArrayList<Date> indisponibVan = new ArrayList<>();
+        Persona van = new Persona("VAN", indisponibVan);
+        listaPersone.add(van);
+
+
+        ArrayList<Date> indisponibDan = new ArrayList<>();
+        Persona dan = new Persona("DAN", indisponibDan);
+        listaPersone.add(dan);
+
+
+        ArrayList<Date> indisponibUrg = new ArrayList<>();
+        Persona urg = new Persona("URG", indisponibUrg);
+        listaPersone.add(urg);
+
+        return listaPersone;
+
+    }
+
+
     public ArrayList<Persona> caricaPersone() {
 
         ArrayList<Persona> listaPersone = new ArrayList<>();
@@ -823,11 +910,15 @@ public class TurniService {
     }
 
 
-    public ArrayList<Turno> caricaMese() {
+    /**
+     * Carica il pattern dei turni del mese
+     * @return
+     */
+    public ArrayList<Turno> caricaMese(int mese) {
 
         ArrayList<Turno> turni = new ArrayList<>();
 
-        ArrayList<Date> datesOfMonth = getDatesOfMonth(10);
+        ArrayList<Date> datesOfMonth = getDatesOfMonth(mese);
         for (Date data : datesOfMonth) {
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
@@ -925,7 +1016,31 @@ public class TurniService {
         return sd;
     }
 
+    public double getDeviazioneStandard(double[] numbers, double media) {
+        double sd = 0;
+        for (int i = 0; i < numbers.length; i++) {
+            sd = sd + Math.pow(numbers[i] - media, 2);
+        }
+        return sd;
+    }
+
     public double getMedia(int[] numbers) {
+
+        double total = 0;
+
+        for (int i = 0; i < numbers.length; i++) {
+            total = total + numbers[i];
+        }
+
+        /* arr.length returns the number of elements
+         * present in the array
+         */
+        double average = total / numbers.length;
+        return average;
+    }
+
+
+    public double getMedia(double[] numbers) {
 
         double total = 0;
 
