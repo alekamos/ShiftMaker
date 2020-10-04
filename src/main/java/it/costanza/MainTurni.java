@@ -9,6 +9,7 @@ import java.util.*;
  * Hello world!
  *
  */
+@Deprecated
 public class MainTurni {
 
     static SimpleDateFormat formatoData = new SimpleDateFormat("MM-dd");

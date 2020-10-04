@@ -1,5 +1,6 @@
 package service;
 
+import com.sun.istack.internal.NotNull;
 import it.costanza.model.*;
 
 import java.util.*;
@@ -8,8 +9,7 @@ public class TurniService {
 
 
 
-    public Run
-    doRun(ArrayList<Turno> turniGiaAssergnati,ArrayList<Turno> turniMese,ArrayList<Persona> persone) throws  ExceptionCustom {
+    public Run doRun(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws  ExceptionCustom {
 
 
 
@@ -274,25 +274,33 @@ public class TurniService {
 
     }
 
-    public void stampaStatistiche(Run run){
+    /**
+     *
+     * @param run
+     * @param turniCompleti se true stampa tutto, se no solo l'estratto
+     */
+    public void stampaStatistiche(Run run,boolean turniCompleti){
 
-        System.out.println("################### turni finali");
-        for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-            System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
-        }
-
-        System.out.println("################### turni finali belli");
-        Date giornoCorrente = run.getCandidatoTurnoMese().get(0).getData();
-        for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-
-            if(isSameDay(giornoCorrente,turnoFinaleGiorno.getData()))
-                System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome()+"\t");
-            else {
-                System.out.println();
-                System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t");
+        if(turniCompleti) {
+            System.out.println("################### turni finali");
+            for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
+                System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
             }
-            //System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
-            giornoCorrente = turnoFinaleGiorno.getData();
+
+
+            System.out.println("################### turni finali belli");
+            Date giornoCorrente = run.getCandidatoTurnoMese().get(0).getData();
+            for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
+
+                if (isSameDay(giornoCorrente, turnoFinaleGiorno.getData()))
+                    System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t");
+                else {
+                    System.out.println();
+                    System.out.print(turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t");
+                }
+                //System.out.println(turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome());
+                giornoCorrente = turnoFinaleGiorno.getData();
+            }
         }
 
 
@@ -306,7 +314,7 @@ public class TurniService {
         System.out.println("################### medie e sd");
         System.out.println("Turni: sd "+run.getSdTurni());
         System.out.println("TurniWe: sd "+run.getSdturniWe());
-        System.out.println("TurniGG: sd "+run.getSdTurniGG());
+        System.out.println("TurniGG: sd  "+run.getSdTurniGG());
         System.out.println("TurniNotte: sd"+run.getSdTurniNotte());
 
     }
