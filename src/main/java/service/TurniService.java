@@ -29,6 +29,8 @@ public class TurniService {
 
         //cicliamo su tutte i turni
 
+        StatService statService = new StatService();
+
         for (Turno turno : turniMese) {
             int giri = 0;
 
@@ -134,7 +136,7 @@ public class TurniService {
         arricchisciPersoneConStatistiche(turniFinale, persone);
 
 
-        Run run = elaborazioneStat(persone, turniFinale);
+        Run run = statService.elaborazioneStat(persone, turniFinale);
 
         return run;
     }
@@ -277,125 +279,9 @@ public class TurniService {
 
     }
 
-    /**
-     *
-     * @param run
-     * @param turniCompleti se true stampa tutto, se no solo l'estratto
-     */
-    public String stampaStatistiche(Run run,boolean turniCompleti){
-
-
-        String msg="";
-
-        if(turniCompleti) {
-            msg = msg + "################### turni finali\r\n";
-            for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-                msg = msg + turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome()+"\r\n";
-            }
-
-
-            msg = msg+  "################### turni finali belli\r\n";
-            Date giornoCorrente = run.getCandidatoTurnoMese().get(0).getData();
-            for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-
-                if (isSameDay(giornoCorrente, turnoFinaleGiorno.getData()))
-                    msg = msg + turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t";
-                else {
-                    msg = msg + "\r\n";
-                    msg = msg + turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t";
-                }
-
-                giornoCorrente = turnoFinaleGiorno.getData();
-            }
-        }
-
-
-        msg = msg + "\r\n";
-
-        /**
-         * Contatori
-         */
-        msg = msg + "####### Contatori turni\r\n";
-        msg = msg + "NOM"+"\t"+"tot\t\t"+"we\t\t"+"gg\t\t"+"notte"+"\r\n";
-        for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
-
-            msg = msg + run.getListaPersoneTurno().get(i).getNome() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte()+"\r\n";
-        }
-
-
-        DecimalFormat df = new DecimalFormat("####0.00");
-        msg = msg + "####### medie e sd"+"\r\n";
-        msg = msg + "Tot sd\t\t\t"+df.format(run.getSdTurni())+"\r\n";
-        msg = msg + "We sd\t\t\t"+df.format(run.getSdturniWe())+"\r\n";
-        msg = msg + "GG sd\t\t\t"+df.format(run.getSdTurniGG())+"\r\n";
-        msg = msg + "Notte sd\t\t"+df.format(run.getSdTurniNotte())+"\r\n";
-
-        return msg;
-
-    }
 
 
 
-
-
-
-
-
-
-
-    /**
-     * Elabora statistiche del run
-     * @param persone
-     * @param turniDelMese
-     * @return
-     */
-    private Run elaborazioneStat(ArrayList<Persona> persone, ArrayList<Turno> turniDelMese) {
-
-
-
-
-        int[] turni = new int[persone.size()];
-        int[] turniWe = new int[persone.size()];
-        int[] turniGG = new int[persone.size()];
-        int[] turniNotte = new int[persone.size()];
-
-
-        for (int i = 0; i < persone.size(); i++) {
-
-
-            turni[i] = persone.get(i).getNumeroTurni();
-            turniWe[i] = persone.get(i).getNumeroTurniWe();
-            turniGG[i] = persone.get(i).getNumeroTurniGiorno();
-            turniNotte[i] = persone.get(i).getNumeroTurniNotte();
-
-
-        }
-
-
-        double mediaTurni = getMedia(turni);
-        double mediaTurniWe = getMedia(turniWe);
-        double mediaTurniGG = getMedia(turniGG);
-        double mediaTurniNotte = getMedia(turniNotte);
-
-
-        double sdTurni = getDeviazioneStandard(turni, mediaTurni);
-        double sdTurniWe = getDeviazioneStandard(turniWe, mediaTurniWe);
-        double sdTurniGg = getDeviazioneStandard(turniGG, mediaTurniGG);
-        double sdTurniNotte = getDeviazioneStandard(turniNotte, mediaTurniNotte);
-
-
-        double[] sdOfsd = {sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte};
-        double sdDeviazioniStandard = getDeviazioneStandard(sdOfsd ,getMedia(sdOfsd));
-
-
-
-
-
-        Run run = new Run(turniDelMese,persone,sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte,sdTurni+sdTurniWe+sdTurniGg+sdTurniNotte,sdDeviazioniStandard);
-        return run;
-
-
-    }
 
     private void arricchisciPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) {
 
@@ -425,7 +311,7 @@ public class TurniService {
                         numeroTurniNotte++;
 
                 //controllo numero turni weekend
-                if (isWeekendDate(turno.getData()))
+                if (DateService.isWeekendDate(turno.getData()))
                     if (turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome()))
                         numeroTurniWe++;
 
@@ -614,7 +500,7 @@ public class TurniService {
         //per tutti i turni del mese
         for (Turno turno : turniMese) {
             //se tutti i turni dello stesso giorno, e dello stesso tipo.. es: il 12 giorno
-            if (isSameDay(turno.getData(), giorno)) {
+            if (DateService.isSameDay(turno.getData(), giorno)) {
                 turniStessoGiorno.add(turno);
 
             }
@@ -635,7 +521,7 @@ public class TurniService {
         //per tutti i turni del mese
         for (Turno turno : turniMese) {
             //se tutti i turni dello stesso giorno, e dello stesso tipo.. es: il 12 giorno
-            if (isSameDay(turno.getData(), giorno) && turno.getTipoTurno().equals(tipoTurno)) {
+            if (DateService.isSameDay(turno.getData(), giorno) && turno.getTipoTurno().equals(tipoTurno)) {
                 turniStessoGiorno.add(turno);
 
             }
@@ -656,7 +542,7 @@ public class TurniService {
         //per tutti i turni del mese
         for (Turno turno : turniMese) {
             //se tutti i turni dello stesso giorno, e dello stesso tipo.. es: il 12 giorno
-            if (isSameDay(turno.getData(), giorno) && turno.getTipoTurno().equals(tipoTurno) && turno.getRuoloTurno().equals(tipoRuolo)) {
+            if (DateService.isSameDay(turno.getData(), giorno) && turno.getTipoTurno().equals(tipoTurno) && turno.getRuoloTurno().equals(tipoRuolo)) {
                 turniStessoGiorno.add(turno);
 
             }
@@ -679,7 +565,7 @@ public class TurniService {
         ArrayList<Date> date = randomPersona.getIndisponibilitaList();
         if (date != null && date.size() > 0) {
             for (Date dataIndisponibilita : date) {
-                if (isSameDay(dataIndisponibilita, dataTurno))
+                if (DateService.isSameDay(dataIndisponibilita, dataTurno))
                     result = false;
 
             }
@@ -922,7 +808,7 @@ public class TurniService {
         for (Date data : datesOfMonth) {
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
-            boolean weekendDate = isWeekendDate(data);
+            boolean weekendDate = DateService.isWeekendDate(data);
             if(!weekendDate)
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA));
 
@@ -987,73 +873,12 @@ public class TurniService {
     }
 
 
-    public boolean isSameDay(Date date1, Date date2) {
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTime(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTime(date2);
-        return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
-                && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH)
-                && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
-    }
-
-    public boolean isWeekendDate(Date dataCorrenteInput) {
-        Calendar dataCorrente = Calendar.getInstance();
-        dataCorrente.setTime(dataCorrenteInput);
-        if (dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
-            return true;
-        else
-            return false;
-
-    }
 
 
-    public double getDeviazioneStandard(int[] numbers, double media) {
-        double sd = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            sd = sd + Math.pow(numbers[i] - media, 2);
-        }
-        return sd;
-    }
-
-    public double getDeviazioneStandard(double[] numbers, double media) {
-        double sd = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            sd = sd + Math.pow(numbers[i] - media, 2);
-        }
-        return sd;
-    }
-
-    public double getMedia(int[] numbers) {
-
-        double total = 0;
-
-        for (int i = 0; i < numbers.length; i++) {
-            total = total + numbers[i];
-        }
-
-        /* arr.length returns the number of elements
-         * present in the array
-         */
-        double average = total / numbers.length;
-        return average;
-    }
 
 
-    public double getMedia(double[] numbers) {
 
-        double total = 0;
 
-        for (int i = 0; i < numbers.length; i++) {
-            total = total + numbers[i];
-        }
-
-        /* arr.length returns the number of elements
-         * present in the array
-         */
-        double average = total / numbers.length;
-        return average;
-    }
 
 
     /**

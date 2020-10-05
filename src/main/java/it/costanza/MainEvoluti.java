@@ -65,13 +65,13 @@ public class MainEvoluti {
             //stampo i primi 3 turni
 
             System.out.println("Terzo turno: "+2);
-            turniService.stampaStatistiche(listaRun.get(2),false);
+            //turniService.stampaStatistiche(listaRun.get(2),false);
 
             System.out.println("Secondo turno: "+1);
-            turniService.stampaStatistiche(listaRun.get(1),false);
+            //turniService.stampaStatistiche(listaRun.get(1),false);
 
             System.out.println("Primo turno: "+1);
-            turniService.stampaStatistiche(listaRun.get(1),true);
+            //turniService.stampaStatistiche(listaRun.get(1),true);
 
             System.out.println("Turni Generati: "+counterTurnoConcluso+" Turni Falliti"+counterTurnoFallito);
 

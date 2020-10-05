@@ -10,19 +10,22 @@ public class Run implements Comparable<Run>{
     private double sdturniWe;
     private double sdTurniGG;
     private double sdTurniNotte;
-    private Double sumSd;
-    private Double sdOfsd;
+    private Double vectorialSumSd;
+
+    private final static double  K_TURNI = 1;
+    private final static double  K_GIORNO = 1;
+    private final static double  K_NOTTE = 1;
+    private final static double  K_WE = 1;
 
 
-    public Run(ArrayList<Turno> candidatoTurnoMese,ArrayList<Persona> persone ,double sdTurni, double sdturniWe, double sdTurniGG, double sdTurniNotte, double sumSd, double sdOfsd) {
+    public Run(ArrayList<Turno> candidatoTurnoMese,ArrayList<Persona> persone ,double sdTurni, double sdturniWe, double sdTurniGG, double sdTurniNotte) {
         this.candidatoTurnoMese = candidatoTurnoMese;
         this.sdTurni = sdTurni;
         this.sdturniWe = sdturniWe;
         this.sdTurniGG = sdTurniGG;
         this.sdTurniNotte = sdTurniNotte;
-        this.sumSd = sumSd;
+        this.vectorialSumSd = Math.sqrt(K_TURNI*Math.pow(sdTurni,2)+K_WE*Math.pow(sdturniWe,2)+K_GIORNO*Math.pow(sdTurniGG,2)+K_NOTTE*Math.pow(sdTurniNotte,2));
         this.listaPersoneTurno=persone;
-        this.sdOfsd=sdOfsd;
     }
 
 
@@ -66,12 +69,12 @@ public class Run implements Comparable<Run>{
         this.sdTurniNotte = sdTurniNotte;
     }
 
-    public Double getSumSd() {
-        return sumSd;
+    public Double getVectorialSumSd() {
+        return vectorialSumSd;
     }
 
-    public void setSumSd(Double sumSd) {
-        this.sumSd = sumSd;
+    public void setVectorialSumSd(Double vectorialSumSd) {
+        this.vectorialSumSd = vectorialSumSd;
     }
 
     public ArrayList<Persona> getListaPersoneTurno() {
@@ -85,16 +88,7 @@ public class Run implements Comparable<Run>{
     @Override
     public int compareTo(Run o) {
 
-        Double qustaSommaVettoriale = Math.sqrt(Math.pow(sumSd,2)+Math.pow(sdOfsd,2));
-        Double altraSommaVettoriale = Math.sqrt(Math.pow(o.getSumSd(),2)+Math.pow(o.getSdOfsd(),2));
-        return qustaSommaVettoriale.compareTo(altraSommaVettoriale);
+        return vectorialSumSd.compareTo(o.getVectorialSumSd());
     }
 
-    public Double getSdOfsd() {
-        return sdOfsd;
-    }
-
-    public void setSdOfsd(Double sdOfsd) {
-        this.sdOfsd = sdOfsd;
-    }
 }

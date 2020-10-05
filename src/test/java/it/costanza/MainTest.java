@@ -5,6 +5,7 @@ import it.costanza.model.Persona;
 import it.costanza.model.Run;
 import it.costanza.model.Turno;
 import service.PropertiesServices;
+import service.StatService;
 import service.TurniService;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class MainTest {
 
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati = new ArrayList<>();
+        StatService statService = new StatService();
 
         int counterTurnoConcluso = 0;
         int counterTurnoFallito = 0;
@@ -64,7 +66,7 @@ public class MainTest {
 
             String output="";
             for (int i = bestResult; i > 0; i--) {
-                output=turniService.stampaStatistiche(listaRun.get(i),false);
+                output=statService.stampaStatistiche(listaRun.get(i),true);
                 System.out.println(output);
 
             }
