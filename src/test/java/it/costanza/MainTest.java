@@ -22,6 +22,7 @@ public class MainTest {
         TurniService turniService = new TurniService();
 
 
+
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati = new ArrayList<>();
         StatService statService = new StatService();
@@ -42,10 +43,10 @@ public class MainTest {
 
                 try {
                     //caricamento persone
-                    ArrayList<Persona> persone = turniService.caricaPersoneMenoDisponibilita();
+                    ArrayList<Persona> persone = turniService.caricaPersone();
 
                     //caricamento turni
-                    ArrayList<Turno> turniMese = turniService.caricaMese(mese);
+                    ArrayList<Turno> turniMese = turniService.caricaMese();
 
                     //caricamento turni gia assegnati
                     //turniGiaAssergnati = turniService.caricaTurniAssegnati();
@@ -66,7 +67,7 @@ public class MainTest {
 
             String output="";
             for (int i = bestResult; i > 0; i--) {
-                output=statService.stampaStatistiche(listaRun.get(i),true);
+                output=statService.stampaStatistiche(listaRun.get(i),false);
                 System.out.println(output);
 
             }

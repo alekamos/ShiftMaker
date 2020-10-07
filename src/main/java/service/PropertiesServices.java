@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class PropertiesServices {
+public class  PropertiesServices {
 
 
     /**
@@ -14,7 +14,7 @@ public class PropertiesServices {
      * @return
      * @throws IOException
      */
-    public String getProperties(String name) throws IOException {
+    public static String getProperties(String name) throws IOException {
 
         String output = "";
 
@@ -22,7 +22,7 @@ public class PropertiesServices {
         String propFileName = "config.properties";
 
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+        InputStream inputStream = PropertiesServices.class.getClassLoader().getResourceAsStream(propFileName);
 
         if (inputStream != null) {
             prop.load(inputStream);
@@ -34,6 +34,8 @@ public class PropertiesServices {
 
         return prop.getProperty(name);
     }
+
+
 
 
 

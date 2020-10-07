@@ -19,6 +19,10 @@ public class Persona {
         this.indisponibilitaList = indisponibilitaList;
     }
 
+    public Persona() {
+
+    }
+
     public ArrayList<Date> getIndisponibilitaList() {
         return indisponibilitaList;
     }
@@ -75,5 +79,18 @@ public class Persona {
 
     public void setNumeroTurniNotte(int numeroTurniNotte) {
         this.numeroTurniNotte = numeroTurniNotte;
+    }
+
+    @Override
+    public String toString() {
+        return "Persona{" +
+                "nome='" + nome + '\'' +
+                ", numeroTurni=" + numeroTurni +
+                ", numeroTurniWe=" + numeroTurniWe +
+                ", numeroTurniGiorno=" + numeroTurniGiorno +
+                ", numeroTurniNotte=" + numeroTurniNotte +
+                ", mediaDistanzaTemporaleTurno=" + mediaDistanzaTemporaleTurno +
+                ", indisponibilitaList=" + indisponibilitaList +
+                '}';
     }
 }

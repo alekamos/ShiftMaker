@@ -3,13 +3,22 @@ package service;
 import com.sun.istack.internal.NotNull;
 import it.costanza.model.*;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.*;
 
 public class TurniService {
 
 
-
+    /**
+     * Metodo cuore che fa un run decidendo i turni del mese
+     * @param turniGiaAssergnati
+     * @param turniMese
+     * @param persone
+     * @return
+     * @throws ExceptionCustom
+     */
     public Run doRun(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws  ExceptionCustom {
 
 
@@ -151,11 +160,13 @@ public class TurniService {
 
     }
 
+    @Deprecated
     public ArrayList<Turno> caricaTurniAssegnati() {
-
-
-
         ArrayList<Turno> listaTurniPreCaricati = new ArrayList<>();
+
+/*
+
+
 
         Persona mgc = new Persona("MGC", null);
         Persona bai = new Persona("BAI", null);
@@ -271,7 +282,7 @@ public class TurniService {
         listaTurniPreCaricati.add(new Turno(getData(10,30),Const.GIORNO,Const.RUOLO_RICERCA,mar));
 
 
-
+*/
         return listaTurniPreCaricati;
 
 
@@ -580,231 +591,24 @@ public class TurniService {
 
 
 
-    public ArrayList<Persona> caricaPersoneMenoDisponibilita(){
 
-        ArrayList<Persona> listaPersone = new ArrayList<>();
 
-        ArrayList<Date> indisponibMgc = new ArrayList<>();
-        Persona mgc = new Persona("MGC", indisponibMgc);
-        listaPersone.add(mgc);
-
-        ArrayList<Date> indisponibBai = new ArrayList<>();
-        Persona bai = new Persona("BAI", indisponibBai);
-        listaPersone.add(bai);
-
-
-
-        ArrayList<Date> indisponibBet = new ArrayList<>();
-        Persona bet = new Persona("BET", indisponibBet);
-        listaPersone.add(bet);
-
-
-
-
-        ArrayList<Date> indisponibCar = new ArrayList<>();
-        Persona car = new Persona("CAR", indisponibCar);
-        listaPersone.add(car);
-
-
-
-
-        ArrayList<Date> indisponibMad = new ArrayList<>();
-        Persona mad = new Persona("MAD", indisponibMad);
-        listaPersone.add(mad);
-
-
-
-        ArrayList<Date> indisponibMar = new ArrayList<>();
-        Persona mar = new Persona("MAR", indisponibMar);
-        listaPersone.add(mar);
-
-
-        ArrayList<Date> indisponibLet = new ArrayList<>();
-
-        Persona let = new Persona("LET", indisponibLet);
-        listaPersone.add(let);
-
-
-
-
-        ArrayList<Date> indisponibPol = new ArrayList<>();
-        Persona pol = new Persona("POL", indisponibPol);
-        listaPersone.add(pol);
-
-
-
-        ArrayList<Date> indisponibVan = new ArrayList<>();
-        Persona van = new Persona("VAN", indisponibVan);
-        listaPersone.add(van);
-
-
-        ArrayList<Date> indisponibDan = new ArrayList<>();
-        Persona dan = new Persona("DAN", indisponibDan);
-        listaPersone.add(dan);
-
-
-        ArrayList<Date> indisponibUrg = new ArrayList<>();
-        Persona urg = new Persona("URG", indisponibUrg);
-        listaPersone.add(urg);
-
-        return listaPersone;
-
-    }
-
-
-    public ArrayList<Persona> caricaPersone() {
-
-        ArrayList<Persona> listaPersone = new ArrayList<>();
-
-        ArrayList<Date> indisponibMgc = new ArrayList<>();
-        indisponibMgc.add(getData(10,2));
-        indisponibMgc.add(getData(10,3));
-        indisponibMgc.add(getData(10,4));
-        indisponibMgc.add(getData(10,5));
-        indisponibMgc.add(getData(10,12));
-        indisponibMgc.add(getData(10,13));
-        indisponibMgc.add(getData(10,14));
-        indisponibMgc.add(getData(10,15));
-        indisponibMgc.add(getData(10,16));
-        indisponibMgc.add(getData(10,17));
-        indisponibMgc.add(getData(10,18));
-        Persona mgc = new Persona("MGC", indisponibMgc);
-        listaPersone.add(mgc);
-
-        ArrayList<Date> indisponibBai = new ArrayList<>();
-        indisponibBai.add(getData(10,9));
-        indisponibBai.add(getData(10,10));
-        indisponibBai.add(getData(10,11));
-        indisponibBai.add(getData(10,12));
-        indisponibBai.add(getData(10,21));
-        indisponibBai.add(getData(10,22));
-        indisponibBai.add(getData(10,23));
-        indisponibBai.add(getData(10,24));
-        indisponibBai.add(getData(10,25));
-        Persona bai = new Persona("BAI", indisponibBai);
-        listaPersone.add(bai);
-
-
-
-
-
-        ArrayList<Date> indisponibBet = new ArrayList<>();
-        indisponibBet.add(getData(10,1));
-        indisponibBet.add(getData(10,2));
-        indisponibBet.add(getData(10,3));
-        indisponibBet.add(getData(10,4));
-        Persona bet = new Persona("BET", indisponibBet);
-        listaPersone.add(bet);
-
-
-
-
-        ArrayList<Date> indisponibCar = new ArrayList<>();
-        indisponibCar.add(getData(10,19));
-        indisponibCar.add(getData(10,20));
-        indisponibCar.add(getData(10,21));
-        indisponibCar.add(getData(10,22));
-        indisponibCar.add(getData(10,23));
-        indisponibCar.add(getData(10,24));
-        indisponibCar.add(getData(10,25));
-        Persona car = new Persona("CAR", indisponibCar);
-        listaPersone.add(car);
-
-
-
-
-        ArrayList<Date> indisponibMad = new ArrayList<>();
-        indisponibMad.add(getData(10,3));
-        indisponibMad.add(getData(10,4));
-        indisponibMad.add(getData(10,5));
-        indisponibMad.add(getData(10,6));
-        indisponibMad.add(getData(10,7));
-        indisponibMad.add(getData(10,8));
-        indisponibMad.add(getData(10,9));
-        indisponibMad.add(getData(10,7));
-        indisponibMad.add(getData(11,8));
-        Persona mad = new Persona("MAD", indisponibMad);
-        listaPersone.add(mad);
-
-
-
-        ArrayList<Date> indisponibMar = new ArrayList<>();
-        indisponibMar.add(getData(10,10));
-        indisponibMar.add(getData(10,11));
-        Persona mar = new Persona("MAR", indisponibMar);
-        listaPersone.add(mar);
-
-
-        ArrayList<Date> indisponibLet = new ArrayList<>();
-        indisponibLet.add(getData(10,16));
-        indisponibLet.add(getData(10,17));
-        indisponibLet.add(getData(10,18));
-        indisponibLet.add(getData(10,19));
-
-        Persona let = new Persona("LET", indisponibLet);
-        listaPersone.add(let);
-
-
-
-
-        ArrayList<Date> indisponibPol = new ArrayList<>();
-        indisponibPol.add(getData(10,5));
-        indisponibPol.add(getData(10,6));
-        indisponibPol.add(getData(10,7));
-        indisponibPol.add(getData(10,8));
-        indisponibPol.add(getData(10,9));
-        indisponibPol.add(getData(10,10));
-        indisponibPol.add(getData(10,11));
-        indisponibPol.add(getData(10,12));
-        indisponibPol.add(getData(10,13));
-        indisponibPol.add(getData(10,28));
-        indisponibPol.add(getData(10,29));
-        Persona pol = new Persona("POL", indisponibPol);
-        listaPersone.add(pol);
-
-
-
-        ArrayList<Date> indisponibVan = new ArrayList<>();
-        indisponibVan.add(getData(10,17));
-        indisponibVan.add(getData(10,18));
-        indisponibVan.add(getData(10,19));
-        indisponibVan.add(getData(10,20));
-        Persona van = new Persona("VAN", indisponibVan);
-        listaPersone.add(van);
-
-
-        ArrayList<Date> indisponibDan = new ArrayList<>();
-        indisponibDan.add(getData(10,24));
-        indisponibDan.add(getData(10,25));
-        indisponibDan.add(getData(10,26));
-        indisponibDan.add(getData(10,27));
-        indisponibDan.add(getData(10,28));
-        Persona dan = new Persona("DAN", indisponibDan);
-        listaPersone.add(dan);
-
-
-        ArrayList<Date> indisponibUrg = new ArrayList<>();
-        indisponibUrg.add(getData(10,19));
-        indisponibUrg.add(getData(10,20));
-        indisponibUrg.add(getData(10,21));
-        indisponibUrg.add(getData(10,22));
-        Persona urg = new Persona("URG", indisponibUrg);
-        listaPersone.add(urg);
-
-        return listaPersone;
-
-    }
 
 
     /**
      * Carica il pattern dei turni del mese
      * @return
      */
-    public ArrayList<Turno> caricaMese(int mese) {
+    public ArrayList<Turno> caricaMese() throws IOException {
 
         ArrayList<Turno> turni = new ArrayList<>();
+        PropertiesServices propertiesServices = new PropertiesServices();
 
-        ArrayList<Date> datesOfMonth = getDatesOfMonth(mese);
+
+        int anno = Integer.parseInt(propertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(propertiesServices.getProperties("mese"));
+
+        ArrayList<Date> datesOfMonth = getDatesOfMonth(anno,mese);
         for (Date data : datesOfMonth) {
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
@@ -827,11 +631,11 @@ public class TurniService {
     }
 
 
-    private ArrayList<Date> getDatesOfMonth(int mese) {
+    private ArrayList<Date> getDatesOfMonth(int anno,int mese) {
         ArrayList<Date> dates = new ArrayList<Date>();
         Calendar cal = Calendar.getInstance();
-        cal.set(2020, mese-1, 1);
-        while (cal.get(Calendar.MONTH) == 9) {
+        cal.set(anno, mese-1, 1);
+        while (cal.get(Calendar.MONTH) == mese-1) {
 
             dates.add(cal.getTime());
 
@@ -841,10 +645,10 @@ public class TurniService {
         return dates;
     }
 
-    private Date getData(int mese,int giorno) {
+    private Date getData(int anno,int mese,int giorno) {
 
         Calendar cal = Calendar.getInstance();
-        cal.set(2020, mese-1, giorno);
+        cal.set(anno, mese-1, giorno);
         cal.getTime();
 
         Date data = cal.getTime();
@@ -904,6 +708,54 @@ public class TurniService {
     }
 
 
+    /**
+     * Carica le persone dal file di properties con le loro indisponibilita
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<Persona> caricaPersone() throws IOException {
+
+        PropertiesServices propertiesServices = new PropertiesServices();
+
+        ArrayList<Persona> persone = new ArrayList<>();
+        String personeLine = "";
+        List<String> listaIndisponibilitaPersona = null;
+        String[] nomePersoneList;
+        int anno = Integer.parseInt(propertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(propertiesServices.getProperties("mese"));
 
 
+        personeLine = propertiesServices.getProperties(Const.PERSONE_ARRAY);
+        nomePersoneList = personeLine.split(Const.LIST_SEPARATOR);
+
+
+        for (int i = 0; i < nomePersoneList.length; i++) {
+            Persona turnista = new Persona();
+            ArrayList<Date> turnistaIndisponibilita = new ArrayList<>();
+
+            //mi comincio a settare il nome
+            turnista.setNome(nomePersoneList[i]);
+
+            //prendo la lista di persone dal file di properties
+            String indisponibilitaLine = propertiesServices.getProperties(Const.PREFIX_INDISPONIBILITA+nomePersoneList[i]);
+
+            //me le separo in stringhe con il mio bel separatore, se non ce niente chiaramente salto tutto e lo lascio senza indisponmibilita
+            if(indisponibilitaLine!=null && !"".equals(indisponibilitaLine)) {
+                listaIndisponibilitaPersona = Arrays.asList(indisponibilitaLine.split(Const.LIST_SEPARATOR));
+
+                if (listaIndisponibilitaPersona != null)
+                    for (String numeroMese : listaIndisponibilitaPersona) {
+                        //mi setto la giornata di insisponihbilita su tutte le righe
+                        turnistaIndisponibilita.add(getData(anno, mese, Integer.parseInt(numeroMese)));
+                    }
+            }
+            turnista.setIndisponibilitaList(turnistaIndisponibilita);
+            persone.add(turnista);
+        }
+
+
+        return persone;
+
+    }
 }
+

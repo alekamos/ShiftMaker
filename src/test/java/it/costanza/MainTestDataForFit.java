@@ -51,10 +51,10 @@ public class MainTestDataForFit {
 
                     try {
                         //caricamento persone
-                        ArrayList<Persona> persone = turniService.caricaPersoneMenoDisponibilita();
+                        ArrayList<Persona> persone = turniService.caricaPersone();
 
                         //caricamento turni
-                        ArrayList<Turno> turniMese = turniService.caricaMese(mese);
+                        ArrayList<Turno> turniMese = turniService.caricaMese();
 
 
                         listaRun.add(turniService.doRun(turniGiaAssergnati, turniMese, persone));

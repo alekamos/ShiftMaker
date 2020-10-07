@@ -54,4 +54,14 @@ public class Turno {
     public void setRuoloTurno(String ruoloTurno) {
         this.ruoloTurno = ruoloTurno;
     }
+
+    @Override
+    public String toString() {
+        return "Turno{" +
+                "data=" + data +
+                ", tipoTurno='" + tipoTurno + '\'' +
+                ", ruoloTurno='" + ruoloTurno + '\'' +
+                ", personaInTurno=" + personaInTurno +
+                '}';
+    }
 }

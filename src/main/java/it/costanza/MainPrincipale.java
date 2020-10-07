@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
-public class MainEvoluti {
+public class MainPrincipale {
 
 
     public static void main(String[] args) {
@@ -44,7 +44,7 @@ public class MainEvoluti {
                     ArrayList<Persona> persone = turniService.caricaPersone();
 
                     //caricamento turni
-                    ArrayList<Turno> turniMese = turniService.caricaMese(mese);
+                    ArrayList<Turno> turniMese = turniService.caricaMese();
 
                     //caricamento turni gia assegnati
                     //turniGiaAssergnati = turniService.caricaTurniAssegnati();
