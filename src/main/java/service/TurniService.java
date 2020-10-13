@@ -148,133 +148,7 @@ public class TurniService {
 
     }
 
-    @Deprecated
-    public ArrayList<Turno> caricaTurniAssegnati() {
-        ArrayList<Turno> listaTurniPreCaricati = new ArrayList<>();
 
-/*
-
-
-
-        Persona mgc = new Persona("MGC", null);
-        Persona bai = new Persona("BAI", null);
-        Persona bet = new Persona("BET", null);
-        Persona car = new Persona("CAR", null);
-        Persona mad = new Persona("MAD", null);
-        Persona mar = new Persona("MAR", null);
-        Persona let = new Persona("LET", null);
-        Persona pol = new Persona("POL", null);
-        Persona van = new Persona("VAN", null);
-        Persona dan = new Persona("DAN", null);
-        Persona urg = new Persona("URG", null);
-
-
-
-
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_1,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_URGENTISTA,mgc));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.GIORNO,Const.RUOLO_RICERCA,mad));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.NOTTE,Const.RUOLO_REPARTO_1,let));
-        listaTurniPreCaricati.add(new Turno(getData(10,1),Const.NOTTE,Const.RUOLO_REPARTO_2,bai));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,2),Const.GIORNO,Const.RUOLO_REPARTO_1,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,2),Const.GIORNO,Const.RUOLO_REPARTO_2,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,2),Const.GIORNO,Const.RUOLO_URGENTISTA,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,2),Const.GIORNO,Const.RUOLO_RICERCA,mad));
-        listaTurniPreCaricati.add(new Turno(getData(10,2),Const.NOTTE,Const.RUOLO_REPARTO_1,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,2),Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,3),Const.GIORNO,Const.RUOLO_REPARTO_1,bai));
-        listaTurniPreCaricati.add(new Turno(getData(10,3),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
-        listaTurniPreCaricati.add(new Turno(getData(10,3),Const.NOTTE,Const.RUOLO_REPARTO_1,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,3),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
-
-
-        listaTurniPreCaricati.add(new Turno(getData(10,4),Const.GIORNO,Const.RUOLO_REPARTO_1,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,4),Const.GIORNO,Const.RUOLO_REPARTO_2,urg));
-        listaTurniPreCaricati.add(new Turno(getData(10,4),Const.NOTTE,Const.RUOLO_REPARTO_1,bai));
-        listaTurniPreCaricati.add(new Turno(getData(10,4),Const.NOTTE,Const.RUOLO_REPARTO_2,car));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,9),Const.NOTTE,Const.RUOLO_REPARTO_1,bet));
-        listaTurniPreCaricati.add(new Turno(getData(10,9),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_1,mgc));
-        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.GIORNO,Const.RUOLO_REPARTO_2,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.NOTTE,Const.RUOLO_REPARTO_1,urg));
-        listaTurniPreCaricati.add(new Turno(getData(10,10),Const.NOTTE,Const.RUOLO_REPARTO_2,let));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.GIORNO,Const.RUOLO_REPARTO_1,bet));
-        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.GIORNO,Const.RUOLO_REPARTO_2,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_1,mgc));
-        listaTurniPreCaricati.add(new Turno(getData(10,11),Const.NOTTE,Const.RUOLO_REPARTO_2,dan));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,16),Const.NOTTE,Const.RUOLO_REPARTO_1,bai));
-        listaTurniPreCaricati.add(new Turno(getData(10,16),Const.NOTTE,Const.RUOLO_REPARTO_2,car));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,17),Const.GIORNO,Const.RUOLO_REPARTO_1,bet));
-        listaTurniPreCaricati.add(new Turno(getData(10,17),Const.GIORNO,Const.RUOLO_REPARTO_2,mad));
-        listaTurniPreCaricati.add(new Turno(getData(10,17),Const.NOTTE,Const.RUOLO_REPARTO_1,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,17),Const.NOTTE,Const.RUOLO_REPARTO_2,mar));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,18),Const.GIORNO,Const.RUOLO_REPARTO_1,bai));
-        listaTurniPreCaricati.add(new Turno(getData(10,18),Const.GIORNO,Const.RUOLO_REPARTO_2,car));
-        listaTurniPreCaricati.add(new Turno(getData(10,18),Const.NOTTE,Const.RUOLO_REPARTO_1,bet));
-        listaTurniPreCaricati.add(new Turno(getData(10,18),Const.NOTTE,Const.RUOLO_REPARTO_2,mad));
-
-        //listaTurniPreCaricati.add(new Turno(getData(10,19), Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,23),Const.NOTTE,Const.RUOLO_REPARTO_1,mad));
-        listaTurniPreCaricati.add(new Turno(getData(10,23),Const.NOTTE,Const.RUOLO_REPARTO_2,mar));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.GIORNO,Const.RUOLO_REPARTO_1,let));
-        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.GIORNO,Const.RUOLO_REPARTO_2,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_1,mgc));
-        listaTurniPreCaricati.add(new Turno(getData(10,24),Const.NOTTE,Const.RUOLO_REPARTO_2,van));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,25),Const.GIORNO,Const.RUOLO_REPARTO_1,mad));
-        listaTurniPreCaricati.add(new Turno(getData(10,25),Const.GIORNO,Const.RUOLO_REPARTO_2,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,25),Const.NOTTE,Const.RUOLO_REPARTO_1,let));
-        listaTurniPreCaricati.add(new Turno(getData(10,25),Const.NOTTE,Const.RUOLO_REPARTO_2,pol));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,30),Const.NOTTE,Const.RUOLO_REPARTO_1,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,30),Const.NOTTE,Const.RUOLO_REPARTO_2,urg));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_1,mgc));
-        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.GIORNO,Const.RUOLO_REPARTO_2,let));
-        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.NOTTE,Const.RUOLO_REPARTO_1,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,31),Const.NOTTE,Const.RUOLO_REPARTO_2,car));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,5),Const.GIORNO,Const.RUOLO_RICERCA,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,6),Const.GIORNO,Const.RUOLO_RICERCA,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,7),Const.GIORNO,Const.RUOLO_RICERCA,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,8),Const.GIORNO,Const.RUOLO_RICERCA,dan));
-        listaTurniPreCaricati.add(new Turno(getData(10,9),Const.GIORNO,Const.RUOLO_RICERCA,dan));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,12),Const.GIORNO,Const.RUOLO_RICERCA,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,13),Const.GIORNO,Const.RUOLO_RICERCA,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,14),Const.GIORNO,Const.RUOLO_RICERCA,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,15),Const.GIORNO,Const.RUOLO_RICERCA,van));
-        listaTurniPreCaricati.add(new Turno(getData(10,16),Const.GIORNO,Const.RUOLO_RICERCA,van));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,19),Const.GIORNO,Const.RUOLO_RICERCA,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,20),Const.GIORNO,Const.RUOLO_RICERCA,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,21),Const.GIORNO,Const.RUOLO_RICERCA,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,22),Const.GIORNO,Const.RUOLO_RICERCA,pol));
-        listaTurniPreCaricati.add(new Turno(getData(10,23),Const.GIORNO,Const.RUOLO_RICERCA,pol));
-
-        listaTurniPreCaricati.add(new Turno(getData(10,26),Const.GIORNO,Const.RUOLO_RICERCA,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,27),Const.GIORNO,Const.RUOLO_RICERCA,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,28),Const.GIORNO,Const.RUOLO_RICERCA,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,29),Const.GIORNO,Const.RUOLO_RICERCA,mar));
-        listaTurniPreCaricati.add(new Turno(getData(10,30),Const.GIORNO,Const.RUOLO_RICERCA,mar));
-
-
-*/
-        return listaTurniPreCaricati;
-
-
-    }
 
 
     private void arricchisciPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) {
@@ -673,7 +547,7 @@ public class TurniService {
      */
     public ArrayList<Persona> caricaPersone() throws IOException {
 
-        
+
 
         ArrayList<Persona> persone = new ArrayList<>();
         String personeLine = "";
@@ -716,9 +590,10 @@ public class TurniService {
                             turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_2));
                         }
                     }
-                personaElem.setIndisponibilitaList(turnistaIndisponibilita);
-                persone.add(personaElem);
             }
+            personaElem.setIndisponibilitaList(turnistaIndisponibilita);
+            persone.add(personaElem);
+
         }
         return persone;
     }
@@ -730,17 +605,13 @@ public class TurniService {
      */
     public ArrayList<Turno> caricaTurniSchedulati() throws IOException {
 
-        
+
 
         ArrayList<Turno> turniAssegnati = new ArrayList<>();
 
 
 
-
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("d");
 
         ArrayList<Turno> turniMese = caricaMese();
 

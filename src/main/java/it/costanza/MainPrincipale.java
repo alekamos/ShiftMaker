@@ -47,7 +47,7 @@ public class MainPrincipale {
                     ArrayList<Turno> turniMese = turniService.caricaMese();
 
                     //caricamento turni gia assegnati
-                    turniGiaAssergnati = turniService.caricaTurniAssegnati();
+                    turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
 
                     listaRun.add(turniService.doRun(turniGiaAssergnati, turniMese, persone));
