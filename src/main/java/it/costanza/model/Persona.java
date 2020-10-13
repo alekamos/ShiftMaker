@@ -11,10 +11,10 @@ public class Persona {
     private int numeroTurniGiorno;
     private int numeroTurniNotte;
     private double mediaDistanzaTemporaleTurno;
-    private ArrayList<Date> indisponibilitaList;
+    private ArrayList<Turno> indisponibilitaList;
 
 
-    public Persona(String nome, ArrayList<Date> indisponibilitaList) {
+    public Persona(String nome, ArrayList<Turno> indisponibilitaList) {
         this.nome = nome;
         this.indisponibilitaList = indisponibilitaList;
     }
@@ -23,11 +23,15 @@ public class Persona {
 
     }
 
-    public ArrayList<Date> getIndisponibilitaList() {
+    public Persona(String nome) {
+        this.nome=nome;
+    }
+
+    public ArrayList<Turno> getIndisponibilitaList() {
         return indisponibilitaList;
     }
 
-    public void setIndisponibilitaList(ArrayList<Date> indisponibilitaList) {
+    public void setIndisponibilitaList(ArrayList<Turno> indisponibilitaList) {
         this.indisponibilitaList = indisponibilitaList;
     }
 

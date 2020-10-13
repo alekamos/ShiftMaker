@@ -1,6 +1,9 @@
 package it.costanza.model;
 
+import service.DateService;
+
 import java.util.Date;
+import java.util.Objects;
 
 public class Turno {
 
@@ -21,6 +24,10 @@ public class Turno {
         this.tipoTurno = tipoTurno;
         this.ruoloTurno = ruoloTurno;
         this.personaInTurno = personaInTurno;
+    }
+
+    public Turno() {
+
     }
 
     public Date getData() {
@@ -64,4 +71,17 @@ public class Turno {
                 ", personaInTurno=" + personaInTurno +
                 '}';
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Turno)) return false;
+        Turno turno = (Turno) o;
+        return DateService.isSameDay(turno.getData(),getData()) &&
+                Objects.equals(getTipoTurno(), turno.getTipoTurno()) &&
+                Objects.equals(getRuoloTurno(), turno.getRuoloTurno());
+    }
+
+
 }

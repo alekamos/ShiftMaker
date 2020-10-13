@@ -6,6 +6,7 @@ import it.costanza.model.*;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TurniService {
@@ -13,16 +14,14 @@ public class TurniService {
 
     /**
      * Metodo cuore che fa un run decidendo i turni del mese
+     *
      * @param turniGiaAssergnati
      * @param turniMese
      * @param persone
      * @return
      * @throws ExceptionCustom
      */
-    public Run doRun(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws  ExceptionCustom {
-
-
-
+    public Run doRun(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom {
 
 
         //inizio algoritmo
@@ -44,7 +43,6 @@ public class TurniService {
             int giri = 0;
 
 
-
             personaDaPiazzare = true;
             isDisponibile = false;
             isTurnoFattibile = false;
@@ -55,31 +53,27 @@ public class TurniService {
             while (personaDaPiazzare) {
                 giri++;
 
-                if(giri>500){
+                if (giri > 500) {
                     ExceptionCustom e = new ExceptionCustom();
-                    e.setMessage("Turno fallito sul giorno"+turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno());
+                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
                     throw e;
                 }
 
 
                 //scelgo una persona a casa
                 Persona candidato = getRandomPersona(persone);
-                //System.out.println("Scelta persona:"+randomPersona.getNome());
 
                 //true se il turno è libero
                 isTurnoLibero = checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno);
-                //System.out.println("Il turno è libero?:"+isTurnoLibero);
 
                 //controllo 1 la persona è disponibile
-                if(isTurnoLibero) {
+                if (isTurnoLibero) {
                     isDisponibile = checkDisponibilita(candidato, turno);
-                    //System.out.println(randomPersona.getNome()+" e disponibile? "+isDisponibile);
                 }
 
                 //controllo che non sia gia in turno come altro reparto
                 if (isDisponibile && isTurnoLibero) {
                     isNotGiaInTurno = checkIsNotGiaInTurno(candidato, turno, turniMese);
-                    //System.out.println(randomPersona.getNome()+" e isNotGiaInTurno? "+isNotGiaInTurno);
                 }
 
                 //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
@@ -91,15 +85,12 @@ public class TurniService {
                 if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isNotGiaInTurnoAssegnati) {
                     //controllo che il turno precedente non abbia fatto notte o giorno
                     isTurnoFattibile = checkFattibilitaTurno(candidato, turno, turniMese);
-                    //System.out.println(randomPersona.getNome()+" e isTurnoFattibile? "+isTurnoFattibile);
                 }
 
 
                 if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
-                    isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato,turno,turniMese,turniGiaAssergnati);
+                    isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turno, turniMese, turniGiaAssergnati);
                 }
-
-
 
 
                 //se sono valide le conidizoni precedenti mettilo in turno
@@ -110,26 +101,24 @@ public class TurniService {
                     //System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno()+" Messa persona: "+candidato.getNome());
 
 
-
-                }
-                else {//diversamente ne scegli un altro
-                    if(!isTurnoLibero){
-                        Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati,turno.getData(),turno.getTipoTurno(),turno.getRuoloTurno());
+                } else {//diversamente ne scegli un altro
+                    if (!isTurnoLibero) {
+                        Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
                         turno.setPersonaInTurno(personaAssegnata);
                         turniFinale.add(turno);
                         //System.out.println();
                         //System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno()+" Turno assegnato a: "+personaAssegnata.getNome());
                         personaDaPiazzare = false;
-                    }else {
+                    } else {
                         String motivazione = "";
-                        if(!isDisponibile)
-                            motivazione = motivazione+" Non disponibile,";
-                        if(!isNotGiaInTurno)
-                            motivazione = motivazione+" Gia in turno";
-                        if(!isTurnoFattibile)
-                            motivazione = motivazione+" Il turno non è fattibile";
-                        if(!isTurnoSuccessivoSeAssegnatoFattibile)
-                            motivazione = motivazione+" Nel turno successivo è assegnato e non può";
+                        if (!isDisponibile)
+                            motivazione = motivazione + " Non disponibile,";
+                        if (!isNotGiaInTurno)
+                            motivazione = motivazione + " Gia in turno";
+                        if (!isTurnoFattibile)
+                            motivazione = motivazione + " Il turno non è fattibile";
+                        if (!isTurnoSuccessivoSeAssegnatoFattibile)
+                            motivazione = motivazione + " Nel turno successivo è assegnato e non può";
 
                         //System.out.println("Non posso mettere:" + candidato.getNome() + " Perchè "+motivazione);
                         personaDaPiazzare = true;
@@ -149,7 +138,6 @@ public class TurniService {
 
         return run;
     }
-
 
 
     private Persona copyTurnoAssegnato(ArrayList<Turno> turniAssegnati, Date data, String tipoTurno, String ruoloTurno) {
@@ -286,12 +274,7 @@ public class TurniService {
         return listaTurniPreCaricati;
 
 
-
-
     }
-
-
-
 
 
     private void arricchisciPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) {
@@ -329,8 +312,6 @@ public class TurniService {
             }
 
             //a questo devo sommare le settimane di ricerca
-
-
 
 
             persone.get(i).setNumeroTurni(numeroTurni);
@@ -404,7 +385,6 @@ public class TurniService {
     }
 
 
-
     /**
      * Controlla che il giorno prima non abbia fatto notte
      *
@@ -413,7 +393,7 @@ public class TurniService {
      * @param turniMese
      * @return
      */
-    private boolean checkFattibilitaTurnoSuccessivo(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese,ArrayList<Turno> turniAssegnati) {
+    private boolean checkFattibilitaTurnoSuccessivo(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese, ArrayList<Turno> turniAssegnati) {
 
         Date gioroDopo = aumentaTogliGiorno(turno.getData(), 1);
         ArrayList<Turno> listaTurniDellaGiornataSuccessivaGiorno = null;
@@ -441,9 +421,6 @@ public class TurniService {
         }
         return turnoLiberoIlGiornoDopo;
     }
-
-
-
 
 
     /**
@@ -496,8 +473,6 @@ public class TurniService {
     }
 
 
-
-
     /**
      * Mi fa la lista di tutti i turni del giorno giorno o notte non importa
      *
@@ -546,7 +521,7 @@ public class TurniService {
      * @param giorno
      * @return
      */
-    private ArrayList<Turno> getTurniDelGiorno(ArrayList<Turno> turniMese, Date giorno, String tipoTurno,String tipoRuolo) {
+    private ArrayList<Turno> getTurniDelGiorno(ArrayList<Turno> turniMese, Date giorno, String tipoTurno, String tipoRuolo) {
 
         //prendo la lista dei turni giorno o notte del turno che si sta facendo
         ArrayList<Turno> turniStessoGiorno = new ArrayList<>();
@@ -563,24 +538,21 @@ public class TurniService {
 
 
     /**
-     * Controlla che la persona non abbia messo il suo giorno di indisponibilità
+     * Controlla che la persona sia disponibile nel turno che dovrebbe fare
      *
-     * @param randomPersona
-     * @param turno
+     * @param randomPersona il candidato
+     * @param turno         il turno che dovrebbe fare
      * @return
      */
     private boolean checkDisponibilita(Persona randomPersona, Turno turno) {
 
         Date dataTurno = turno.getData();
         boolean result = true;
-        ArrayList<Date> date = randomPersona.getIndisponibilitaList();
-        if (date != null && date.size() > 0) {
-            for (Date dataIndisponibilita : date) {
-                if (DateService.isSameDay(dataIndisponibilita, dataTurno))
-                    result = false;
+        ArrayList<Turno> turniIndisponibilita = randomPersona.getIndisponibilitaList();
 
-            }
-        } else
+        if (turniIndisponibilita != null && turniIndisponibilita.contains(turno))
+            result = false;
+        else
             result = true;
 
 
@@ -590,13 +562,9 @@ public class TurniService {
     }
 
 
-
-
-
-
-
     /**
      * Carica il pattern dei turni del mese
+     *
      * @return
      */
     public ArrayList<Turno> caricaMese() throws IOException {
@@ -608,19 +576,19 @@ public class TurniService {
         int anno = Integer.parseInt(propertiesServices.getProperties("anno"));
         int mese = Integer.parseInt(propertiesServices.getProperties("mese"));
 
-        ArrayList<Date> datesOfMonth = getDatesOfMonth(anno,mese);
+        ArrayList<Date> datesOfMonth = getDatesOfMonth(anno, mese);
         for (Date data : datesOfMonth) {
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
             boolean weekendDate = DateService.isWeekendDate(data);
-            if(!weekendDate)
+            if (!weekendDate)
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA));
 
 
             turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1));
             turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2));
 
-            if(!weekendDate)
+            if (!weekendDate)
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA));
 
             turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1));
@@ -631,11 +599,11 @@ public class TurniService {
     }
 
 
-    private ArrayList<Date> getDatesOfMonth(int anno,int mese) {
+    private ArrayList<Date> getDatesOfMonth(int anno, int mese) {
         ArrayList<Date> dates = new ArrayList<Date>();
         Calendar cal = Calendar.getInstance();
-        cal.set(anno, mese-1, 1);
-        while (cal.get(Calendar.MONTH) == mese-1) {
+        cal.set(anno, mese - 1, 1);
+        while (cal.get(Calendar.MONTH) == mese - 1) {
 
             dates.add(cal.getTime());
 
@@ -645,19 +613,16 @@ public class TurniService {
         return dates;
     }
 
-    private Date getData(int anno,int mese,int giorno) {
+    private Date getData(int anno, int mese, int giorno) {
 
         Calendar cal = Calendar.getInstance();
-        cal.set(anno, mese-1, giorno);
+        cal.set(anno, mese - 1, giorno);
         cal.getTime();
 
         Date data = cal.getTime();
-        return  data;
+        return data;
 
     }
-
-
-
 
 
     private Date aumentaTogliGiorno(Date dataCorrente, int giorniDaAumentareTogliere) {
@@ -677,29 +642,21 @@ public class TurniService {
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * Se ad esempio stiamo facendo un turno del giorno x giorno reparto 1 ed è già assegnato allo torna false, true se il turno è libero
+     *
      * @param turniPreAssegnati
      * @param candidatoTurno
      * @return
      */
-    public boolean checkTurnoLiberoTurnoAssegnato(ArrayList<Turno> turniPreAssegnati, Turno candidatoTurno){
+    public boolean checkTurnoLiberoTurnoAssegnato(ArrayList<Turno> turniPreAssegnati, Turno candidatoTurno) {
 
 
-        ArrayList<Turno> turniDelGiorno = getTurniDelGiorno(turniPreAssegnati, candidatoTurno.getData(), candidatoTurno.getTipoTurno(),candidatoTurno.getRuoloTurno());
-        if (turniDelGiorno!=null && turniDelGiorno.size()>0) {
+        ArrayList<Turno> turniDelGiorno = getTurniDelGiorno(turniPreAssegnati, candidatoTurno.getData(), candidatoTurno.getTipoTurno(), candidatoTurno.getRuoloTurno());
+        if (turniDelGiorno != null && turniDelGiorno.size() > 0) {
 
             return false;
-        }
-        else {
+        } else {
 
             return true;
         }
@@ -710,52 +667,93 @@ public class TurniService {
 
     /**
      * Carica le persone dal file di properties con le loro indisponibilita
+     *
      * @return
      * @throws IOException
      */
     public ArrayList<Persona> caricaPersone() throws IOException {
 
-        PropertiesServices propertiesServices = new PropertiesServices();
+        
 
         ArrayList<Persona> persone = new ArrayList<>();
         String personeLine = "";
         List<String> listaIndisponibilitaPersona = null;
         String[] nomePersoneList;
-        int anno = Integer.parseInt(propertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(propertiesServices.getProperties("mese"));
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
 
 
-        personeLine = propertiesServices.getProperties(Const.PERSONE_ARRAY);
+        personeLine = PropertiesServices.getProperties(Const.PERSONE_ARRAY);
         nomePersoneList = personeLine.split(Const.LIST_SEPARATOR);
 
 
         for (int i = 0; i < nomePersoneList.length; i++) {
-            Persona turnista = new Persona();
-            ArrayList<Date> turnistaIndisponibilita = new ArrayList<>();
+            Persona personaElem = new Persona();
+            ArrayList<Turno> turnistaIndisponibilita = new ArrayList<>();
 
             //mi comincio a settare il nome
-            turnista.setNome(nomePersoneList[i]);
+            personaElem.setNome(nomePersoneList[i]);
 
             //prendo la lista di persone dal file di properties
-            String indisponibilitaLine = propertiesServices.getProperties(Const.PREFIX_INDISPONIBILITA+nomePersoneList[i]);
+            String indisponibilitaLine = PropertiesServices.getProperties(Const.PREFIX_INDISPONIBILITA + nomePersoneList[i]);
 
             //me le separo in stringhe con il mio bel separatore, se non ce niente chiaramente salto tutto e lo lascio senza indisponmibilita
-            if(indisponibilitaLine!=null && !"".equals(indisponibilitaLine)) {
+            if (indisponibilitaLine != null && !"".equals(indisponibilitaLine)) {
                 listaIndisponibilitaPersona = Arrays.asList(indisponibilitaLine.split(Const.LIST_SEPARATOR));
 
                 if (listaIndisponibilitaPersona != null)
-                    for (String numeroMese : listaIndisponibilitaPersona) {
-                        //mi setto la giornata di insisponihbilita su tutte le righe
-                        turnistaIndisponibilita.add(getData(anno, mese, Integer.parseInt(numeroMese)));
+                    for (String indisponibilitaElem : listaIndisponibilitaPersona) {
+                        //per ogni data, quindi tolgo tutte le lettere dalla stringa calcolata
+                        String dataNumber = indisponibilitaElem.replaceAll("[^0-9]", "");
+                        if (indisponibilitaElem.contains(Const.GIORNO)) {
+                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_1));
+                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_2));
+                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_URGENTISTA));
+                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_RICERCA));
+                        }
+                        if (indisponibilitaElem.contains(Const.NOTTE)) {
+                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_1));
+                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_2));
+                        }
                     }
+                personaElem.setIndisponibilitaList(turnistaIndisponibilita);
+                persone.add(personaElem);
             }
-            turnista.setIndisponibilitaList(turnistaIndisponibilita);
-            persone.add(turnista);
         }
-
-
         return persone;
-
     }
+
+    /**
+     * Carica i turni già schedulati dal file di props
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<Turno> caricaTurniSchedulati() throws IOException {
+
+        
+
+        ArrayList<Turno> turniAssegnati = new ArrayList<>();
+
+
+
+
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd");
+
+        ArrayList<Turno> turniMese = caricaMese();
+
+        for (Turno turno : turniMese) {
+            String ricercaProps = sdf.format(turno.getData())+"|"+turno.getTipoTurno()+"|"+turno.getRuoloTurno();
+            String personaAssegnataAlTurno = PropertiesServices.getProperties(ricercaProps);
+            if(personaAssegnataAlTurno!=null && !"".equals(personaAssegnataAlTurno))
+                turniAssegnati.add(new Turno(turno.getData(),turno.getTipoTurno(),turno.getRuoloTurno(),new Persona(personaAssegnataAlTurno)));
+
+
+        }
+        return turniAssegnati;
+    }
+
 }
 
