@@ -23,4 +23,6 @@ public class Const {
     public static final String PESO_WE = "PESO_WE";
     public static final String PESO_GIORNO = "PESO_GIORNO";
     public static final String PESO_NOTTE = "PESO_NOTTE";
+    public static final String SEZIONE_STAMPA = "###########################";
+    public static final String SEZIONE_STAMPA_MAIN = "===========================";
 }

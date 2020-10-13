@@ -84,4 +84,8 @@ public class Turno {
     }
 
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(DateService.removeTime(getData()), getTipoTurno(), getRuoloTurno());
+    }
 }

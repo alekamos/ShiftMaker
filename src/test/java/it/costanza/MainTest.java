@@ -67,7 +67,7 @@ public class MainTest {
 
             String output="";
             for (int i = bestResult; i > 0; i--) {
-                output=statService.stampaStatistiche(listaRun.get(i),false);
+                output=statService.stampaStatistiche(listaRun.get(i),true);
                 System.out.println(output);
 
             }

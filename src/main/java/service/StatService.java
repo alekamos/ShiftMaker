@@ -1,10 +1,14 @@
 package service;
 
+import it.costanza.model.Const;
 import it.costanza.model.Persona;
 import it.costanza.model.Run;
 import it.costanza.model.Turno;
+import sun.java2d.pipe.SpanShapeRenderer;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -16,31 +20,63 @@ public class StatService {
      * @param run
      * @param turniCompleti se true stampa tutto, se no solo l'estratto
      */
-    public String stampaStatistiche(Run run, boolean turniCompleti){
+    public String stampaStatistiche(Run run, boolean turniCompleti) throws IOException {
 
 
         String msg="";
+        TurniService service = new TurniService();
+
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
+
+        ArrayList<Date> datesOfMonth = service.getDatesOfMonth(anno, mese);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd");
 
         if(turniCompleti) {
-            msg = msg + "################### turni finali\r\n";
-            for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-                msg = msg + turnoFinaleGiorno.getData() + "\t" + turnoFinaleGiorno.getTipoTurno() + " " + turnoFinaleGiorno.getRuoloTurno() + " " + turnoFinaleGiorno.getPersonaInTurno().getNome()+"\r\n";
+
+
+
+            msg = msg+  Const.SEZIONE_STAMPA+" turni finali:\r\n";
+
+            msg = msg + "DAT\t"+"RIC\t"+"REP\t"+"REP\t"+"URG\t"+"REP\t"+"REP\t"+"\r\n";
+            int count = 0;
+
+            while (datesOfMonth.size()>count){
+
+                Date date = datesOfMonth.get(count);
+                msg = msg+ "\r\n";
+                count++;
+                msg = msg + sdf.format(date)+"\t";
+
+                //RICERCA
+                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_RICERCA)!=null)
+                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_RICERCA).getPersonaInTurno().getNome()+"\t";
+                else msg = msg+ "\t";
+
+                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_1)!=null)
+                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_1).getPersonaInTurno().getNome()+"\t";
+                else msg = msg+ "\t";
+
+                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_2)!=null)
+                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_2).getPersonaInTurno().getNome()+"\t";
+                else msg = msg+ "\t";
+
+                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_URGENTISTA)!=null)
+                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_URGENTISTA).getPersonaInTurno().getNome()+"\t";
+                else msg = msg+ "\t";
+
+                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_1)!=null)
+                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_1).getPersonaInTurno().getNome()+"\t";
+                else msg = msg+ "\t";
+
+                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_2)!=null)
+                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_2).getPersonaInTurno().getNome()+"\t";
+                else msg = msg+ "\t";
+
+
             }
 
 
-            msg = msg+  "################### turni finali belli\r\n";
-            Date giornoCorrente = run.getCandidatoTurnoMese().get(0).getData();
-            for (Turno turnoFinaleGiorno : run.getCandidatoTurnoMese()) {
-
-                if (DateService.isSameDay(giornoCorrente, turnoFinaleGiorno.getData()))
-                    msg = msg + turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t";
-                else {
-                    msg = msg + "\r\n";
-                    msg = msg + turnoFinaleGiorno.getPersonaInTurno().getNome() + "\t";
-                }
-
-                giornoCorrente = turnoFinaleGiorno.getData();
-            }
         }
 
 
@@ -49,7 +85,7 @@ public class StatService {
         /**
          * Contatori
          */
-        msg = msg + "####### Contatori turni\r\n";
+        msg = msg + Const.SEZIONE_STAMPA+" Contatori turni:\r\n";
         msg = msg + "NOM"+"\t"+"tot\t\t"+"we\t\t"+"gg\t\t"+"notte"+"\r\n";
         for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
 
@@ -58,7 +94,7 @@ public class StatService {
 
 
         DecimalFormat df = new DecimalFormat("####0.00");
-        msg = msg + "####### medie e sd"+"\r\n";
+        msg = msg + Const.SEZIONE_STAMPA+" Deviazioni standard grandezze:"+"\r\n";
         msg = msg + "Tot sd\t\t\t"+df.format(run.getSdTurni())+"\r\n";
         msg = msg + "We sd\t\t\t"+df.format(run.getSdturniWe())+"\r\n";
         msg = msg + "GG sd\t\t\t"+df.format(run.getSdTurniGG())+"\r\n";
@@ -67,6 +103,9 @@ public class StatService {
         return msg;
 
     }
+
+
+
 
     /**
      * Stampa le deviazioni standard

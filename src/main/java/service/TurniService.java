@@ -473,7 +473,7 @@ public class TurniService {
     }
 
 
-    private ArrayList<Date> getDatesOfMonth(int anno, int mese) {
+    public ArrayList<Date> getDatesOfMonth(int anno, int mese) {
         ArrayList<Date> dates = new ArrayList<Date>();
         Calendar cal = Calendar.getInstance();
         cal.set(anno, mese - 1, 1);
@@ -624,6 +624,25 @@ public class TurniService {
 
         }
         return turniAssegnati;
+    }
+
+
+    /**
+     * Mi cerca un turno specifico dentro l'array che passo
+     * @param turni
+     * @param data
+     * @param tipoTurno
+     * @param ruolo
+     * @return
+     */
+    public Turno getTurnoSpecificoFromList(ArrayList<Turno> turni,Date data,String tipoTurno, String ruolo){
+
+        for (Turno turno : turni) {
+            if(turno.equals(new Turno(data,tipoTurno,ruolo)))
+                return turno;
+
+        }
+        return null;
     }
 
 }
