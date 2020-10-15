@@ -50,21 +50,20 @@ public class MakeTurni {
 
 
 
-        for (int i = 0; i < numeroGiriTurni; i++) {
 
+
+        for (int i = 0; i < numeroGiriTurni; i++) {
+            long t1 = System.currentTimeMillis();
             try {
                 //caricamento persone
                 ArrayList<Persona> persone = turniService.caricaPersone();
-
                 //caricamento turni
                 ArrayList<Turno> turniMese = turniService.caricaMese();
-
                 //caricamento turni gia assegnati
                 turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
-
                 listaRun.add(turniService.doRun(sdf.format(new Date())+"_"+i,turniGiaAssergnati, turniMese, persone));
-                System.out.println(i+" Turno concluso!");
+                System.out.println(i+" Turno concluso in: "+(System.currentTimeMillis()-t1)+"ms");
             }catch (ExceptionCustom e){
                 System.out.println(i+" Turno non concluso"+e.getMessage());
             }
@@ -78,7 +77,7 @@ public class MakeTurni {
         String output="";
         String turni="";
         for (int i = 0; i < bestResult; i++) {
-            intestazione = Const.SEZIONE_STAMPA_MAIN+" Run Position: "+i+" id: "+listaRun.get(i).getId()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n\r\n";
+            intestazione = Const.SEZIONE_STAMPA_MAIN+" Run Position: "+i+" id: "+listaRun.get(i).getId()+" "+Const.SEZIONE_STAMPA_MAIN;
 
             //print file
             Files.write(Paths.get(path+"\\"+fileName), intestazione.getBytes(), StandardOpenOption.APPEND);

@@ -1,7 +1,6 @@
 package it.costanza.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Persona {
 
@@ -10,7 +9,8 @@ public class Persona {
     private int numeroTurniWe;
     private int numeroTurniGiorno;
     private int numeroTurniNotte;
-    private int[] presenzaSettimanale;
+    private int[] presenzaFeriale;
+    private int presenzaFestiva;
     private double mediaDistanzaTemporaleTurno;
     private ArrayList<Turno> indisponibilitaList;
 
@@ -24,12 +24,20 @@ public class Persona {
 
     }
 
-    public int[] getPresenzaSettimanale() {
-        return presenzaSettimanale;
+    public int getPresenzaFestiva() {
+        return presenzaFestiva;
     }
 
-    public void setPresenzaSettimanale(int[] presenzaSettimanale) {
-        this.presenzaSettimanale = presenzaSettimanale;
+    public void setPresenzaFestiva(int presenzaFestiva) {
+        this.presenzaFestiva = presenzaFestiva;
+    }
+
+    public int[] getPresenzaFeriale() {
+        return presenzaFeriale;
+    }
+
+    public void setPresenzaFeriale(int[] presenzaFeriale) {
+        this.presenzaFeriale = presenzaFeriale;
     }
 
     public Persona(String nome) {

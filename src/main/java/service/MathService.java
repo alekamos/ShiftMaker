@@ -36,11 +36,18 @@ public class MathService {
 
 
     public static double getDeviazioneStandard(int[] numbers, double media) {
-        double sd = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            sd = sd + Math.pow(numbers[i] - media, 2);
+
+        double sum = 0;
+        double newSum = 0;
+
+
+        for (int j = 0; j < numbers.length; j++) {
+            // put the calculation right in there
+            newSum = newSum + ((numbers[j] - media) * (numbers[j] - media));
         }
-        return sd;
+        double squaredDiffMean = (newSum) / (numbers.length);
+        double standardDev = (Math.sqrt(squaredDiffMean));
+        return standardDev;
     }
 
     public static double getDeviazioneStandard(double[] numbers, double media) {

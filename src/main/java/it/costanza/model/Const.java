@@ -23,6 +23,10 @@ public class Const {
     public static final String PESO_WE = "PESO_WE";
     public static final String PESO_GIORNO = "PESO_GIORNO";
     public static final String PESO_NOTTE = "PESO_NOTTE";
+    public static final String PESO_PRES_FES = "PESO_PRES_FESTIVI";
+    public static final String PESO_SD_FES = "PESO_SD_FESTIVI";
+    public static final String PESO_SD_PRES_FER ="PESO_PRES_SET";
     public static final String SEZIONE_STAMPA = "###########################";
     public static final String SEZIONE_STAMPA_MAIN = "===========================";
+
 }

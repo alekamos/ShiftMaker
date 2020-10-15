@@ -132,4 +132,19 @@ public class DateService {
             return nesimaSettimanaMensile;
 
     }
+
+    public static ArrayList<Date> getNEsimaSettimanaMensileFestiva(int anno, int mese,int weekNumber) {
+        ArrayList<Date> nesimaSettimanaMensile = getNesimaSettimanaMensile(anno, mese, weekNumber);
+        Calendar cal = Calendar.getInstance();
+
+        for (int j = 0; j < nesimaSettimanaMensile.size(); j++) {
+            cal.setTime(nesimaSettimanaMensile.get(j));
+            if (cal.get(Calendar.DAY_OF_WEEK)!=Calendar.SATURDAY && cal.get(Calendar.DAY_OF_WEEK)!=Calendar.SUNDAY)
+                nesimaSettimanaMensile.remove(j);
+
+        }
+
+            return nesimaSettimanaMensile;
+
+    }
 }

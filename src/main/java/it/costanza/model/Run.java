@@ -10,19 +10,43 @@ public class Run implements Comparable<Run>{
     private String id;
     private ArrayList<Turno> candidatoTurnoMese;
     private ArrayList<Persona> listaPersoneTurno;
+    private double mediaTurni;
     private double sdTurni;
-    private double sdturniWe;
-    private double sdTurniGG;
+    private double sdNrturniWe;
+    private double mediaNrturniWe;
+    private double mediaNrTurniGG;
+    private double sdNrTurniGG;
+    private double mediaTurniNotte;
     private double sdTurniNotte;
+    private double mediaPresenzaSettimanale;
     private double sdPresenzaSettimanale;
+    private double mediaPresenzaWe;
+    private double sdPresenzaWe;
     private Double score;
 
+    public double getMediaPresenzaWe() {
+        return mediaPresenzaWe;
+    }
 
+    public void setMediaPresenzaWe(double mediaPresenzaWe) {
+        this.mediaPresenzaWe = mediaPresenzaWe;
+    }
+
+    public double getSdPresenzaWe() {
+        return sdPresenzaWe;
+    }
+
+    public void setSdPresenzaWe(double sdPresenzaWe) {
+        this.sdPresenzaWe = sdPresenzaWe;
+    }
 
     private static double  K_TURNI = 0;
     private static double  K_GIORNO = 0;
     private static double  K_NOTTE = 0;
     private static double  K_WE = 0;
+    private static double  K_PRES_FES = 0;
+    private static double  K_SD_FES = 0;
+    private static double  K_SD_FER = 0;
 
     static {
         try {
@@ -30,29 +54,33 @@ public class Run implements Comparable<Run>{
             K_GIORNO = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_GIORNO));
             K_NOTTE = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_NOTTE));
             K_WE = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_WE));
+            K_PRES_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_PRES_FES));
+            K_SD_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_FES));
+            K_SD_FER = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_PRES_FER));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    public Run(String id,ArrayList<Turno> candidatoTurnoMese,ArrayList<Persona> persone ,double sdTurni, double sdturniWe, double sdTurniGG, double sdTurniNotte) {
+    public Run(String id, ArrayList<Turno> candidatoTurnoMese, ArrayList<Persona> persone , double sdTurni, double sdNrturniWe, double sdNrTurniGG, double sdTurniNotte) {
         this.id=id;
         this.candidatoTurnoMese = candidatoTurnoMese;
         this.sdTurni = sdTurni;
-        this.sdturniWe = sdturniWe;
-        this.sdTurniGG = sdTurniGG;
+        this.sdNrturniWe = sdNrturniWe;
+        this.sdNrTurniGG = sdNrTurniGG;
         this.sdTurniNotte = sdTurniNotte;
         this.listaPersoneTurno=persone;
-        this.score = calculateScore();
     }
 
     /**
      * Qui c'è la formula per calcolare il punteggio
      * @return
      */
-    private double calculateScore(){
-        return Math.sqrt(K_TURNI*Math.pow(sdTurni,2)+K_WE*Math.pow(sdturniWe,2)+K_GIORNO*Math.pow(sdTurniGG,2)+K_NOTTE*Math.pow(sdTurniNotte,2));
+    public double calculateScore(){
+        return Math.sqrt(K_TURNI*Math.pow(sdTurni,2)+K_WE*Math.pow(sdNrturniWe,2)+K_GIORNO*Math.pow(sdNrTurniGG,2)+K_NOTTE*Math.pow(sdTurniNotte,2)+K_SD_FER*Math.pow(sdPresenzaSettimanale,2));
+
     }
 
 
@@ -62,6 +90,46 @@ public class Run implements Comparable<Run>{
 
     public void setCandidatoTurnoMese(ArrayList<Turno> candidatoTurnoMese) {
         this.candidatoTurnoMese = candidatoTurnoMese;
+    }
+
+    public double getMediaTurni() {
+        return mediaTurni;
+    }
+
+    public void setMediaTurni(double mediaTurni) {
+        this.mediaTurni = mediaTurni;
+    }
+
+    public double getMediaNrturniWe() {
+        return mediaNrturniWe;
+    }
+
+    public void setMediaNrturniWe(double mediaNrturniWe) {
+        this.mediaNrturniWe = mediaNrturniWe;
+    }
+
+    public double getMediaNrTurniGG() {
+        return mediaNrTurniGG;
+    }
+
+    public void setMediaNrTurniGG(double mediaNrTurniGG) {
+        this.mediaNrTurniGG = mediaNrTurniGG;
+    }
+
+    public double getMediaTurniNotte() {
+        return mediaTurniNotte;
+    }
+
+    public void setMediaTurniNotte(double mediaTurniNotte) {
+        this.mediaTurniNotte = mediaTurniNotte;
+    }
+
+    public double getMediaPresenzaSettimanale() {
+        return mediaPresenzaSettimanale;
+    }
+
+    public void setMediaPresenzaSettimanale(double mediaPresenzaSettimanale) {
+        this.mediaPresenzaSettimanale = mediaPresenzaSettimanale;
     }
 
     public String getId() {
@@ -80,20 +148,20 @@ public class Run implements Comparable<Run>{
         this.sdTurni = sdTurni;
     }
 
-    public double getSdturniWe() {
-        return sdturniWe;
+    public double getSdNrturniWe() {
+        return sdNrturniWe;
     }
 
-    public void setSdturniWe(double sdturniWe) {
-        this.sdturniWe = sdturniWe;
+    public void setSdNrturniWe(double sdNrturniWe) {
+        this.sdNrturniWe = sdNrturniWe;
     }
 
-    public double getSdTurniGG() {
-        return sdTurniGG;
+    public double getSdNrTurniGG() {
+        return sdNrTurniGG;
     }
 
-    public void setSdTurniGG(double sdTurniGG) {
-        this.sdTurniGG = sdTurniGG;
+    public void setSdNrTurniGG(double sdNrTurniGG) {
+        this.sdNrTurniGG = sdNrTurniGG;
     }
 
     public double getSdTurniNotte() {

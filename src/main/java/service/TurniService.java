@@ -159,6 +159,13 @@ public class TurniService {
         ArrayList<Date> we4 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 4);
         ArrayList<Date> we5 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 5);
 
+        ArrayList<Date> wend1 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 1);
+        ArrayList<Date> wend2 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 2);
+        ArrayList<Date> wend3 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 3);
+        ArrayList<Date> wend4 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 4);
+        ArrayList<Date> wend5 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 5);
+        ArrayList<Date> wend6 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 6);
+
 
         for (int i = 0; i < persone.size(); i++) {
 
@@ -167,7 +174,9 @@ public class TurniService {
             int numeroTurniGiorno = 0;
             int numeroTurniNotte = 0;
             int numeroTurniWe = 0;
-            int[] presenzaSettimanale = new int[5];
+            int counterPresenzaWe = 0;
+            int[] presenzaFeriale = new int[5];
+            int[] presenzaFestiva = new int[6];
 
             for (Turno turno : turniFinale) {
                 boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome());
@@ -191,25 +200,41 @@ public class TurniService {
                     if (personaInTurnoSameAsPersonaElem)
                         numeroTurniWe++;
 
-                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
+
+                    //Controlli sui turni in settimana
                 if(we1!=null && isTurnoInWeek(turno,we1) && personaInTurnoSameAsPersonaElem)
-                    presenzaSettimanale[0]++;
+                    presenzaFeriale[0]++;
 
-                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
                 if(we2!=null && isTurnoInWeek(turno,we2) && personaInTurnoSameAsPersonaElem)
-                    presenzaSettimanale[1]++;
+                    presenzaFeriale[1]++;
 
-                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
                 if(we3!=null && isTurnoInWeek(turno,we3) && personaInTurnoSameAsPersonaElem)
-                    presenzaSettimanale[2]++;
+                    presenzaFeriale[2]++;
 
-                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
                 if(we4!=null && isTurnoInWeek(turno,we4) && personaInTurnoSameAsPersonaElem)
-                    presenzaSettimanale[3]++;
+                    presenzaFeriale[3]++;
 
-                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
                 if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem)
-                    presenzaSettimanale[4]++;
+                    presenzaFeriale[4]++;
+
+                //Controlli sui turni nel weekend
+                if(wend1!=null && isTurnoInWeek(turno,wend1) && personaInTurnoSameAsPersonaElem)
+                    presenzaFestiva[0]++;
+
+                if(wend2!=null && isTurnoInWeek(turno,wend2) && personaInTurnoSameAsPersonaElem)
+                    presenzaFestiva[1]++;
+
+                if(wend3!=null && isTurnoInWeek(turno,wend3) && personaInTurnoSameAsPersonaElem)
+                    presenzaFestiva[2]++;
+
+                if(wend4!=null && isTurnoInWeek(turno,wend4) && personaInTurnoSameAsPersonaElem)
+                    presenzaFestiva[3]++;
+
+                if(wend5!=null && isTurnoInWeek(turno,wend5) && personaInTurnoSameAsPersonaElem)
+                    presenzaFestiva[4]++;
+
+                if(wend6!=null && isTurnoInWeek(turno,wend6) && personaInTurnoSameAsPersonaElem)
+                    presenzaFestiva[5]++;
 
 
             }
@@ -221,7 +246,15 @@ public class TurniService {
             persone.get(i).setNumeroTurniWe(numeroTurniWe);
             persone.get(i).setNumeroTurniGiorno(numeroTurniGiorno);
             persone.get(i).setNumeroTurniNotte(numeroTurniNotte);
-            persone.get(i).setPresenzaSettimanale(presenzaSettimanale);
+            persone.get(i).setPresenzaFeriale(presenzaFeriale);
+
+
+            for (int j = 0; j < presenzaFestiva.length; j++) {
+                if (presenzaFestiva[j]>0)
+                    counterPresenzaWe++;
+
+            }
+            persone.get(i).setPresenzaFestiva(counterPresenzaWe);
 
         }
 
