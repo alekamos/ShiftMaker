@@ -4,7 +4,6 @@ import it.costanza.model.Const;
 import it.costanza.model.Persona;
 import it.costanza.model.Run;
 import it.costanza.model.Turno;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -20,7 +19,7 @@ public class StatService {
      * @param run
      * @param turniCompleti se true stampa tutto, se no solo l'estratto
      */
-    public String stampaStatistiche(Run run, boolean turniCompleti) throws IOException {
+    public String stampaStatistiche(Run run) throws IOException {
 
 
         String msg="";
@@ -29,14 +28,54 @@ public class StatService {
         int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
         int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
 
-        ArrayList<Date> datesOfMonth = service.getDatesOfMonth(anno, mese);
+        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
         SimpleDateFormat sdf = new SimpleDateFormat("dd");
 
-        if(turniCompleti) {
+
+        msg = msg + "\r\n";
+
+        /**
+         * Contatori
+         */
+        msg = msg + Const.SEZIONE_STAMPA+" Contatori turni:\r\n";
+        msg = msg + "NOM"+"\t"+"tot\t\t"+"we\t\t"+"gg\t\t"+"notte"+"\r\n";
+        for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
+
+            msg = msg + run.getListaPersoneTurno().get(i).getNome() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte()+"\r\n";
+        }
+
+
+        DecimalFormat df = new DecimalFormat("####0.00");
+        msg = msg + Const.SEZIONE_STAMPA+" Deviazioni standard grandezze:"+"\r\n";
+        msg = msg + "Score\t\t\t"+df.format(run.getScore())+"\r\n";
+        msg = msg + "Tot sd\t\t\t"+df.format(run.getSdTurni())+"\r\n";
+        msg = msg + "We sd\t\t\t"+df.format(run.getSdturniWe())+"\r\n";
+        msg = msg + "GG sd\t\t\t"+df.format(run.getSdTurniGG())+"\r\n";
+        msg = msg + "Notte sd\t\t"+df.format(run.getSdTurniNotte())+"\r\n";
+
+        return msg;
+
+    }
 
 
 
-            msg = msg+  Const.SEZIONE_STAMPA+" turni finali:\r\n";
+    public String stampaTurni(Run run) throws IOException {
+
+
+        String msg="";
+        TurniService service = new TurniService();
+
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
+
+        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd");
+
+
+
+
+
+            msg = msg+  Const.SEZIONE_STAMPA_MAIN+" Turno finale id :"+" "+run.getId()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n";
 
             msg = msg + "DAT\t"+"RIC\t"+"REP\t"+"REP\t"+"URG\t"+"REP\t"+"REP\t"+"\r\n";
             int count = 0;
@@ -77,7 +116,7 @@ public class StatService {
             }
 
 
-        }
+
 
 
         msg = msg + "\r\n";
@@ -86,19 +125,17 @@ public class StatService {
          * Contatori
          */
         msg = msg + Const.SEZIONE_STAMPA+" Contatori turni:\r\n";
-        msg = msg + "NOM"+"\t"+"tot\t\t"+"we\t\t"+"gg\t\t"+"notte"+"\r\n";
+        msg = msg + "nom"+"\t\t"+"tot\t\t"+"we\t\t"+"gg\t\t"+"not\t\t"+"Iw\t\t"+"IIw\t\t"+"III\t\t"+"IV\t\t"+"\r\n";
         for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
 
-            msg = msg + run.getListaPersoneTurno().get(i).getNome() + "\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte()+"\r\n";
+            msg = msg + run.getListaPersoneTurno().get(i).getNome() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte()+"\t\t"+
+                    run.getListaPersoneTurno().get(i).getPresenzaSettimanale()[0]+"\t\t"+
+                    run.getListaPersoneTurno().get(i).getPresenzaSettimanale()[1]+"\t\t"+
+                    run.getListaPersoneTurno().get(i).getPresenzaSettimanale()[2]+"\t\t"+
+                    run.getListaPersoneTurno().get(i).getPresenzaSettimanale()[3]+"\t\t"+
+                    "\r\n";
         }
 
-
-        DecimalFormat df = new DecimalFormat("####0.00");
-        msg = msg + Const.SEZIONE_STAMPA+" Deviazioni standard grandezze:"+"\r\n";
-        msg = msg + "Tot sd\t\t\t"+df.format(run.getSdTurni())+"\r\n";
-        msg = msg + "We sd\t\t\t"+df.format(run.getSdturniWe())+"\r\n";
-        msg = msg + "GG sd\t\t\t"+df.format(run.getSdTurniGG())+"\r\n";
-        msg = msg + "Notte sd\t\t"+df.format(run.getSdTurniNotte())+"\r\n";
 
         return msg;
 
@@ -133,7 +170,7 @@ public class StatService {
 
 
         DecimalFormat df = new DecimalFormat("####0.00");
-        msg = msg + df.format(run.getSdTurni())+";"+df.format(run.getSdturniWe())+";"+df.format(run.getSdTurniGG())+";"+df.format(run.getSdTurniNotte())+";"+df.format(run.getVectorialSumSd());
+        msg = msg + df.format(run.getSdTurni())+";"+df.format(run.getSdturniWe())+";"+df.format(run.getSdTurniGG())+";"+df.format(run.getSdTurniNotte())+";"+df.format(run.getScore());
 
 
         return msg;
@@ -148,7 +185,7 @@ public class StatService {
      * @param turniDelMese
      * @return
      */
-    public Run elaborazioneStat(ArrayList<Persona> persone, ArrayList<Turno> turniDelMese) {
+    public Run elaborazioneStat(String idRun,ArrayList<Persona> persone, ArrayList<Turno> turniDelMese) {
 
 
 
@@ -190,7 +227,7 @@ public class StatService {
 
 
 
-        Run run = new Run(turniDelMese,persone,sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte);
+        Run run = new Run(idRun,turniDelMese,persone,sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte);
         return run;
 
 

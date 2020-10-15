@@ -1,11 +1,8 @@
 package service;
 
-import com.sun.istack.internal.NotNull;
 import it.costanza.model.*;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -21,7 +18,7 @@ public class TurniService {
      * @return
      * @throws ExceptionCustom
      */
-    public Run doRun(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom {
+    public Run doRun(String idRun,ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
 
 
         //inizio algoritmo
@@ -134,7 +131,7 @@ public class TurniService {
         arricchisciPersoneConStatistiche(turniFinale, persone);
 
 
-        Run run = statService.elaborazioneStat(persone, turniFinale);
+        Run run = statService.elaborazioneStat(idRun,persone, turniFinale);
 
         return run;
     }
@@ -151,7 +148,16 @@ public class TurniService {
 
 
 
-    private void arricchisciPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) {
+    private void arricchisciPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
+
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
+
+        ArrayList<Date> we1 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 1);
+        ArrayList<Date> we2 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 2);
+        ArrayList<Date> we3 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 3);
+        ArrayList<Date> we4 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 4);
+        ArrayList<Date> we5 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 5);
 
 
         for (int i = 0; i < persone.size(); i++) {
@@ -161,27 +167,50 @@ public class TurniService {
             int numeroTurniGiorno = 0;
             int numeroTurniNotte = 0;
             int numeroTurniWe = 0;
+            int[] presenzaSettimanale = new int[5];
 
             for (Turno turno : turniFinale) {
+                boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome());
 
                 //controllo numero turni
-                if (turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome()))
+                if (personaInTurnoSameAsPersonaElem)
                     numeroTurni++;
 
                 //controllo numero turni giorni
                 if (turno.getTipoTurno().equals(Const.GIORNO))
-                    if (turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome()))
+                    if (personaInTurnoSameAsPersonaElem)
                         numeroTurniGiorno++;
 
                 //controllo numero turni notte
                 if (turno.getTipoTurno().equals(Const.NOTTE))
-                    if (turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome()))
+                    if (personaInTurnoSameAsPersonaElem)
                         numeroTurniNotte++;
 
                 //controllo numero turni weekend
                 if (DateService.isWeekendDate(turno.getData()))
-                    if (turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome()))
+                    if (personaInTurnoSameAsPersonaElem)
                         numeroTurniWe++;
+
+                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
+                if(we1!=null && isTurnoInWeek(turno,we1) && personaInTurnoSameAsPersonaElem)
+                    presenzaSettimanale[0]++;
+
+                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
+                if(we2!=null && isTurnoInWeek(turno,we2) && personaInTurnoSameAsPersonaElem)
+                    presenzaSettimanale[1]++;
+
+                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
+                if(we3!=null && isTurnoInWeek(turno,we3) && personaInTurnoSameAsPersonaElem)
+                    presenzaSettimanale[2]++;
+
+                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
+                if(we4!=null && isTurnoInWeek(turno,we4) && personaInTurnoSameAsPersonaElem)
+                    presenzaSettimanale[3]++;
+
+                //Controlla se ha il turno in prima settimana, se we1 è null vuol dire che la prima settimana è più corta di 3 gg
+                if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem)
+                    presenzaSettimanale[4]++;
+
 
             }
 
@@ -192,11 +221,45 @@ public class TurniService {
             persone.get(i).setNumeroTurniWe(numeroTurniWe);
             persone.get(i).setNumeroTurniGiorno(numeroTurniGiorno);
             persone.get(i).setNumeroTurniNotte(numeroTurniNotte);
+            persone.get(i).setPresenzaSettimanale(presenzaSettimanale);
 
         }
 
 
     }
+
+
+    /**
+     * Controlla se il turno è feriale nei giorni indicati e passati come parametro
+     * @param turno
+     * @param dateSettimana
+     * @return
+     */
+    private boolean isTurnoInWeek(Turno turno,ArrayList<Date> dateSettimana){
+
+        //se il turno è un venerdì notte è non è da contare
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(turno.getData());
+        boolean response = false;
+        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals(Const.NOTTE))
+            response = false;
+
+        for (Date date : dateSettimana) {
+            if(DateService.isSameDay(date,turno.getData()))
+                return true;
+        }
+
+
+        return response;
+
+
+
+
+
+    }
+
+
+
 
     /**
      * Controlla che il giorno prima non abbia fatto notte
@@ -208,7 +271,7 @@ public class TurniService {
      */
     private boolean checkFattibilitaTurno(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
 
-        Date giornoPrima = aumentaTogliGiorno(turno.getData(), -1);
+        Date giornoPrima = DateService.aumentaTogliGiorno(turno.getData(), -1);
         ArrayList<Turno> listaTurniDellaGiornataPrecedenteDiurnoONotturno = null;
         boolean turnoLiberoIlGiornoPrima = true;
 
@@ -234,7 +297,7 @@ public class TurniService {
 
     private boolean checkFattibilitaTurnoDebug(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
 
-        Date giornoPrima = aumentaTogliGiorno(turno.getData(), -1);
+        Date giornoPrima = DateService.aumentaTogliGiorno(turno.getData(), -1);
         ArrayList<Turno> listaTurniDellaGiornataPrecedenteDiurnoONotturno = null;
         boolean turnoLiberoIlGiornoPrima = true;
 
@@ -269,7 +332,7 @@ public class TurniService {
      */
     private boolean checkFattibilitaTurnoSuccessivo(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese, ArrayList<Turno> turniAssegnati) {
 
-        Date gioroDopo = aumentaTogliGiorno(turno.getData(), 1);
+        Date gioroDopo = DateService.aumentaTogliGiorno(turno.getData(), 1);
         ArrayList<Turno> listaTurniDellaGiornataSuccessivaGiorno = null;
         ArrayList<Turno> listaTurniDellaGiornataSuccessivaNotte = null;
         ArrayList<Turno> listaTurniDellaGiornata = new ArrayList<>();
@@ -436,6 +499,12 @@ public class TurniService {
     }
 
 
+
+
+
+
+
+
     /**
      * Carica il pattern dei turni del mese
      *
@@ -450,7 +519,7 @@ public class TurniService {
         int anno = Integer.parseInt(propertiesServices.getProperties("anno"));
         int mese = Integer.parseInt(propertiesServices.getProperties("mese"));
 
-        ArrayList<Date> datesOfMonth = getDatesOfMonth(anno, mese);
+        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
         for (Date data : datesOfMonth) {
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
@@ -470,43 +539,6 @@ public class TurniService {
         }
 
         return turni;
-    }
-
-
-    public ArrayList<Date> getDatesOfMonth(int anno, int mese) {
-        ArrayList<Date> dates = new ArrayList<Date>();
-        Calendar cal = Calendar.getInstance();
-        cal.set(anno, mese - 1, 1);
-        while (cal.get(Calendar.MONTH) == mese - 1) {
-
-            dates.add(cal.getTime());
-
-
-            cal.add(Calendar.DATE, 1);
-        }
-        return dates;
-    }
-
-    private Date getData(int anno, int mese, int giorno) {
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(anno, mese - 1, giorno);
-        cal.getTime();
-
-        Date data = cal.getTime();
-        return data;
-
-    }
-
-
-    private Date aumentaTogliGiorno(Date dataCorrente, int giorniDaAumentareTogliere) {
-
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(dataCorrente);
-        c.add(Calendar.DATE, giorniDaAumentareTogliere);  // number of days to add
-        return c.getTime();
-
     }
 
 
@@ -580,14 +612,14 @@ public class TurniService {
                         //per ogni data, quindi tolgo tutte le lettere dalla stringa calcolata
                         String dataNumber = indisponibilitaElem.replaceAll("[^0-9]", "");
                         if (indisponibilitaElem.contains(Const.GIORNO)) {
-                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_1));
-                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_2));
-                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_URGENTISTA));
-                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_RICERCA));
+                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_1));
+                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_2));
+                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_URGENTISTA));
+                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_RICERCA));
                         }
                         if (indisponibilitaElem.contains(Const.NOTTE)) {
-                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_1));
-                            turnistaIndisponibilita.add(new Turno(getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_2));
+                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_1));
+                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_2));
                         }
                     }
             }

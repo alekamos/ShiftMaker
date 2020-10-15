@@ -10,6 +10,7 @@ public class Persona {
     private int numeroTurniWe;
     private int numeroTurniGiorno;
     private int numeroTurniNotte;
+    private int[] presenzaSettimanale;
     private double mediaDistanzaTemporaleTurno;
     private ArrayList<Turno> indisponibilitaList;
 
@@ -21,6 +22,14 @@ public class Persona {
 
     public Persona() {
 
+    }
+
+    public int[] getPresenzaSettimanale() {
+        return presenzaSettimanale;
+    }
+
+    public void setPresenzaSettimanale(int[] presenzaSettimanale) {
+        this.presenzaSettimanale = presenzaSettimanale;
     }
 
     public Persona(String nome) {

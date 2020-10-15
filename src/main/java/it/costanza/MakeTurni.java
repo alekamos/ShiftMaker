@@ -29,7 +29,7 @@ public class MakeTurni {
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati = new ArrayList<>();
         StatService statService = new StatService();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH24mmSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmm");
 
 
 
@@ -38,13 +38,16 @@ public class MakeTurni {
         int numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
         int bestResult = Integer.parseInt(PropertiesServices.getProperties("bestResult"));
         String fileName = sdf.format(new Date())+PropertiesServices.getProperties("fileName");
+        String fileNameTurni = sdf.format(new Date())+PropertiesServices.getProperties("fileNameTurni");
         String path = PropertiesServices.getProperties("pathFile");
+
+
+        //creo i file
         File file = new File(path+"\\"+fileName);
-        boolean result = file.createNewFile();  //creates a new file
-        if(result)      // test if successfully created a new file
-        {
-            System.out.println("file created "+file.getCanonicalPath()); //returns the path string
-        }
+        file.createNewFile();  //creates a new file
+        File file2 = new File(path+"\\"+fileNameTurni);
+        file2.createNewFile();  //creates a new file
+
 
 
         for (int i = 0; i < numeroGiriTurni; i++) {
@@ -60,7 +63,7 @@ public class MakeTurni {
                 turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
 
-                listaRun.add(turniService.doRun(turniGiaAssergnati, turniMese, persone));
+                listaRun.add(turniService.doRun(sdf.format(new Date())+"_"+i,turniGiaAssergnati, turniMese, persone));
                 System.out.println(i+" Turno concluso!");
             }catch (ExceptionCustom e){
                 System.out.println(i+" Turno non concluso"+e.getMessage());
@@ -73,15 +76,29 @@ public class MakeTurni {
         String intestazione = "";
 
         String output="";
-        for (int i = bestResult; i > 0; i--) {
-            intestazione = Const.SEZIONE_STAMPA_MAIN+" Run number: "+i+Const.SEZIONE_STAMPA_MAIN+"\r\n\r\n";
+        String turni="";
+        for (int i = 0; i < bestResult; i++) {
+            intestazione = Const.SEZIONE_STAMPA_MAIN+" Run Position: "+i+" id: "+listaRun.get(i).getId()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n\r\n";
+
+            //print file
             Files.write(Paths.get(path+"\\"+fileName), intestazione.getBytes(), StandardOpenOption.APPEND);
-            output=statService.stampaStatistiche(listaRun.get(i),true);
+            output=statService.stampaStatistiche(listaRun.get(i));
+
+
+            //solo per praticità
+            System.out.println(intestazione);
             System.out.println(output);
 
 
             Files.write(Paths.get(path+"\\"+fileName), output.getBytes(), StandardOpenOption.APPEND);
 
+
+
+        }
+
+        for (Run run : listaRun) {
+            turni=statService.stampaTurni(run);
+            Files.write(Paths.get(path+"\\"+fileNameTurni), turni.getBytes(), StandardOpenOption.APPEND);
 
         }
 
