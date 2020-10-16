@@ -3,6 +3,7 @@ package service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 public class DateService {
 
@@ -95,7 +96,7 @@ public class DateService {
             weekDateList.add(removeTime(cal.getTime()));
         }
 
-       return weekDateList;
+        return weekDateList;
     }
 
     public static Date getData(int anno, int mese, int giorno) {
@@ -118,13 +119,21 @@ public class DateService {
     public static ArrayList<Date> getNEsimaSettimanaMensileFeriale(int anno, int mese,int weekNumber) {
         ArrayList<Date> nesimaSettimanaMensile = getNesimaSettimanaMensile(anno, mese, weekNumber);
         Calendar cal = Calendar.getInstance();
+        ArrayList<Integer> listaElemDaRimuovere = new ArrayList<>();
 
         for (int j = 0; j < nesimaSettimanaMensile.size(); j++) {
             cal.setTime(nesimaSettimanaMensile.get(j));
             if (cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)
-                nesimaSettimanaMensile.remove(j);
+                listaElemDaRimuovere.add(j);
 
         }
+
+        for (int i = listaElemDaRimuovere.size()-1; i >= 0; i--) {
+            nesimaSettimanaMensile.remove(listaElemDaRimuovere.get(i).intValue());
+        }
+
+
+
 
         if (nesimaSettimanaMensile.size()<3)
             return null;
@@ -144,7 +153,7 @@ public class DateService {
 
         }
 
-            return nesimaSettimanaMensile;
+        return nesimaSettimanaMensile;
 
     }
 }

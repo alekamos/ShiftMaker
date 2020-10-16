@@ -27,7 +27,7 @@ public class MakeTurni {
 
 
         ArrayList<Run> listaRun = new ArrayList<>();
-        ArrayList<Turno> turniGiaAssergnati = new ArrayList<>();
+        ArrayList<Turno> turniGiaAssergnati;
         StatService statService = new StatService();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmm");
 
@@ -38,7 +38,9 @@ public class MakeTurni {
         int numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
         int bestResult = Integer.parseInt(PropertiesServices.getProperties("bestResult"));
         String fileName = sdf.format(new Date())+PropertiesServices.getProperties("fileName");
+        String fileNameBuffer = sdf.format(new Date())+PropertiesServices.getProperties("fileNameBuffer");
         String fileNameTurni = sdf.format(new Date())+PropertiesServices.getProperties("fileNameTurni");
+        String fileNameTurniBuffer = sdf.format(new Date())+PropertiesServices.getProperties("fileNameTurniBuffer");
         String path = PropertiesServices.getProperties("pathFile");
 
 
@@ -47,6 +49,10 @@ public class MakeTurni {
         file.createNewFile();  //creates a new file
         File file2 = new File(path+"\\"+fileNameTurni);
         file2.createNewFile();  //creates a new file
+        File file3 = new File(path+"\\"+fileNameTurniBuffer);
+        file3.createNewFile();  //creates a new file
+        File file4 = new File(path+"\\"+fileNameBuffer);
+        file4.createNewFile();  //creates a new file
 
 
 
@@ -63,35 +69,32 @@ public class MakeTurni {
                 turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
                 listaRun.add(turniService.doRun(sdf.format(new Date())+"_"+i,turniGiaAssergnati, turniMese, persone));
-                System.out.println(i+" Turno concluso in: "+(System.currentTimeMillis()-t1)+"ms");
+                System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
+                //stampiamo per buffering
+                Files.write(Paths.get(path+"\\"+fileNameBuffer), statService.stampaStatistiche(listaRun.get(listaRun.size() - 1)).getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get(path+"\\"+fileNameTurniBuffer), statService.stampaTurni(listaRun.get(listaRun.size() - 1)).getBytes(), StandardOpenOption.APPEND);
             }catch (ExceptionCustom e){
-                System.out.println(i+" Turno non concluso"+e.getMessage());
+                System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }
         }
 
 
         //ordino la lista
         Collections.sort(listaRun);
-        String intestazione = "";
+
 
         String output="";
         String turni="";
-        for (int i = 0; i < bestResult; i++) {
-            intestazione = Const.SEZIONE_STAMPA_MAIN+" Run Position: "+i+" id: "+listaRun.get(i).getId()+" "+Const.SEZIONE_STAMPA_MAIN;
+
+        long giri = Math.round((double)listaRun.size()/(double)100*bestResult);
+        if(giri<10)
+            giri=listaRun.size();
+
+        for (int i = 0; i < giri; i++) {
 
             //print file
-            Files.write(Paths.get(path+"\\"+fileName), intestazione.getBytes(), StandardOpenOption.APPEND);
             output=statService.stampaStatistiche(listaRun.get(i));
-
-
-            //solo per praticità
-            System.out.println(intestazione);
-            System.out.println(output);
-
-
             Files.write(Paths.get(path+"\\"+fileName), output.getBytes(), StandardOpenOption.APPEND);
-
-
 
         }
 
@@ -100,7 +103,6 @@ public class MakeTurni {
             Files.write(Paths.get(path+"\\"+fileNameTurni), turni.getBytes(), StandardOpenOption.APPEND);
 
         }
-
 
 
     }

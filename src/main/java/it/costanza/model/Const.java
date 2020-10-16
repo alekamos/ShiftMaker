@@ -1,5 +1,7 @@
 package it.costanza.model;
 
+import service.PropertiesServices;
+
 import java.io.InputStream;
 
 public class Const {
@@ -28,5 +30,16 @@ public class Const {
     public static final String PESO_SD_PRES_FER ="PESO_PRES_SET";
     public static final String SEZIONE_STAMPA = "###########################";
     public static final String SEZIONE_STAMPA_MAIN = "===========================";
+
+    public static final String QUALITY_CHECK = "QUALITY_CHECK";
+    public static final String QC_DIFF_PRESENZ_FERIALE= "QC_DIFF_PRESENZ_FERIALE";
+
+
+    public static final String MIN_NOTTI = "QC_MIN_NOTTI";
+    public static final String MAX_NOTTI = "QC_MAX_NOTTI";
+    public static final String MIN_FERIALE = "QC_MIN_PRESENZ_FERIALE";
+    public static final String MAX_FERIALE = "QC_MAX_PRESENZ_FERIALE";
+    public static final String ECCEZIONI_TURNI_NOTTE = "ECCEZIONE_NOTTE";
+
 
 }

@@ -1,9 +1,6 @@
 package service;
 
-import it.costanza.model.Const;
-import it.costanza.model.Persona;
-import it.costanza.model.Run;
-import it.costanza.model.Turno;
+import it.costanza.model.*;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -33,6 +30,7 @@ public class StatService {
         /**
          * Contatori
          */
+        msg = msg+  Const.SEZIONE_STAMPA_MAIN+" id :"+" "+run.getId()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n";
         msg = msg + Const.SEZIONE_STAMPA+" Contatori turni:\r\n";
         msg = msg + "nom"+"\t\t"+"tot\t\t"+"Pw\t\t"+"#we\t\t"+"#gg\t\t"+"not\t\t"+
                 "1°s\t\t"+"2°s\t\t"+"3°s\t\t"+"4°s\t\t"+"5°s\t\t"+
@@ -85,48 +83,45 @@ public class StatService {
         SimpleDateFormat sdf = new SimpleDateFormat("dd");
 
 
+        msg = msg+  Const.SEZIONE_STAMPA_MAIN+" Turno finale id :"+" "+run.getId()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n";
+
+        msg = msg + "DAT\t"+"RIC\t"+"REP\t"+"REP\t"+"URG\t"+"REP\t"+"REP\t"+"\r\n";
+        int count = 0;
+
+        while (datesOfMonth.size()>count){
+
+            Date date = datesOfMonth.get(count);
+            msg = msg+ "\r\n";
+            count++;
+            msg = msg + sdf.format(date)+"\t";
+
+            //RICERCA
+            if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_RICERCA)!=null)
+                msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_RICERCA).getPersonaInTurno().getNome()+"\t";
+            else msg = msg+ "\t";
+
+            if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_1)!=null)
+                msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_1).getPersonaInTurno().getNome()+"\t";
+            else msg = msg+ "\t";
+
+            if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_2)!=null)
+                msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_2).getPersonaInTurno().getNome()+"\t";
+            else msg = msg+ "\t";
+
+            if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_URGENTISTA)!=null)
+                msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_URGENTISTA).getPersonaInTurno().getNome()+"\t";
+            else msg = msg+ "\t";
+
+            if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_1)!=null)
+                msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_1).getPersonaInTurno().getNome()+"\t";
+            else msg = msg+ "\t";
+
+            if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_2)!=null)
+                msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_2).getPersonaInTurno().getNome()+"\t";
+            else msg = msg+ "\t";
 
 
-
-            msg = msg+  Const.SEZIONE_STAMPA_MAIN+" Turno finale id :"+" "+run.getId()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n";
-
-            msg = msg + "DAT\t"+"RIC\t"+"REP\t"+"REP\t"+"URG\t"+"REP\t"+"REP\t"+"\r\n";
-            int count = 0;
-
-            while (datesOfMonth.size()>count){
-
-                Date date = datesOfMonth.get(count);
-                msg = msg+ "\r\n";
-                count++;
-                msg = msg + sdf.format(date)+"\t";
-
-                //RICERCA
-                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_RICERCA)!=null)
-                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_RICERCA).getPersonaInTurno().getNome()+"\t";
-                else msg = msg+ "\t";
-
-                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_1)!=null)
-                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_1).getPersonaInTurno().getNome()+"\t";
-                else msg = msg+ "\t";
-
-                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_2)!=null)
-                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_REPARTO_2).getPersonaInTurno().getNome()+"\t";
-                else msg = msg+ "\t";
-
-                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_URGENTISTA)!=null)
-                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.GIORNO, Const.RUOLO_URGENTISTA).getPersonaInTurno().getNome()+"\t";
-                else msg = msg+ "\t";
-
-                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_1)!=null)
-                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_1).getPersonaInTurno().getNome()+"\t";
-                else msg = msg+ "\t";
-
-                if(service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_2)!=null)
-                    msg = msg + service.getTurnoSpecificoFromList(run.getCandidatoTurnoMese(), date, Const.NOTTE, Const.RUOLO_REPARTO_2).getPersonaInTurno().getNome()+"\t";
-                else msg = msg+ "\t";
-
-
-            }
+        }
 
 
 
@@ -139,8 +134,8 @@ public class StatService {
          */
         msg = msg + Const.SEZIONE_STAMPA+" Contatori turni:\r\n";
         msg = msg + "nom"+"\t\t"+"tot\t\t"+"Pw\t\t"+"#we\t\t"+"#gg\t\t"+"not\t\t"+
-                "1°s\t\t"+"2°s\t\t"+"3°s\t\t"+"4°s\t\t"+
-                "\r\n";
+                "1°s\t\t"+"2°s\t\t"+"3°s\t\t"+"4°s\t\t"+"5°s\t\t"
+                +"\r\n";
         for (int i = 0; i < run.getListaPersoneTurno().size(); i++) {
 
             msg = msg + run.getListaPersoneTurno().get(i).getNome() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurni() + "\t\t" + run.getListaPersoneTurno().get(i).getPresenzaFestiva() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniWe() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniGiorno() + "\t\t" + run.getListaPersoneTurno().get(i).getNumeroTurniNotte()+"\t\t"+
@@ -148,6 +143,7 @@ public class StatService {
                     run.getListaPersoneTurno().get(i).getPresenzaFeriale()[1]+"\t\t"+
                     run.getListaPersoneTurno().get(i).getPresenzaFeriale()[2]+"\t\t"+
                     run.getListaPersoneTurno().get(i).getPresenzaFeriale()[3]+"\t\t"+
+                    run.getListaPersoneTurno().get(i).getPresenzaFeriale()[4]+"\t\t" +
                     "\r\n";
         }
 
@@ -245,4 +241,76 @@ public class StatService {
 
     }
 
+    public void checkRunQuality(Run run) throws IOException, ExceptionCustom {
+
+
+        int maxDiff = Integer.parseInt(PropertiesServices.getProperties(Const.QC_DIFF_PRESENZ_FERIALE));
+        ArrayList<Persona> listaPersoneTurno = run.getListaPersoneTurno();
+        ExceptionCustom ferialDiff = new ExceptionCustom();
+        ferialDiff.setMessage("Cotrolli di qualità non superati, differenza troppo alta settimanale");
+
+        ExceptionCustom notteMin = new ExceptionCustom();
+        notteMin.setMessage("Notti minime non superate");
+
+        ExceptionCustom notteMax = new ExceptionCustom();
+        notteMax.setMessage("Notti max superate");
+
+        ExceptionCustom ferMin = new ExceptionCustom();
+        ferMin.setMessage("Presenza feriale minima non rispettata");
+
+        ExceptionCustom ferMax = new ExceptionCustom();
+        ferMax.setMessage("Presenza feriale massima superata");
+
+
+        int minNotte = Integer.parseInt(PropertiesServices.getProperties(Const.MIN_NOTTI));
+        int maxNotte =Integer.parseInt(PropertiesServices.getProperties(Const.MAX_NOTTI));
+        int minFeriale =Integer.parseInt(PropertiesServices.getProperties(Const.MIN_FERIALE));
+        int maxFeriale =Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE));
+        String eccezioneNotte = PropertiesServices.getProperties(Const.ECCEZIONI_TURNI_NOTTE);
+
+
+
+        //1a settimana
+        int[] fer1 = new int[listaPersoneTurno.size()];
+        int[] fer2 = new int[listaPersoneTurno.size()];
+        int[] fer3 = new int[listaPersoneTurno.size()];
+        int[] fer4 = new int[listaPersoneTurno.size()];
+        int[] fer5 = new int[listaPersoneTurno.size()];
+        for (int i = 0; i < listaPersoneTurno.size(); i++) {
+
+
+            if(!listaPersoneTurno.get(i).getNome().equals(eccezioneNotte) && listaPersoneTurno.get(i).getNumeroTurniNotte()<minNotte)
+                throw notteMin;
+
+            if(!listaPersoneTurno.get(i).getNome().equals(eccezioneNotte) && listaPersoneTurno.get(i).getNumeroTurniNotte()>maxNotte)
+                throw notteMax;
+
+
+            fer1[i]= listaPersoneTurno.get(i).getPresenzaFeriale()[0];
+            fer2[i]= listaPersoneTurno.get(i).getPresenzaFeriale()[1];
+            fer3[i]= listaPersoneTurno.get(i).getPresenzaFeriale()[2];
+            fer4[i]= listaPersoneTurno.get(i).getPresenzaFeriale()[3];
+            fer5[i]= listaPersoneTurno.get(i).getPresenzaFeriale()[4];
+
+
+        }
+        if(MathService.getMax(fer1)-MathService.getMin(fer1)>=maxDiff)
+            throw ferialDiff;
+
+        if(MathService.getMax(fer2)-MathService.getMin(fer2)>=maxDiff)
+            throw ferialDiff;
+
+        if(MathService.getMax(fer3)-MathService.getMin(fer3)>=maxDiff)
+            throw ferialDiff;
+
+        if(MathService.getMax(fer4)-MathService.getMin(fer4)>=maxDiff)
+            throw ferialDiff;
+
+        if(MathService.getMax(fer5)-MathService.getMin(fer5)>=maxDiff)
+            throw ferialDiff;
+
+        //Eccezione sulle notti
+
+
+    }
 }

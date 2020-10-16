@@ -132,6 +132,9 @@ public class TurniService {
 
 
         Run run = statService.elaborazioneStat(idRun,persone, turniFinale);
+        boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
+        if(doQualityCheck)
+            statService.checkRunQuality(run);
 
         return run;
     }
@@ -201,7 +204,7 @@ public class TurniService {
                         numeroTurniWe++;
 
 
-                    //Controlli sui turni in settimana
+                //Controlli sui turni in settimana
                 if(we1!=null && isTurnoInWeek(turno,we1) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[0]++;
 
@@ -214,8 +217,13 @@ public class TurniService {
                 if(we4!=null && isTurnoInWeek(turno,we4) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[3]++;
 
-                if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem)
+                if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem) {
                     presenzaFeriale[4]++;
+
+                    if(presenzaFeriale[4]==6)
+                        System.out.println("");
+
+                }
 
                 //Controlli sui turni nel weekend
                 if(wend1!=null && isTurnoInWeek(turno,wend1) && personaInTurnoSameAsPersonaElem)
