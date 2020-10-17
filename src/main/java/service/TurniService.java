@@ -1,6 +1,7 @@
 package service;
 
 import it.costanza.model.*;
+import it.costanza.model.SuperRun;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -20,117 +21,272 @@ public class TurniService {
      */
     public Run doRun(String idRun,ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
 
-        long t1 = System.currentTimeMillis();
-        //inizio algoritmo
-        boolean isDisponibile = false;
-        boolean isTurnoLibero = false;
-        boolean isTurnoFattibile = false;
-        boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
-        boolean personaDaPiazzare = true;
-        boolean isNotGiaInTurno = false;
-        boolean isNotGiaInTurnoAssegnati = false;
 
+        //inizio algoritmo
+        boolean personaDaPiazzare = true;
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
 
         //cicliamo su tutte i turni
-
         StatService statService = new StatService();
 
         for (Turno turno : turniMese) {
             int giri = 0;
-
-
             personaDaPiazzare = true;
-            isDisponibile = false;
-            isTurnoFattibile = false;
-            isNotGiaInTurno = false;
-            isNotGiaInTurnoAssegnati = false;
-            isTurnoSuccessivoSeAssegnatoFattibile = false;
 
             while (personaDaPiazzare) {
                 giri++;
 
-                if (giri > 500) {
+                if (giri > 150) {
                     ExceptionCustom e = new ExceptionCustom();
                     e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
                     throw e;
                 }
 
-
-                //scelgo una persona a casa
-                Persona candidato = getRandomPersona(persone);
-
                 //true se il turno è libero
-                isTurnoLibero = checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno);
+                if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno)) {
 
-                //controllo 1 la persona è disponibile
-                if (isTurnoLibero) {
-                    isDisponibile = checkDisponibilita(candidato, turno);
-                }
+                    Turno attempt = attemptPutRandomPersonInTurno(persone, turno, turniMese, turniGiaAssergnati);
+                    if(attempt!=null) {
+                        turniFinale.add(attempt);
+                        personaDaPiazzare = false;
+                    }
 
-                //controllo che non sia gia in turno come altro reparto
-                if (isDisponibile && isTurnoLibero) {
-                    isNotGiaInTurno = checkIsNotGiaInTurno(candidato, turno, turniMese);
-                }
-
-                //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
-                if (isDisponibile && isTurnoLibero && isNotGiaInTurno) {
-                    isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turno, turniGiaAssergnati);
-                }
-
-
-                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isNotGiaInTurnoAssegnati) {
-                    //controllo che il turno precedente non abbia fatto notte o giorno
-                    isTurnoFattibile = checkFattibilitaTurno(candidato, turno, turniMese);
-                }
-
-
-                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
-                    isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turno, turniMese, turniGiaAssergnati);
-                }
-
-
-                //se sono valide le conidizoni precedenti mettilo in turno
-                if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-
+                }else {
+                    Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
                     Turno trnComplete = deepCopyTurno(turno);
-                    trnComplete.setPersonaInTurno(candidato);
+                    trnComplete.setPersonaInTurno(personaAssegnata);
                     turniFinale.add(trnComplete);
                     personaDaPiazzare = false;
-
-
-
-                } else {//diversamente ne scegli un altro
-                    if (!isTurnoLibero) {
-                        Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
-                        Turno trnComplete = deepCopyTurno(turno);
-                        trnComplete.setPersonaInTurno(personaAssegnata);
-                        turniFinale.add(trnComplete);
-                        personaDaPiazzare = false;
-                    } else {
-                        personaDaPiazzare = true;
-                    }
                 }
-
-
             }
-
-
         }
 
 
-
+        //generazione statistiche sulle persone
         ArrayList<Persona> personeStats = generaPersoneConStatistiche(turniFinale, persone);
-
-
+        //elaborazione statistiche sul run
         Run run = statService.elaborazioneStat(idRun,personeStats, turniFinale);
 
         boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
-
+        //quality check
         if(doQualityCheck)
             statService.checkRunQuality(run);
 
         return run;
+    }
+
+
+
+    public SuperRun doRunMigliorato(String idRun, ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
+
+
+        //inizio algoritmo
+        boolean personaDaPiazzare = true;
+        ArrayList<Turno> turniFinale = new ArrayList<Turno>();
+
+        //cicliamo su tutte i turni
+        StatService statService = new StatService();
+
+        for (Turno turno : turniMese) {
+            int giri = 0;
+            personaDaPiazzare = true;
+
+            while (personaDaPiazzare) {
+                giri++;
+
+                if (giri > 150) {
+                    ExceptionCustom e = new ExceptionCustom();
+                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
+                    throw e;
+                }
+
+                //true se il turno è libero
+                if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno)) {
+
+                    Turno attempt = attemptPutRandomPersonInTurno(persone, turno, turniMese, turniGiaAssergnati);
+                    if(attempt!=null) {
+                        turniFinale.add(attempt);
+                        personaDaPiazzare = false;
+                    }
+
+                }else {
+                    Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
+                    Turno trnComplete = deepCopyTurno(turno);
+                    trnComplete.setPersonaInTurno(personaAssegnata);
+                    turniFinale.add(trnComplete);
+                    personaDaPiazzare = false;
+                }
+            }
+        }
+
+
+        //generazione statistiche sulle persone
+        ArrayList<Persona> personeStats = generaPersoneConStatistiche(turniFinale, persone);
+        //elaborazione statistiche sul run
+        Run run = statService.elaborazioneStat(idRun,personeStats, turniFinale);
+
+        boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
+        //quality check
+        if(doQualityCheck)
+            statService.checkRunQuality(run);
+
+
+        miglioraRun(turniFinale,personeStats,turniGiaAssergnati,turniMese);
+
+
+
+        ArrayList<Persona> personeStats2 = generaPersoneConStatistiche(turniFinale, persone);
+        Run run2 = statService.elaborazioneStat(idRun,personeStats2, turniFinale);
+        SuperRun sr = new SuperRun();
+        sr.setRun1(run);
+        sr.setRunMigliorato(run2);
+
+        return sr;
+    }
+
+    private void miglioraRun(ArrayList<Turno> candidatoTurno,ArrayList<Persona> listaPersoneTurno,ArrayList<Turno> turniGiaAssegnati,ArrayList<Turno> turniMese) throws IOException {
+
+
+
+        int maxDiffTurni = Integer.parseInt(PropertiesServices.getProperties(Const.QC_DIFF_TURNI));
+
+        int minNotte = Integer.parseInt(PropertiesServices.getProperties(Const.MIN_NOTTI));
+        int maxNotte =Integer.parseInt(PropertiesServices.getProperties(Const.MAX_NOTTI));
+        String eccezioneNotte = PropertiesServices.getProperties(Const.ECCEZIONI_TURNI_NOTTE);
+        int indicePersonaMaxTurni = 0;
+        int indicePersonaMinTurni = 0;
+        int tmpTurniMax;
+        int tmpTurniMin;
+
+
+
+        //1a settimana
+        tmpTurniMax = listaPersoneTurno.get(0).getNumeroTurni();
+        tmpTurniMin = listaPersoneTurno.get(0).getNumeroTurni();
+
+        for (int i = 0; i < listaPersoneTurno.size(); i++) {
+
+
+            if (listaPersoneTurno.get(i).getNumeroTurni() > tmpTurniMax)
+                indicePersonaMaxTurni = i;
+
+            if (listaPersoneTurno.get(i).getNumeroTurni() < tmpTurniMin)
+                indicePersonaMinTurni = i;
+
+            tmpTurniMax = listaPersoneTurno.get(i).getNumeroTurni();
+            tmpTurniMin = listaPersoneTurno.get(i).getNumeroTurni();
+
+        }
+
+
+        //miglioramento turno swap turno
+        if(tmpTurniMax-tmpTurniMin>maxDiffTurni)
+            swapTurno(listaPersoneTurno.get(indicePersonaMaxTurni),listaPersoneTurno.get(indicePersonaMinTurni),candidatoTurno,turniGiaAssegnati,turniMese);
+
+
+    }
+
+
+    private Turno attemptPutRandomPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati){
+
+
+        boolean isDisponibile = false;
+        boolean isTurnoFattibile = false;
+        boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
+        boolean isNotGiaInTurno = false;
+        boolean isNotGiaInTurnoAssegnati = false;
+
+
+
+
+        //scelgo una persona a casa
+        Persona candidato = getRandomPersona(persone);
+
+        //controllo 1 la persona è disponibile
+        isDisponibile = checkDisponibilita(candidato, turnoDaAssegnare);
+
+
+        //controllo che non sia gia in turno come altro reparto
+        if (isDisponibile) {
+            isNotGiaInTurno = checkIsNotGiaInTurno(candidato, turnoDaAssegnare, turniMese);
+        }
+
+        //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
+        if (isDisponibile && isNotGiaInTurno) {
+            isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniGiaAssergnati);
+        }
+
+
+        if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
+            //controllo che il turno precedente non abbia fatto notte o giorno
+            isTurnoFattibile = checkFattibilitaTurno(candidato, turnoDaAssegnare, turniMese);
+        }
+
+
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
+            isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniGiaAssergnati);
+        }
+
+
+        //se sono valide le conidizoni precedenti mettilo in turno
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
+            Turno finale = new Turno();
+            finale = deepCopyTurno(turnoDaAssegnare);
+            finale.setPersonaInTurno(candidato);
+            return finale;
+
+        }
+
+        return null;
+    }
+
+    private Turno attemptPutSpecificPersonInTurno(Persona candidato, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati){
+
+
+        boolean isDisponibile = false;
+        boolean isTurnoFattibile = false;
+        boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
+        boolean isNotGiaInTurno = false;
+        boolean isNotGiaInTurnoAssegnati = false;
+
+
+
+        //controllo 1 la persona è disponibile
+        isDisponibile = checkDisponibilita(candidato, turnoDaAssegnare);
+
+
+        //controllo che non sia gia in turno come altro reparto
+        if (isDisponibile) {
+            isNotGiaInTurno = checkIsNotGiaInTurno(candidato, turnoDaAssegnare, turniMese);
+        }
+
+        //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
+        if (isDisponibile && isNotGiaInTurno) {
+            isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniGiaAssergnati);
+        }
+
+
+        if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
+            //controllo che il turno precedente non abbia fatto notte o giorno
+            isTurnoFattibile = checkFattibilitaTurno(candidato, turnoDaAssegnare, turniMese);
+        }
+
+
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
+            isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniGiaAssergnati);
+        }
+
+
+        //se sono valide le conidizoni precedenti mettilo in turno
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
+            Turno finale = new Turno();
+            finale = deepCopyTurno(turnoDaAssegnare);
+            finale.setPersonaInTurno(candidato);
+            return finale;
+
+        }
+
+        return null;
     }
 
 
@@ -614,7 +770,7 @@ public class TurniService {
      * @return
      * @throws IOException
      */
-    public ArrayList<Persona> caricaPersone() throws IOException {
+    public ArrayList<Persona> caricaPersone() throws IOException{
 
 
 
@@ -723,5 +879,36 @@ public class TurniService {
         return trn;
     }
 
-}
 
+
+    /**
+     * Ruba ai ricchi per dare ai poveri
+     */
+    private void swapTurno(Persona stakanov,Persona nullafacente,ArrayList<Turno> turniMeseFinali,ArrayList<Turno> turniGiaAssergnati,ArrayList<Turno> turniMese) {
+
+        boolean swapSucceded = false;
+        int breakDown = 100000;
+        int index = 0;
+
+        while (!swapSucceded &&  index < breakDown) {
+
+            int rndIndex = RandomSingleton.getInstance().nextInt(turniMeseFinali.size());
+            if (turniMeseFinali.get(rndIndex).getPersonaInTurno().getNome().equals(stakanov.getNome())) {
+                if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turniMeseFinali.get(rndIndex))) {
+
+
+                    Turno attempt = attemptPutSpecificPersonInTurno(nullafacente, turniMeseFinali.get(rndIndex), turniMese, turniGiaAssergnati);
+                    if (attempt != null) {
+                        turniMeseFinali.get(rndIndex).setPersonaInTurno(attempt.getPersonaInTurno());
+                        swapSucceded = true;
+                    }
+
+
+                }
+            }
+
+
+            index++;
+        }
+    }
+}

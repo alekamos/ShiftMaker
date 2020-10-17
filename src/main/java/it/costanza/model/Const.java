@@ -39,7 +39,9 @@ public class Const {
     public static final String MAX_NOTTI = "QC_MAX_NOTTI";
     public static final String MIN_FERIALE = "QC_MIN_PRESENZ_FERIALE";
     public static final String MAX_FERIALE = "QC_MAX_PRESENZ_FERIALE";
+    public static final String QC_DIFF_TURNI = "QC_DIFF_TURNI";
     public static final String ECCEZIONI_TURNI_NOTTE = "ECCEZIONE_NOTTE";
+
 
 
 }
