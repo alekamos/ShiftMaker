@@ -16,14 +16,10 @@ public class StatService {
 
 
         String msg="";
-        TurniService service = new TurniService();
+
 
         int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
         int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
-
-        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd");
-
 
 
 
@@ -264,8 +260,6 @@ public class StatService {
 
         int minNotte = Integer.parseInt(PropertiesServices.getProperties(Const.MIN_NOTTI));
         int maxNotte =Integer.parseInt(PropertiesServices.getProperties(Const.MAX_NOTTI));
-        int minFeriale =Integer.parseInt(PropertiesServices.getProperties(Const.MIN_FERIALE));
-        int maxFeriale =Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE));
         String eccezioneNotte = PropertiesServices.getProperties(Const.ECCEZIONI_TURNI_NOTTE);
 
 

@@ -24,6 +24,11 @@ public class Persona {
 
     }
 
+    public Persona(Persona persona) {
+        this.nome=persona.getNome();
+        this.indisponibilitaList = persona.getIndisponibilitaList();
+    }
+
     public int getPresenzaFestiva() {
         return presenzaFestiva;
     }

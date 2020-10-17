@@ -40,15 +40,16 @@ public class Run implements Comparable<Run>{
         this.sdPresenzaWe = sdPresenzaWe;
     }
 
-    private static double  K_TURNI = 0;
-    private static double  K_GIORNO = 0;
-    private static double  K_NOTTE = 0;
-    private static double  K_WE = 0;
-    private static double  K_PRES_FES = 0;
-    private static double  K_SD_FES = 0;
-    private static double  K_SD_FER = 0;
+    private static double  K_TURNI = 1;
+    private static double  K_GIORNO = 1;
+    private static double  K_NOTTE = 1;
+    private static double  K_WE = 1;
+    private static double  K_PRES_FES = 1;
+    private static double  K_SD_FES = 1;
+    private static double  K_SD_FER = 1;
 
     static {
+
         try {
             K_TURNI = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_TURNI));
             K_GIORNO = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_GIORNO));
@@ -57,10 +58,10 @@ public class Run implements Comparable<Run>{
             K_PRES_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_PRES_FES));
             K_SD_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_FES));
             K_SD_FER = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_PRES_FER));
-
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("ERRORE instaziazione parametri per calcolo score");
         }
+
     }
 
 

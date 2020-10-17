@@ -1,6 +1,9 @@
 package it.costanza;
 
-import it.costanza.model.*;
+import it.costanza.model.ExceptionCustom;
+import it.costanza.model.Persona;
+import it.costanza.model.Run;
+import it.costanza.model.Turno;
 import service.PropertiesServices;
 import service.StatService;
 import service.TurniService;
@@ -14,96 +17,104 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 
 public class MakeTurni {
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ExceptionCustom {
 
 
 
         TurniService turniService = new TurniService();
-
-
-
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati;
-        StatService statService = new StatService();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmm");
-
-
-
+        String prefixFile = UUID.randomUUID().toString().substring(0,5);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
         //Configurazioni
         int numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
-        int bestResult = Integer.parseInt(PropertiesServices.getProperties("bestResult"));
-        String fileName = sdf.format(new Date())+PropertiesServices.getProperties("fileName");
-        String fileNameBuffer = sdf.format(new Date())+PropertiesServices.getProperties("fileNameBuffer");
-        String fileNameTurni = sdf.format(new Date())+PropertiesServices.getProperties("fileNameTurni");
-        String fileNameTurniBuffer = sdf.format(new Date())+PropertiesServices.getProperties("fileNameTurniBuffer");
+        String fileName = prefixFile+PropertiesServices.getProperties("fileName");
+        String fileNameTurni = prefixFile+PropertiesServices.getProperties("fileNameTurni");
         String path = PropertiesServices.getProperties("pathFile");
+        String id;
 
 
-        //creo i file
-        File file = new File(path+"\\"+fileName);
-        file.createNewFile();  //creates a new file
-        File file2 = new File(path+"\\"+fileNameTurni);
-        file2.createNewFile();  //creates a new file
-        File file3 = new File(path+"\\"+fileNameTurniBuffer);
-        file3.createNewFile();  //creates a new file
-        File file4 = new File(path+"\\"+fileNameBuffer);
-        file4.createNewFile();  //creates a new file
+        //creazionifile
+        createFilesInPath(fileName, fileNameTurni, path);
 
+        //caricamento persone
+        ArrayList<Persona> persone = turniService.caricaPersone();
 
+        //caricamento turni
+        ArrayList<Turno> turniMese = turniService.caricaMese();
 
+        //caricamento turni gia assegnati
+        turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
 
         for (int i = 0; i < numeroGiriTurni; i++) {
             long t1 = System.currentTimeMillis();
+            id = sdf.format(new Date())+"_"+i;
             try {
-                //caricamento persone
-                ArrayList<Persona> persone = turniService.caricaPersone();
-                //caricamento turni
-                ArrayList<Turno> turniMese = turniService.caricaMese();
-                //caricamento turni gia assegnati
-                turniGiaAssergnati = turniService.caricaTurniSchedulati();
-
-                listaRun.add(turniService.doRun(sdf.format(new Date())+"_"+i,turniGiaAssergnati, turniMese, persone));
-                System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
-                //stampiamo per buffering
-                Files.write(Paths.get(path+"\\"+fileNameBuffer), statService.stampaStatistiche(listaRun.get(listaRun.size() - 1)).getBytes(), StandardOpenOption.APPEND);
-                Files.write(Paths.get(path+"\\"+fileNameTurniBuffer), statService.stampaTurni(listaRun.get(listaRun.size() - 1)).getBytes(), StandardOpenOption.APPEND);
+                listaRun.add(turniService.doRun(id,turniGiaAssergnati, turniMese, persone));
             }catch (ExceptionCustom e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }
+            System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
         }
 
 
         //ordino la lista
         Collections.sort(listaRun);
 
+        //stampo le stats
+        printStats(listaRun,prefixFile);
 
+    }
+
+    private static void printStats(ArrayList<Run> listaRun,String prefix) throws IOException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HHmm");
+
+        int bestResult = Integer.parseInt(PropertiesServices.getProperties("bestResult"));
+        String fileName = prefix+PropertiesServices.getProperties("fileName");
+        String fileNameTurni = prefix+PropertiesServices.getProperties("fileNameTurni");
+        String path = PropertiesServices.getProperties("pathFile");
+
+        StatService statService = new StatService();
         String output="";
         String turni="";
 
-        long giri = Math.round((double)listaRun.size()/(double)100*bestResult);
+        long giri = Math.round((double) listaRun.size()/(double)100*bestResult);
         if(giri<10)
-            giri=listaRun.size();
+            giri= listaRun.size();
 
         for (int i = 0; i < giri; i++) {
 
             //print file
             output=statService.stampaStatistiche(listaRun.get(i));
             Files.write(Paths.get(path+"\\"+fileName), output.getBytes(), StandardOpenOption.APPEND);
-
-        }
-
-        for (Run run : listaRun) {
-            turni=statService.stampaTurni(run);
+            turni=statService.stampaTurni(listaRun.get(i));
             Files.write(Paths.get(path+"\\"+fileNameTurni), turni.getBytes(), StandardOpenOption.APPEND);
 
         }
 
+    }
 
+
+    private static void createFilesInPath(String fileName, String fileNameTurni, String path) throws IOException, ExceptionCustom {
+        //creo i file
+
+        boolean newFile = false;
+        ExceptionCustom exceptionCustom = new ExceptionCustom();
+        exceptionCustom.setMessage("File non creato");
+        File file = new File(path +"\\"+ fileName);
+        newFile = file.createNewFile();//creates a new file
+        if(!newFile)
+            throw exceptionCustom;
+        File file2 = new File(path +"\\"+ fileNameTurni);
+        newFile = file2.createNewFile();  //creates a new file
+        if(!newFile)
+            throw exceptionCustom;
     }
 }

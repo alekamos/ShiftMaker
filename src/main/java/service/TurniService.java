@@ -20,7 +20,7 @@ public class TurniService {
      */
     public Run doRun(String idRun,ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
 
-
+        long t1 = System.currentTimeMillis();
         //inizio algoritmo
         boolean isDisponibile = false;
         boolean isTurnoLibero = false;
@@ -92,32 +92,22 @@ public class TurniService {
 
                 //se sono valide le conidizoni precedenti mettilo in turno
                 if (isDisponibile && isNotGiaInTurno && isTurnoLibero && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-                    turno.setPersonaInTurno(candidato);
-                    turniFinale.add(turno);
+
+                    Turno trnComplete = deepCopyTurno(turno);
+                    trnComplete.setPersonaInTurno(candidato);
+                    turniFinale.add(trnComplete);
                     personaDaPiazzare = false;
-                    //System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno()+" Messa persona: "+candidato.getNome());
+
 
 
                 } else {//diversamente ne scegli un altro
                     if (!isTurnoLibero) {
                         Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
-                        turno.setPersonaInTurno(personaAssegnata);
-                        turniFinale.add(turno);
-                        //System.out.println();
-                        //System.out.println(turno.getData()+" "+turno.getTipoTurno()+" "+turno.getRuoloTurno()+" Turno assegnato a: "+personaAssegnata.getNome());
+                        Turno trnComplete = deepCopyTurno(turno);
+                        trnComplete.setPersonaInTurno(personaAssegnata);
+                        turniFinale.add(trnComplete);
                         personaDaPiazzare = false;
                     } else {
-                        String motivazione = "";
-                        if (!isDisponibile)
-                            motivazione = motivazione + " Non disponibile,";
-                        if (!isNotGiaInTurno)
-                            motivazione = motivazione + " Gia in turno";
-                        if (!isTurnoFattibile)
-                            motivazione = motivazione + " Il turno non è fattibile";
-                        if (!isTurnoSuccessivoSeAssegnatoFattibile)
-                            motivazione = motivazione + " Nel turno successivo è assegnato e non può";
-
-                        //System.out.println("Non posso mettere:" + candidato.getNome() + " Perchè "+motivazione);
                         personaDaPiazzare = true;
                     }
                 }
@@ -128,11 +118,15 @@ public class TurniService {
 
         }
 
-        arricchisciPersoneConStatistiche(turniFinale, persone);
 
 
-        Run run = statService.elaborazioneStat(idRun,persone, turniFinale);
+        ArrayList<Persona> personeStats = generaPersoneConStatistiche(turniFinale, persone);
+
+
+        Run run = statService.elaborazioneStat(idRun,personeStats, turniFinale);
+
         boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
+
         if(doQualityCheck)
             statService.checkRunQuality(run);
 
@@ -151,7 +145,11 @@ public class TurniService {
 
 
 
-    private void arricchisciPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
+    private ArrayList<Persona> generaPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
+
+
+
+        ArrayList<Persona> personeOut = new ArrayList<>();
 
         int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
         int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
@@ -168,7 +166,7 @@ public class TurniService {
         ArrayList<Date> wend4 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 4);
         ArrayList<Date> wend5 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 5);
         ArrayList<Date> wend6 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 6);
-
+        long t1 = System.currentTimeMillis();
 
         for (int i = 0; i < persone.size(); i++) {
 
@@ -220,9 +218,6 @@ public class TurniService {
                 if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem) {
                     presenzaFeriale[4]++;
 
-                    if(presenzaFeriale[4]==6)
-                        System.out.println("");
-
                 }
 
                 //Controlli sui turni nel weekend
@@ -249,12 +244,12 @@ public class TurniService {
 
             //a questo devo sommare le settimane di ricerca
 
-
-            persone.get(i).setNumeroTurni(numeroTurni);
-            persone.get(i).setNumeroTurniWe(numeroTurniWe);
-            persone.get(i).setNumeroTurniGiorno(numeroTurniGiorno);
-            persone.get(i).setNumeroTurniNotte(numeroTurniNotte);
-            persone.get(i).setPresenzaFeriale(presenzaFeriale);
+            personeOut.add(new Persona(persone.get(i).getNome()));
+            personeOut.get(i).setNumeroTurni(numeroTurni);
+            personeOut.get(i).setNumeroTurniWe(numeroTurniWe);
+            personeOut.get(i).setNumeroTurniGiorno(numeroTurniGiorno);
+            personeOut.get(i).setNumeroTurniNotte(numeroTurniNotte);
+            personeOut.get(i).setPresenzaFeriale(presenzaFeriale);
 
 
             for (int j = 0; j < presenzaFestiva.length; j++) {
@@ -262,11 +257,12 @@ public class TurniService {
                     counterPresenzaWe++;
 
             }
-            persone.get(i).setPresenzaFestiva(counterPresenzaWe);
+            personeOut.get(i).setPresenzaFestiva(counterPresenzaWe);
 
         }
 
 
+        return personeOut;
     }
 
 
@@ -554,11 +550,10 @@ public class TurniService {
     public ArrayList<Turno> caricaMese() throws IOException {
 
         ArrayList<Turno> turni = new ArrayList<>();
-        PropertiesServices propertiesServices = new PropertiesServices();
 
 
-        int anno = Integer.parseInt(propertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(propertiesServices.getProperties("mese"));
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
 
         ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
         for (Date data : datesOfMonth) {
@@ -584,8 +579,11 @@ public class TurniService {
 
 
     public Persona getRandomPersona(List<Persona> list) {
-        Random rand = new Random();
-        return list.get(rand.nextInt(list.size()));
+
+
+        return list.get(RandomSingleton.getInstance().nextInt(list.size()));
+
+
     }
 
 
@@ -600,11 +598,9 @@ public class TurniService {
 
 
         ArrayList<Turno> turniDelGiorno = getTurniDelGiorno(turniPreAssegnati, candidatoTurno.getData(), candidatoTurno.getTipoTurno(), candidatoTurno.getRuoloTurno());
-        if (turniDelGiorno != null && turniDelGiorno.size() > 0) {
-
+        if (turniDelGiorno.size() > 0) {
             return false;
         } else {
-
             return true;
         }
 
@@ -716,6 +712,15 @@ public class TurniService {
 
         }
         return null;
+    }
+
+    public Turno deepCopyTurno(Turno turno){
+        Turno trn = new Turno();
+        trn.setPersonaInTurno(turno.getPersonaInTurno());
+        trn.setData(turno.getData());
+        trn.setTipoTurno(turno.getTipoTurno());
+        trn.setRuoloTurno(turno.getRuoloTurno());
+        return trn;
     }
 
 }
