@@ -358,7 +358,7 @@ public class TurniService {
                         numeroTurniWe++;
 
 
-                //Controlli sui turni in settimana
+                //Controlli sui turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
                 if(we1!=null && isTurnoInWeek(turno,we1) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[0]++;
 
@@ -831,6 +831,17 @@ public class TurniService {
     public ArrayList<Turno> caricaTurniSchedulati() throws IOException {
 
 
+        return caricaTurniSchedulati(null);
+    }
+
+    /**
+     * Carica i turni già schedulati dal file specificato
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<Turno> caricaTurniSchedulati(String fileTurni) throws IOException {
+
+
 
         ArrayList<Turno> turniAssegnati = new ArrayList<>();
 
@@ -842,7 +853,7 @@ public class TurniService {
 
         for (Turno turno : turniMese) {
             String ricercaProps = sdf.format(turno.getData())+"|"+turno.getTipoTurno()+"|"+turno.getRuoloTurno();
-            String personaAssegnataAlTurno = PropertiesServices.getProperties(ricercaProps);
+            String personaAssegnataAlTurno = PropertiesServices.getProperties(ricercaProps,fileTurni);
             if(personaAssegnataAlTurno!=null && !"".equals(personaAssegnataAlTurno))
                 turniAssegnati.add(new Turno(turno.getData(),turno.getTipoTurno(),turno.getRuoloTurno(),new Persona(personaAssegnataAlTurno)));
 

@@ -8,6 +8,8 @@ import java.util.Properties;
 public class  PropertiesServices {
 
 
+
+
     /**
      * Mi prende la properties dal file delle properties
      * @param name
@@ -16,10 +18,26 @@ public class  PropertiesServices {
      */
     public static String getProperties(String name) throws IOException {
 
+        return getProperties(name,null);
+    }
+
+
+
+    /**
+     * Mi prende la properties dal file delle properties specificando il file di properties, se propfile name nullo, mi prende quello di default
+     * @param name
+     * @return
+     * @throws IOException
+     */
+    public static String getProperties(String name,String propFileName) throws IOException {
+
         String output = "";
 
         Properties prop = new Properties();
-        String propFileName = "config.properties";
+        String defaultPropFile = "config.properties";
+
+        if(propFileName==null)
+            propFileName = defaultPropFile;
 
 
         InputStream inputStream = PropertiesServices.class.getClassLoader().getResourceAsStream(propFileName);
