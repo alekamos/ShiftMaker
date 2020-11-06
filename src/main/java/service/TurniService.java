@@ -371,10 +371,10 @@ public class TurniService {
                 if(we4!=null && isTurnoInWeek(turno,we4) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[3]++;
 
-                if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem) {
+                if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[4]++;
 
-                }
+
 
                 //Controlli sui turni nel weekend
                 if(wend1!=null && isTurnoInWeek(turno,wend1) && personaInTurnoSameAsPersonaElem)
@@ -433,9 +433,8 @@ public class TurniService {
         //se il turno è un venerdì notte è non è da contare
         Calendar cal = Calendar.getInstance();
         cal.setTime(turno.getData());
-        boolean response = false;
         if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals(Const.NOTTE))
-            response = false;
+            return false;
 
         for (Date date : dateSettimana) {
             if(DateService.isSameDay(date,turno.getData()))
@@ -443,7 +442,7 @@ public class TurniService {
         }
 
 
-        return response;
+        return false;
 
 
 
