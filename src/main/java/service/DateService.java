@@ -110,10 +110,10 @@ public class DateService {
 
         int nSettimana = 1;
 
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < 7; i++) {
             ArrayList<Date> nEsimaSettimanaMensileFeriale = getNEsimaSettimanaMensileFeriale(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, i);
             if (nEsimaSettimanaMensileFeriale.size()>0 && isInRageDate(nEsimaSettimanaMensileFeriale.get(0),nEsimaSettimanaMensileFeriale.get(nEsimaSettimanaMensileFeriale.size()-1),date))
-                return nSettimana;
+                return i;
         }
 
         return 0;

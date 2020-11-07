@@ -265,8 +265,9 @@ public class TurniService {
         ArrayList<Date> we3 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 3);
         ArrayList<Date> we4 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 4);
         ArrayList<Date> we5 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 5);
+        ArrayList<Date> we6 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 6);
 
-        int[] presenzaFeriale = new int[5];
+        int[] presenzaFeriale = new int[6];
 
 
         for (Turno turno : turniMese) {
@@ -294,15 +295,17 @@ public class TurniService {
             if (we5 != null && isTurnoInWeek(turno, we5)  && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[4]++;
 
+            if (we6 != null && isTurnoInWeek(turno, we6)  && personaInTurnoSameAsPersonaElem)
+                presenzaFeriale[5]++;
+
         }
 
 
 
-
-        if (presenzaFeriale[DateService.getWeekNumberOfDay(turnoDaAssegnare.getData())] > Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE))){
-            System.out.println("Sforato");
+        int indicePresFeriale = DateService.getWeekNumberOfDay(turnoDaAssegnare.getData())-1;
+        if (presenzaFeriale[indicePresFeriale] >= Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE)))
             return false;
-        }
+
 
 
 
