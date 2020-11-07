@@ -1,7 +1,6 @@
 package service;
 
 import it.costanza.model.*;
-import it.costanza.model.SuperRun;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -19,7 +18,7 @@ public class TurniService {
      * @return
      * @throws ExceptionCustom
      */
-    public Run doRun(String idRun,ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
+    public Run doRun(String idRun, ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
 
 
         //inizio algoritmo
@@ -46,12 +45,12 @@ public class TurniService {
                 if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno)) {
 
                     Turno attempt = attemptPutRandomPersonInTurno(persone, turno, turniMese, turniGiaAssergnati);
-                    if(attempt!=null) {
+                    if (attempt != null) {
                         turniFinale.add(attempt);
                         personaDaPiazzare = false;
                     }
 
-                }else {
+                } else {
                     Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
                     Turno trnComplete = deepCopyTurno(turno);
                     trnComplete.setPersonaInTurno(personaAssegnata);
@@ -65,19 +64,27 @@ public class TurniService {
         //generazione statistiche sulle persone
         ArrayList<Persona> personeStats = generaPersoneConStatistiche(turniFinale, persone);
         //elaborazione statistiche sul run
-        Run run = statService.elaborazioneStat(idRun,personeStats, turniFinale);
+        Run run = statService.elaborazioneStat(idRun, personeStats, turniFinale);
 
         boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
         //quality check
-        if(doQualityCheck)
+        if (doQualityCheck)
             statService.checkRunQuality(run);
 
         return run;
     }
 
 
-
-    public SuperRun doRunMigliorato(String idRun, ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
+    /**
+     * Metodo cuore che fa un run decidendo i turni del mese
+     *
+     * @param turniGiaAssergnati
+     * @param turniMese
+     * @param persone
+     * @return
+     * @throws ExceptionCustom
+     */
+    public ArrayList<Turno> doRunSressScore(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
 
 
         //inizio algoritmo
@@ -103,13 +110,13 @@ public class TurniService {
                 //true se il turno è libero
                 if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno)) {
 
-                    Turno attempt = attemptPutRandomPersonInTurno(persone, turno, turniMese, turniGiaAssergnati);
-                    if(attempt!=null) {
+                    Turno attempt = attemptPutQualityPersonInTurno(persone, turno, turniMese, turniGiaAssergnati,turniFinale);
+                    if (attempt != null) {
                         turniFinale.add(attempt);
                         personaDaPiazzare = false;
                     }
 
-                }else {
+                } else {
                     Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
                     Turno trnComplete = deepCopyTurno(turno);
                     trnComplete.setPersonaInTurno(personaAssegnata);
@@ -120,74 +127,11 @@ public class TurniService {
         }
 
 
-        //generazione statistiche sulle persone
-        ArrayList<Persona> personeStats = generaPersoneConStatistiche(turniFinale, persone);
-        //elaborazione statistiche sul run
-        Run run = statService.elaborazioneStat(idRun,personeStats, turniFinale);
-
-        boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
-        //quality check
-        if(doQualityCheck)
-            statService.checkRunQuality(run);
-
-
-        miglioraRun(turniFinale,personeStats,turniGiaAssergnati,turniMese);
-
-
-
-        ArrayList<Persona> personeStats2 = generaPersoneConStatistiche(turniFinale, persone);
-        Run run2 = statService.elaborazioneStat(idRun,personeStats2, turniFinale);
-        SuperRun sr = new SuperRun();
-        sr.setRun1(run);
-        sr.setRunMigliorato(run2);
-
-        return sr;
-    }
-
-    private void miglioraRun(ArrayList<Turno> candidatoTurno,ArrayList<Persona> listaPersoneTurno,ArrayList<Turno> turniGiaAssegnati,ArrayList<Turno> turniMese) throws IOException {
-
-
-
-        int maxDiffTurni = Integer.parseInt(PropertiesServices.getProperties(Const.QC_DIFF_TURNI));
-
-        int minNotte = Integer.parseInt(PropertiesServices.getProperties(Const.MIN_NOTTI));
-        int maxNotte =Integer.parseInt(PropertiesServices.getProperties(Const.MAX_NOTTI));
-        String eccezioneNotte = PropertiesServices.getProperties(Const.ECCEZIONI_TURNI_NOTTE);
-        int indicePersonaMaxTurni = 0;
-        int indicePersonaMinTurni = 0;
-        int tmpTurniMax;
-        int tmpTurniMin;
-
-
-
-        //1a settimana
-        tmpTurniMax = listaPersoneTurno.get(0).getNumeroTurni();
-        tmpTurniMin = listaPersoneTurno.get(0).getNumeroTurni();
-
-        for (int i = 0; i < listaPersoneTurno.size(); i++) {
-
-
-            if (listaPersoneTurno.get(i).getNumeroTurni() > tmpTurniMax)
-                indicePersonaMaxTurni = i;
-
-            if (listaPersoneTurno.get(i).getNumeroTurni() < tmpTurniMin)
-                indicePersonaMinTurni = i;
-
-            tmpTurniMax = listaPersoneTurno.get(i).getNumeroTurni();
-            tmpTurniMin = listaPersoneTurno.get(i).getNumeroTurni();
-
-        }
-
-
-        //miglioramento turno swap turno
-        if(tmpTurniMax-tmpTurniMin>maxDiffTurni)
-            swapTurno(listaPersoneTurno.get(indicePersonaMaxTurni),listaPersoneTurno.get(indicePersonaMinTurni),candidatoTurno,turniGiaAssegnati,turniMese);
-
-
+        return turniFinale;
     }
 
 
-    private Turno attemptPutRandomPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati){
+    private Turno attemptPutRandomPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati) {
 
 
         boolean isDisponibile = false;
@@ -195,8 +139,6 @@ public class TurniService {
         boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
         boolean isNotGiaInTurno = false;
         boolean isNotGiaInTurnoAssegnati = false;
-
-
 
 
         //scelgo una persona a casa
@@ -240,7 +182,17 @@ public class TurniService {
         return null;
     }
 
-    private Turno attemptPutSpecificPersonInTurno(Persona candidato, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati){
+
+    /**
+     * Cerca di piazzare una persona valutando il suo stress score
+     *
+     * @param persone
+     * @param turnoDaAssegnare
+     * @param turniMese
+     * @param turniSchedulati
+     * @return
+     */
+    private Turno attemptPutQualityPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati,ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
 
 
         boolean isDisponibile = false;
@@ -248,8 +200,11 @@ public class TurniService {
         boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
         boolean isNotGiaInTurno = false;
         boolean isNotGiaInTurnoAssegnati = false;
+        boolean okQualityCheck = false;
 
 
+        //scelgo una persona a casa
+        Persona candidato = getRandomPersona(persone);
 
         //controllo 1 la persona è disponibile
         isDisponibile = checkDisponibilita(candidato, turnoDaAssegnare);
@@ -262,7 +217,7 @@ public class TurniService {
 
         //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
         if (isDisponibile && isNotGiaInTurno) {
-            isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniGiaAssergnati);
+            isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniSchedulati);
         }
 
 
@@ -273,12 +228,16 @@ public class TurniService {
 
 
         if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
-            isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniGiaAssergnati);
+            isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniSchedulati);
+        }
+
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
+            okQualityCheck = candidatoQualityCheck(turniAssegnatiNelMese, candidato, turnoDaAssegnare);
         }
 
 
         //se sono valide le conidizoni precedenti mettilo in turno
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati && okQualityCheck) {
             Turno finale = new Turno();
             finale = deepCopyTurno(turnoDaAssegnare);
             finale.setPersonaInTurno(candidato);
@@ -288,6 +247,72 @@ public class TurniService {
 
         return null;
     }
+
+    /**
+     * Mi controlla che un candidato stia dentro i limiti imposti
+     *
+     * @param turniMese
+     * @return
+     */
+    private boolean candidatoQualityCheck(ArrayList<Turno> turniMese, Persona candidato, Turno turnoDaAssegnare) throws IOException {
+
+
+        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
+        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
+
+        ArrayList<Date> we1 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 1);
+        ArrayList<Date> we2 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 2);
+        ArrayList<Date> we3 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 3);
+        ArrayList<Date> we4 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 4);
+        ArrayList<Date> we5 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 5);
+
+        int[] presenzaFeriale = new int[5];
+
+
+        for (Turno turno : turniMese) {
+
+
+            //è il primo turno del mese
+            if(turno.getPersonaInTurno()==null)
+                return true;
+
+            boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(candidato.getNome());
+
+            //Controlli sui turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
+            if (we1 != null && isTurnoInWeek(turno, we1) && personaInTurnoSameAsPersonaElem)
+                presenzaFeriale[0]++;
+
+            if (we2 != null && isTurnoInWeek(turno, we2) && personaInTurnoSameAsPersonaElem)
+                presenzaFeriale[1]++;
+
+            if (we3 != null && isTurnoInWeek(turno, we3) && personaInTurnoSameAsPersonaElem)
+                presenzaFeriale[2]++;
+
+            if (we4 != null && isTurnoInWeek(turno, we4) && personaInTurnoSameAsPersonaElem)
+                presenzaFeriale[3]++;
+
+            if (we5 != null && isTurnoInWeek(turno, we5)  && personaInTurnoSameAsPersonaElem)
+                presenzaFeriale[4]++;
+
+        }
+
+
+
+
+        if (presenzaFeriale[DateService.getWeekNumberOfDay(turnoDaAssegnare.getData())] > Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE))){
+            System.out.println("Sforato");
+            return false;
+        }
+
+
+
+
+
+
+        return true;
+    }
+
+
 
 
     private Persona copyTurnoAssegnato(ArrayList<Turno> turniAssegnati, Date data, String tipoTurno, String ruoloTurno) {
@@ -299,9 +324,14 @@ public class TurniService {
     }
 
 
-
-
-    private ArrayList<Persona> generaPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
+    /**
+     * Genera un nuovo array di persone con le statistiche
+     * @param turniFinale
+     * @param persone
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<Persona> generaPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
 
 
 
@@ -891,34 +921,4 @@ public class TurniService {
 
 
 
-    /**
-     * Ruba ai ricchi per dare ai poveri
-     */
-    private void swapTurno(Persona stakanov,Persona nullafacente,ArrayList<Turno> turniMeseFinali,ArrayList<Turno> turniGiaAssergnati,ArrayList<Turno> turniMese) {
-
-        boolean swapSucceded = false;
-        int breakDown = 100000;
-        int index = 0;
-
-        while (!swapSucceded &&  index < breakDown) {
-
-            int rndIndex = RandomSingleton.getInstance().nextInt(turniMeseFinali.size());
-            if (turniMeseFinali.get(rndIndex).getPersonaInTurno().getNome().equals(stakanov.getNome())) {
-                if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turniMeseFinali.get(rndIndex))) {
-
-
-                    Turno attempt = attemptPutSpecificPersonInTurno(nullafacente, turniMeseFinali.get(rndIndex), turniMese, turniGiaAssergnati);
-                    if (attempt != null) {
-                        turniMeseFinali.get(rndIndex).setPersonaInTurno(attempt.getPersonaInTurno());
-                        swapSucceded = true;
-                    }
-
-
-                }
-            }
-
-
-            index++;
-        }
-    }
 }

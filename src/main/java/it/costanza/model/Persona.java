@@ -11,8 +11,9 @@ public class Persona {
     private int numeroTurniNotte;
     private int[] presenzaFeriale;
     private int presenzaFestiva;
-    private double mediaDistanzaTemporaleTurno;
+    private double[] stressScoreFeriale;
     private ArrayList<Turno> indisponibilitaList;
+    private ArrayList<Turno> turniPersonali;
 
 
     public Persona(String nome, ArrayList<Turno> indisponibilitaList) {
@@ -27,6 +28,22 @@ public class Persona {
     public Persona(Persona persona) {
         this.nome=persona.getNome();
         this.indisponibilitaList = persona.getIndisponibilitaList();
+    }
+
+    public double[] getStressScoreFeriale() {
+        return stressScoreFeriale;
+    }
+
+    public void setStressScoreFeriale(double[] stressScoreFeriale) {
+        this.stressScoreFeriale = stressScoreFeriale;
+    }
+
+    public ArrayList<Turno> getTurniPersonali() {
+        return turniPersonali;
+    }
+
+    public void setTurniPersonali(ArrayList<Turno> turniPersonali) {
+        this.turniPersonali = turniPersonali;
     }
 
     public int getPresenzaFestiva() {
@@ -81,15 +98,6 @@ public class Persona {
         this.numeroTurniWe = numeroTurniWe;
     }
 
-    public double getMediaDistanzaTemporaleTurno() {
-        return mediaDistanzaTemporaleTurno;
-    }
-
-    public void setMediaDistanzaTemporaleTurno(double mediaDistanzaTemporaleTurno) {
-        this.mediaDistanzaTemporaleTurno = mediaDistanzaTemporaleTurno;
-    }
-
-
 
     public int getNumeroTurniGiorno() {
         return numeroTurniGiorno;
@@ -115,7 +123,7 @@ public class Persona {
                 ", numeroTurniWe=" + numeroTurniWe +
                 ", numeroTurniGiorno=" + numeroTurniGiorno +
                 ", numeroTurniNotte=" + numeroTurniNotte +
-                ", mediaDistanzaTemporaleTurno=" + mediaDistanzaTemporaleTurno +
+                ", mediaDistanzaTemporaleTurno=" + stressScoreFeriale +
                 ", indisponibilitaList=" + indisponibilitaList +
                 '}';
     }

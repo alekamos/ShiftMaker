@@ -99,6 +99,29 @@ public class DateService {
         return weekDateList;
     }
 
+
+    /**
+     * Il metodo restituisce l'intera settimana feriale al quale appartiene una data
+     * @return
+     */
+    public static int getWeekNumberOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int nSettimana = 1;
+
+        for (int i = 1; i < 6; i++) {
+            ArrayList<Date> nEsimaSettimanaMensileFeriale = getNEsimaSettimanaMensileFeriale(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, i);
+            if (nEsimaSettimanaMensileFeriale.size()>0 && isInRageDate(nEsimaSettimanaMensileFeriale.get(0),nEsimaSettimanaMensileFeriale.get(nEsimaSettimanaMensileFeriale.size()-1),date))
+                return nSettimana;
+        }
+
+        return 0;
+    }
+
+
+
+
     public static Date getData(int anno, int mese, int giorno) {
 
         Calendar cal = Calendar.getInstance();
@@ -135,9 +158,9 @@ public class DateService {
 
 
 
-        if (nesimaSettimanaMensile.size()<3)
-            return null;
-        else
+       // if (nesimaSettimanaMensile.size()<3)
+         //   return null;
+        //else
             return nesimaSettimanaMensile;
 
     }
