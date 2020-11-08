@@ -1,6 +1,6 @@
 package service;
 
-import it.costanza.model.*;
+import it.costanza.controllers.model.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -16,9 +16,9 @@ public class TurniService {
      * @param turniMese
      * @param persone
      * @return
-     * @throws ExceptionCustom
+     * @throws FailedGenerationTurno
      */
-    public Run doRun(String idRun, ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
+    public Run doRun(String idRun, ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws FailedGenerationTurno, IOException {
 
 
         //inizio algoritmo
@@ -36,7 +36,7 @@ public class TurniService {
                 giri++;
 
                 if (giri > 150) {
-                    ExceptionCustom e = new ExceptionCustom();
+                    FailedGenerationTurno e = new FailedGenerationTurno();
                     e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
                     throw e;
                 }
@@ -75,60 +75,6 @@ public class TurniService {
     }
 
 
-    /**
-     * Metodo cuore che fa un run decidendo i turni del mese
-     *
-     * @param turniGiaAssergnati
-     * @param turniMese
-     * @param persone
-     * @return
-     * @throws ExceptionCustom
-     */
-    public ArrayList<Turno> doRunSressScore(ArrayList<Turno> turniGiaAssergnati, ArrayList<Turno> turniMese, ArrayList<Persona> persone) throws ExceptionCustom, IOException {
-
-
-        //inizio algoritmo
-        boolean personaDaPiazzare = true;
-        ArrayList<Turno> turniFinale = new ArrayList<Turno>();
-
-        //cicliamo su tutte i turni
-        StatService statService = new StatService();
-
-        for (Turno turno : turniMese) {
-            int giri = 0;
-            personaDaPiazzare = true;
-
-            while (personaDaPiazzare) {
-                giri++;
-
-                if (giri > 150) {
-                    ExceptionCustom e = new ExceptionCustom();
-                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
-                    throw e;
-                }
-
-                //true se il turno è libero
-                if (checkTurnoLiberoTurnoAssegnato(turniGiaAssergnati, turno)) {
-
-                    Turno attempt = attemptPutQualityPersonInTurno(persone, turno, turniMese, turniGiaAssergnati,turniFinale);
-                    if (attempt != null) {
-                        turniFinale.add(attempt);
-                        personaDaPiazzare = false;
-                    }
-
-                } else {
-                    Persona personaAssegnata = copyTurnoAssegnato(turniGiaAssergnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
-                    Turno trnComplete = deepCopyTurno(turno);
-                    trnComplete.setPersonaInTurno(personaAssegnata);
-                    turniFinale.add(trnComplete);
-                    personaDaPiazzare = false;
-                }
-            }
-        }
-
-
-        return turniFinale;
-    }
 
 
     private Turno attemptPutRandomPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati) {
@@ -183,70 +129,7 @@ public class TurniService {
     }
 
 
-    /**
-     * Cerca di piazzare una persona valutando il suo stress score
-     *
-     * @param persone
-     * @param turnoDaAssegnare
-     * @param turniMese
-     * @param turniSchedulati
-     * @return
-     */
-    private Turno attemptPutQualityPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati,ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
 
-
-        boolean isDisponibile = false;
-        boolean isTurnoFattibile = false;
-        boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
-        boolean isNotGiaInTurno = false;
-        boolean isNotGiaInTurnoAssegnati = false;
-        boolean okQualityCheck = false;
-
-
-        //scelgo una persona a casa
-        Persona candidato = getRandomPersona(persone);
-
-        //controllo 1 la persona è disponibile
-        isDisponibile = checkDisponibilita(candidato, turnoDaAssegnare);
-
-
-        //controllo che non sia gia in turno come altro reparto
-        if (isDisponibile) {
-            isNotGiaInTurno = checkIsNotGiaInTurno(candidato, turnoDaAssegnare, turniMese);
-        }
-
-        //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
-        if (isDisponibile && isNotGiaInTurno) {
-            isNotGiaInTurnoAssegnati = checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniSchedulati);
-        }
-
-
-        if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
-            //controllo che il turno precedente non abbia fatto notte o giorno
-            isTurnoFattibile = checkFattibilitaTurno(candidato, turnoDaAssegnare, turniMese);
-        }
-
-
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
-            isTurnoSuccessivoSeAssegnatoFattibile = checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniSchedulati);
-        }
-
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-            okQualityCheck = candidatoQualityCheck(turniAssegnatiNelMese, candidato, turnoDaAssegnare);
-        }
-
-
-        //se sono valide le conidizoni precedenti mettilo in turno
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati && okQualityCheck) {
-            Turno finale = new Turno();
-            finale = deepCopyTurno(turnoDaAssegnare);
-            finale.setPersonaInTurno(candidato);
-            return finale;
-
-        }
-
-        return null;
-    }
 
     /**
      * Mi controlla che un candidato stia dentro i limiti imposti
@@ -254,7 +137,7 @@ public class TurniService {
      * @param turniMese
      * @return
      */
-    private boolean candidatoQualityCheck(ArrayList<Turno> turniMese, Persona candidato, Turno turnoDaAssegnare) throws IOException {
+    public boolean candidatoQualityCheck(ArrayList<Turno> turniMese, Persona candidato, Turno turnoDaAssegnare) throws IOException {
 
 
         int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
@@ -318,7 +201,7 @@ public class TurniService {
 
 
 
-    private Persona copyTurnoAssegnato(ArrayList<Turno> turniAssegnati, Date data, String tipoTurno, String ruoloTurno) {
+    public Persona copyTurnoAssegnato(ArrayList<Turno> turniAssegnati, Date data, String tipoTurno, String ruoloTurno) {
 
         ArrayList<Turno> turnoDelGiorno = getTurniDelGiorno(turniAssegnati, data, tipoTurno, ruoloTurno);
 
@@ -494,7 +377,7 @@ public class TurniService {
      * @param turniMese
      * @return
      */
-    private boolean checkFattibilitaTurno(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
+    public boolean checkFattibilitaTurno(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
 
         Date giornoPrima = DateService.aumentaTogliGiorno(turno.getData(), -1);
         ArrayList<Turno> listaTurniDellaGiornataPrecedenteDiurnoONotturno = null;
@@ -555,7 +438,7 @@ public class TurniService {
      * @param turniMese
      * @return
      */
-    private boolean checkFattibilitaTurnoSuccessivo(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese, ArrayList<Turno> turniAssegnati) {
+    public boolean checkFattibilitaTurnoSuccessivo(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese, ArrayList<Turno> turniAssegnati) {
 
         Date gioroDopo = DateService.aumentaTogliGiorno(turno.getData(), 1);
         ArrayList<Turno> listaTurniDellaGiornataSuccessivaGiorno = null;
@@ -594,7 +477,7 @@ public class TurniService {
      * @param turniMese
      * @return
      */
-    private boolean checkIsNotGiaInTurno(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
+    public boolean checkIsNotGiaInTurno(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
 
         ArrayList<Turno> listaTurniDellaGiornata = getTurniDelGiorno(turniMese, turno.getData());
         boolean nonInTurno = true;
@@ -619,7 +502,7 @@ public class TurniService {
      * @param turniAssegnati
      * @return
      */
-    private boolean checkIsNotGiaInTurnoTraIPrenotati(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniAssegnati) {
+    public boolean checkIsNotGiaInTurnoTraIPrenotati(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniAssegnati) {
 
         ArrayList<Turno> listaTurniDellaGiornata = getTurniDelGiorno(turniAssegnati, turno.getData());
         boolean nonInTurno = true;
@@ -706,7 +589,7 @@ public class TurniService {
      * @param turno         il turno che dovrebbe fare
      * @return
      */
-    private boolean checkDisponibilita(Persona randomPersona, Turno turno) {
+    public boolean checkDisponibilita(Persona randomPersona, Turno turno) {
 
         Date dataTurno = turno.getData();
         boolean result = true;

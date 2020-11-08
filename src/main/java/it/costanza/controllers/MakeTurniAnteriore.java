@@ -1,6 +1,8 @@
-package it.costanza;
+package it.costanza.controllers;
 
-import it.costanza.model.*;
+import it.costanza.controllers.command.TurnoGenerator;
+import it.costanza.controllers.command.WeeklyLimitGenerator;
+import it.costanza.controllers.model.*;
 import service.FileService;
 import service.PropertiesServices;
 import service.StatService;
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class MakeTurniAnteriore {
 
 
-    public static void main(String[] args) throws IOException, ExceptionCustom {
+    public static void main(String[] args) throws IOException, FailedGenerationTurno {
 
 
 
@@ -47,12 +49,17 @@ public class MakeTurniAnteriore {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
+        TurnoGenerator generator = new WeeklyLimitGenerator(persone,turniMese,turniGiaAssergnati);
+
 
         for (int i = 0; i < numeroGiriTurni; i++) {
             long t1 = System.currentTimeMillis();
 
             try {
-                ArrayList<Turno> turniGenerati = turniService.doRunSressScore(turniGiaAssergnati, turniMese, persone);
+
+
+
+                ArrayList<Turno> turniGenerati = generator.generate();
 
                 //generazione statistiche sulle persone
                 ArrayList<Persona> personeStats = turniService.generaPersoneConStatistiche(turniGenerati, persone);
@@ -69,7 +76,7 @@ public class MakeTurniAnteriore {
                 listaRun.add(run);
 
 
-            }catch (ExceptionCustom e){
+            }catch (FailedGenerationTurno e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }
             System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");

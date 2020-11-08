@@ -1,6 +1,6 @@
 package service;
 
-import it.costanza.model.*;
+import it.costanza.controllers.model.*;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -161,7 +161,7 @@ public class StatService {
      * @param turniDelMese
      * @return
      */
-    public Run elaborazioneStat(String idRun,ArrayList<Persona> persone, ArrayList<Turno> turniDelMese) {
+    public Run elaborazioneStat(String idRun, ArrayList<Persona> persone, ArrayList<Turno> turniDelMese) {
 
 
 
@@ -237,24 +237,24 @@ public class StatService {
 
     }
 
-    public void checkRunQuality(Run run) throws IOException, ExceptionCustom {
+    public void checkRunQuality(Run run) throws IOException, FailedGenerationTurno {
 
 
         int maxDiff = Integer.parseInt(PropertiesServices.getProperties(Const.QC_DIFF_PRESENZ_FERIALE));
         ArrayList<Persona> listaPersoneTurno = run.getListaPersoneTurno();
-        ExceptionCustom ferialDiff = new ExceptionCustom();
+        FailedGenerationTurno ferialDiff = new FailedGenerationTurno();
         ferialDiff.setMessage("Cotrolli di qualità non superati, differenza troppo alta settimanale");
 
-        ExceptionCustom notteMin = new ExceptionCustom();
+        FailedGenerationTurno notteMin = new FailedGenerationTurno();
         notteMin.setMessage("Notti minime non superate");
 
-        ExceptionCustom notteMax = new ExceptionCustom();
+        FailedGenerationTurno notteMax = new FailedGenerationTurno();
         notteMax.setMessage("Notti max superate");
 
-        ExceptionCustom ferMin = new ExceptionCustom();
+        FailedGenerationTurno ferMin = new FailedGenerationTurno();
         ferMin.setMessage("Presenza feriale minima non rispettata");
 
-        ExceptionCustom ferMax = new ExceptionCustom();
+        FailedGenerationTurno ferMax = new FailedGenerationTurno();
         ferMax.setMessage("Presenza feriale massima superata");
 
 

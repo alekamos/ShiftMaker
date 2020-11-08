@@ -1,9 +1,9 @@
-package it.costanza;
+package it.costanza.controllers;
 
-import it.costanza.model.ExceptionCustom;
-import it.costanza.model.Persona;
-import it.costanza.model.Run;
-import it.costanza.model.Turno;
+import it.costanza.controllers.model.FailedGenerationTurno;
+import it.costanza.controllers.model.Persona;
+import it.costanza.controllers.model.Run;
+import it.costanza.controllers.model.Turno;
 import service.FileService;
 import service.PropertiesServices;
 import service.TurniService;
@@ -15,26 +15,24 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
-public class EvaluateStats {
+public class MakeTurni {
 
 
-    public static void main(String[] args) throws IOException, ExceptionCustom {
+    public static void main(String[] args) throws IOException, FailedGenerationTurno {
 
 
 
         TurniService turniService = new TurniService();
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati;
-
+        String prefixFile = UUID.randomUUID().toString().substring(0,5);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
         //Configurazioni
-        String prefixFile = "TurniAssegnati_Nov"+UUID.randomUUID().toString().substring(0,5);
-        String file = "novembre.properties";
+        int numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
         String fileName = prefixFile+PropertiesServices.getProperties("fileName");
         String fileNameTurni = prefixFile+PropertiesServices.getProperties("fileNameTurni");
         String path = PropertiesServices.getProperties("pathFile");
-
         String id;
 
 
@@ -48,22 +46,28 @@ public class EvaluateStats {
         ArrayList<Turno> turniMese = turniService.caricaMese();
 
         //caricamento turni gia assegnati
-        turniGiaAssergnati = turniService.caricaTurniSchedulati(file);
+        turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
 
-        int i = 0;
-        long t1 = System.currentTimeMillis();
-        id = sdf.format(new Date())+"_"+i;
-        try {
-            listaRun.add(turniService.doRun(id,turniGiaAssergnati, turniMese, persone));
-        }catch (ExceptionCustom e){
-            System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
+        for (int i = 0; i < numeroGiriTurni; i++) {
+            long t1 = System.currentTimeMillis();
+            id = sdf.format(new Date())+"_"+i;
+            try {
+                listaRun.add(turniService.doRun(id,turniGiaAssergnati, turniMese, persone));
+            }catch (FailedGenerationTurno e){
+                System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
+            }
+            System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
         }
-        System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
 
+
+        //ordino la lista
+        Collections.sort(listaRun);
 
         //stampo le stats
         FileService.printStats(listaRun,prefixFile);
 
     }
+
+
 }

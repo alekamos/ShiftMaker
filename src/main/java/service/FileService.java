@@ -1,7 +1,7 @@
 package service;
 
-import it.costanza.model.ExceptionCustom;
-import it.costanza.model.Run;
+import it.costanza.controllers.model.FailedGenerationTurno;
+import it.costanza.controllers.model.Run;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,19 +40,19 @@ public class FileService {
 
     }
 
-    public static void createFilesInPath(String fileName, String fileNameTurni, String path) throws IOException, ExceptionCustom {
+    public static void createFilesInPath(String fileName, String fileNameTurni, String path) throws IOException, FailedGenerationTurno {
         //creo i file
 
         boolean newFile = false;
-        ExceptionCustom exceptionCustom = new ExceptionCustom();
-        exceptionCustom.setMessage("File non creato");
+        FailedGenerationTurno failedGenerationTurno = new FailedGenerationTurno();
+        failedGenerationTurno.setMessage("File non creato");
         File file = new File(path +"\\"+ fileName);
         newFile = file.createNewFile();//creates a new file
         if(!newFile)
-            throw exceptionCustom;
+            throw failedGenerationTurno;
         File file2 = new File(path +"\\"+ fileNameTurni);
         newFile = file2.createNewFile();  //creates a new file
         if(!newFile)
-            throw exceptionCustom;
+            throw failedGenerationTurno;
     }
 }

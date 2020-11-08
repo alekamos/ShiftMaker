@@ -1,6 +1,6 @@
-package it.costanza.model;
+package it.costanza.controllers.model;
 
-public class ExceptionCustom extends Throwable {
+public class FailedGenerationTurno extends Throwable {
 
     private String message;
 

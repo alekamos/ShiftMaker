@@ -1,4 +1,4 @@
-package it.costanza.model;
+package it.costanza.controllers.model;
 
 import service.PropertiesServices;
 
