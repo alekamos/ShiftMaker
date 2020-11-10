@@ -1,5 +1,7 @@
 package service;
 
+import it.costanza.dao.TurnoDao;
+import it.costanza.entityDb.TurniGeneratiEntity;
 import it.costanza.model.*;
 
 import java.io.IOException;
@@ -806,6 +808,10 @@ public class TurniService {
     }
 
 
-    public void salvaGiornata(Turno turno) {
+    public void salvaGiornata(Integer id,Turno turno) {
+
+        TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(id, turno);
+        TurnoDao dao = new TurnoDao();
+        dao.salva(turniGeneratiEntity);
     }
 }

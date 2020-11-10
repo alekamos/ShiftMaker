@@ -100,4 +100,8 @@ public class TurniGeneratiEntity {
         result = 31 * result + (idRun != null ? idRun.hashCode() : 0);
         return result;
     }
+
+
+
+
 }

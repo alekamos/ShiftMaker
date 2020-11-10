@@ -1,14 +1,17 @@
 package it.costanza.dao;
 
-import it.costanza.entityDb.RunEntity;
 import it.costanza.entityDb.TurniGeneratiEntity;
+import it.costanza.entityDb.RunEntity;
 import org.hibernate.Session;
 import service.HibernateUtil;
 
-public class TurnoDao implements Crud<TurniGeneratiEntity> {
+public class RunDao implements Crud<RunEntity> {
 
 
-    public long salva(TurniGeneratiEntity e) {
+
+
+    @Override
+    public long salva(RunEntity e) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         session.save(e);

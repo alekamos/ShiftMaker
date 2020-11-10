@@ -1,9 +1,13 @@
 package it.costanza.controllers;
 
+import it.costanza.dao.RunDao;
 import it.costanza.entityDb.RunEntity;
 import org.hibernate.Session;
 import service.HibernateUtil;
+import service.PropertiesServices;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class testHibernate {
@@ -44,5 +48,9 @@ public class testHibernate {
 
 
 
+
     }
+
+
+
 }

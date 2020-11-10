@@ -30,7 +30,7 @@ public class WeeklyLimitDbGenerator{
 
     TurniService turnoService = new TurniService();
 
-    public ArrayList<Turno> generate(long idRun) throws FailedGenerationTurno, IOException {
+    public ArrayList<Turno> generate(Integer idRun) throws FailedGenerationTurno, IOException {
 
 
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
@@ -57,7 +57,7 @@ public class WeeklyLimitDbGenerator{
 
                     Turno attempt = attemptPutQualityPersonInTurno(idRun,persone, turno, skeletonTurni, turniAssegnati,turniFinale);
                     if (attempt != null) {
-                        turnoService.salvaGiornata(turno);
+                        turnoService.salvaGiornata(idRun,turno);
                         turniFinale.add(attempt);
                         personaDaPiazzare = false;
                     }
