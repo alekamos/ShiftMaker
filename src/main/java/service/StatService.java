@@ -1,6 +1,6 @@
 package service;
 
-import it.costanza.controllers.model.*;
+import it.costanza.model.*;
 
 import java.io.IOException;
 import java.text.DecimalFormat;

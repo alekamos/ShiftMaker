@@ -1,6 +1,6 @@
 package service;
 
-import it.costanza.controllers.model.*;
+import it.costanza.model.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -806,5 +806,6 @@ public class TurniService {
     }
 
 
-
+    public void salvaGiornata(Turno turno) {
+    }
 }

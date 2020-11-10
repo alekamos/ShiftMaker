@@ -1,4 +1,4 @@
-package it.costanza.model.databaseBeans;
+package it.costanza.entityDb2;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -14,7 +14,7 @@ public class TurniGeneratiEntity {
     private Integer idRun;
 
     @Id
-    @Column(name = "ID_TURNO")
+    @Column(name = "ID_TURNO", nullable = false)
     public long getIdTurno() {
         return idTurno;
     }
@@ -24,7 +24,7 @@ public class TurniGeneratiEntity {
     }
 
     @Basic
-    @Column(name = "DATA_TURNO")
+    @Column(name = "DATA_TURNO", nullable = true)
     public Date getDataTurno() {
         return dataTurno;
     }
@@ -34,7 +34,7 @@ public class TurniGeneratiEntity {
     }
 
     @Basic
-    @Column(name = "TIPO_TURNO")
+    @Column(name = "TIPO_TURNO", nullable = true, length = 100)
     public String getTipoTurno() {
         return tipoTurno;
     }
@@ -44,7 +44,7 @@ public class TurniGeneratiEntity {
     }
 
     @Basic
-    @Column(name = "RUOLO_TURNO")
+    @Column(name = "RUOLO_TURNO", nullable = true, length = 100)
     public String getRuoloTurno() {
         return ruoloTurno;
     }
@@ -54,7 +54,7 @@ public class TurniGeneratiEntity {
     }
 
     @Basic
-    @Column(name = "PERSONA_TURNO")
+    @Column(name = "PERSONA_TURNO", nullable = true, length = 100)
     public String getPersonaTurno() {
         return personaTurno;
     }
@@ -64,7 +64,7 @@ public class TurniGeneratiEntity {
     }
 
     @Basic
-    @Column(name = "ID_RUN")
+    @Column(name = "ID_RUN", nullable = true)
     public Integer getIdRun() {
         return idRun;
     }

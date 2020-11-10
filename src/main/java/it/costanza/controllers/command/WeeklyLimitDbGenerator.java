@@ -1,14 +1,14 @@
 package it.costanza.controllers.command;
 
-import it.costanza.controllers.model.FailedGenerationTurno;
-import it.costanza.controllers.model.Persona;
-import it.costanza.controllers.model.Turno;
+import it.costanza.model.FailedGenerationTurno;
+import it.costanza.model.Persona;
+import it.costanza.model.Turno;
 import service.TurniService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class WeeklyLimitDbGenerator implements TurnoGenerator{
+public class WeeklyLimitDbGenerator{
 
 
 
@@ -27,10 +27,10 @@ public class WeeklyLimitDbGenerator implements TurnoGenerator{
         this.turniAssegnati = turniAssegnati;
     }
 
+
     TurniService turnoService = new TurniService();
 
-    @Override
-    public ArrayList<Turno> generate() throws FailedGenerationTurno, IOException {
+    public ArrayList<Turno> generate(long idRun) throws FailedGenerationTurno, IOException {
 
 
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
@@ -55,8 +55,9 @@ public class WeeklyLimitDbGenerator implements TurnoGenerator{
                 //true se il turno è libero
                 if (turnoService.checkTurnoLiberoTurnoAssegnato(turniAssegnati, turno)) {
 
-                    Turno attempt = attemptPutQualityPersonInTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
+                    Turno attempt = attemptPutQualityPersonInTurno(idRun,persone, turno, skeletonTurni, turniAssegnati,turniFinale);
                     if (attempt != null) {
+                        turnoService.salvaGiornata(turno);
                         turniFinale.add(attempt);
                         personaDaPiazzare = false;
                     }
@@ -86,7 +87,7 @@ public class WeeklyLimitDbGenerator implements TurnoGenerator{
      * @param turniSchedulati
      * @return
      */
-    public Turno attemptPutQualityPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
+    public Turno attemptPutQualityPersonInTurno(long idRun,ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
 
 
         boolean isDisponibile = false;
@@ -126,7 +127,7 @@ public class WeeklyLimitDbGenerator implements TurnoGenerator{
         }
 
         if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-            okQualityCheck = turnoService.candidatoQualityCheck(turniAssegnatiNelMese, candidato, turnoDaAssegnare);
+            okQualityCheck = turnoService.candidatoQualityCheck(turniAssegnatiNelMese,candidato, turnoDaAssegnare);
         }
 
 

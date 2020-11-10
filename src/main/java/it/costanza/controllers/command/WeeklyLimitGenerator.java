@@ -1,15 +1,14 @@
 package it.costanza.controllers.command;
 
-import it.costanza.controllers.model.FailedGenerationTurno;
-import it.costanza.controllers.model.Persona;
-import it.costanza.controllers.model.Turno;
-import service.StatService;
+import it.costanza.model.FailedGenerationTurno;
+import it.costanza.model.Persona;
+import it.costanza.model.Turno;
 import service.TurniService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class WeeklyLimitGenerator implements TurnoGenerator{
+public class WeeklyLimitGenerator{
 
 
 
@@ -31,7 +30,6 @@ public class WeeklyLimitGenerator implements TurnoGenerator{
 
     TurniService turnoService = new TurniService();
 
-    @Override
     public ArrayList<Turno> generate() throws FailedGenerationTurno, IOException {
 
 

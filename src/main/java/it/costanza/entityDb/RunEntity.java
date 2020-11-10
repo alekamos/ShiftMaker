@@ -1,12 +1,13 @@
-package it.costanza.model.databaseBeans2;
+package it.costanza.entityDb;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "RUN", schema = "EUROPE", catalog = "")
+@Table(name = "RUN", schema = "EUROPE")
 public class RunEntity {
     private long idRun;
+    private String annomese;
     private Timestamp dataInizioRun;
     private Timestamp dataFineRun;
     private String tipoRun;
@@ -19,6 +20,16 @@ public class RunEntity {
 
     public void setIdRun(long idRun) {
         this.idRun = idRun;
+    }
+
+    @Basic
+    @Column(name = "ANNOMESE", nullable = true, length = 6)
+    public String getAnnomese() {
+        return annomese;
+    }
+
+    public void setAnnomese(String annomese) {
+        this.annomese = annomese;
     }
 
     @Basic
@@ -59,6 +70,7 @@ public class RunEntity {
         RunEntity runEntity = (RunEntity) o;
 
         if (idRun != runEntity.idRun) return false;
+        if (annomese != null ? !annomese.equals(runEntity.annomese) : runEntity.annomese != null) return false;
         if (dataInizioRun != null ? !dataInizioRun.equals(runEntity.dataInizioRun) : runEntity.dataInizioRun != null)
             return false;
         if (dataFineRun != null ? !dataFineRun.equals(runEntity.dataFineRun) : runEntity.dataFineRun != null)
@@ -71,6 +83,7 @@ public class RunEntity {
     @Override
     public int hashCode() {
         int result = (int) (idRun ^ (idRun >>> 32));
+        result = 31 * result + (annomese != null ? annomese.hashCode() : 0);
         result = 31 * result + (dataInizioRun != null ? dataInizioRun.hashCode() : 0);
         result = 31 * result + (dataFineRun != null ? dataFineRun.hashCode() : 0);
         result = 31 * result + (tipoRun != null ? tipoRun.hashCode() : 0);

@@ -1,10 +1,10 @@
-package it.costanza.model.databaseBeans2;
+package it.costanza.entityDb;
 
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table(name = "TURNI_GENERATI", schema = "EUROPE", catalog = "")
+@Table(name = "TURNI_GENERATI", schema = "EUROPE")
 public class TurniGeneratiEntity {
     private long idTurno;
     private Date dataTurno;

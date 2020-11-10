@@ -1,9 +1,9 @@
 package it.costanza.controllers;
 
-import it.costanza.controllers.model.FailedGenerationTurno;
-import it.costanza.controllers.model.Persona;
-import it.costanza.controllers.model.Run;
-import it.costanza.controllers.model.Turno;
+import it.costanza.model.FailedGenerationTurno;
+import it.costanza.model.Persona;
+import it.costanza.model.Run;
+import it.costanza.model.Turno;
 import service.FileService;
 import service.PropertiesServices;
 import service.TurniService;

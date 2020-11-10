@@ -1,8 +1,7 @@
 package it.costanza.controllers;
 
-import it.costanza.controllers.command.TurnoGenerator;
 import it.costanza.controllers.command.WeeklyLimitGenerator;
-import it.costanza.controllers.model.*;
+import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;
 import service.StatService;
@@ -49,7 +48,7 @@ public class MakeTurniAnteriore {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
-        TurnoGenerator generator = new WeeklyLimitGenerator(persone,turniMese,turniGiaAssergnati);
+        WeeklyLimitGenerator generator = new WeeklyLimitGenerator(persone,turniMese,turniGiaAssergnati);
 
 
         for (int i = 0; i < numeroGiriTurni; i++) {

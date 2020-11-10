@@ -1,10 +1,10 @@
-package it.costanza.model.databaseBeans;
+package it.costanza.entityDb;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "TURNI_GENERATI_STATS", schema = "EUROPE", catalog = "")
+@Table(name = "TURNI_GENERATI_STATS", schema = "EUROPE")
 public class TurniGeneratiStatsEntity {
     private Long idTurno;
     private Double mediaTurniTot;
@@ -26,10 +26,11 @@ public class TurniGeneratiStatsEntity {
     private String scoreFormula;
     private Timestamp dataInserimento;
     private Timestamp dataAggiornamento;
-    private String id;
 
+
+    @Id
     @Basic
-    @Column(name = "ID_TURNO")
+    @Column(name = "ID_TURNO", nullable = true)
     public Long getIdTurno() {
         return idTurno;
     }
@@ -39,7 +40,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "MEDIA_TURNI_TOT")
+    @Column(name = "MEDIA_TURNI_TOT", nullable = true, precision = 5)
     public Double getMediaTurniTot() {
         return mediaTurniTot;
     }
@@ -49,7 +50,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_TURNI_TOT")
+    @Column(name = "SDEV_TURNI_TOT", nullable = true, precision = 5)
     public Double getSdevTurniTot() {
         return sdevTurniTot;
     }
@@ -59,7 +60,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "MEDIA_PRES_FEST")
+    @Column(name = "MEDIA_PRES_FEST", nullable = true, precision = 5)
     public Double getMediaPresFest() {
         return mediaPresFest;
     }
@@ -69,7 +70,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_PRES_FEST")
+    @Column(name = "SDEV_PRES_FEST", nullable = true, precision = 5)
     public Double getSdevPresFest() {
         return sdevPresFest;
     }
@@ -79,7 +80,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "MEDIA_GIORNI_FEST")
+    @Column(name = "MEDIA_GIORNI_FEST", nullable = true, precision = 5)
     public Double getMediaGiorniFest() {
         return mediaGiorniFest;
     }
@@ -89,7 +90,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_GIORNI_FEST")
+    @Column(name = "SDEV_GIORNI_FEST", nullable = true, precision = 5)
     public Double getSdevGiorniFest() {
         return sdevGiorniFest;
     }
@@ -99,7 +100,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "MEDIA_GIORNI_FER")
+    @Column(name = "MEDIA_GIORNI_FER", nullable = true, precision = 5)
     public Double getMediaGiorniFer() {
         return mediaGiorniFer;
     }
@@ -109,7 +110,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_GIORNI_FER")
+    @Column(name = "SDEV_GIORNI_FER", nullable = true, precision = 5)
     public Double getSdevGiorniFer() {
         return sdevGiorniFer;
     }
@@ -119,7 +120,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "MEDIA_NOTTI")
+    @Column(name = "MEDIA_NOTTI", nullable = true, precision = 5)
     public Double getMediaNotti() {
         return mediaNotti;
     }
@@ -129,7 +130,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_NOTTI")
+    @Column(name = "SDEV_NOTTI", nullable = true, precision = 5)
     public Double getSdevNotti() {
         return sdevNotti;
     }
@@ -139,7 +140,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_1_SETTIMANA")
+    @Column(name = "SDEV_1_SETTIMANA", nullable = true, precision = 5)
     public Double getSdev1Settimana() {
         return sdev1Settimana;
     }
@@ -149,7 +150,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_2_SETTIMANA")
+    @Column(name = "SDEV_2_SETTIMANA", nullable = true, precision = 5)
     public Double getSdev2Settimana() {
         return sdev2Settimana;
     }
@@ -159,7 +160,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_3_SETTIMANA")
+    @Column(name = "SDEV_3_SETTIMANA", nullable = true, precision = 5)
     public Double getSdev3Settimana() {
         return sdev3Settimana;
     }
@@ -169,7 +170,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_4_SETTIMANA")
+    @Column(name = "SDEV_4_SETTIMANA", nullable = true, precision = 5)
     public Double getSdev4Settimana() {
         return sdev4Settimana;
     }
@@ -179,7 +180,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SDEV_5_SETTIMANA")
+    @Column(name = "SDEV_5_SETTIMANA", nullable = true, precision = 5)
     public Double getSdev5Settimana() {
         return sdev5Settimana;
     }
@@ -189,7 +190,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SCORE")
+    @Column(name = "SCORE", nullable = true, precision = 5)
     public Double getScore() {
         return score;
     }
@@ -199,7 +200,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "SCORE_FORMULA")
+    @Column(name = "SCORE_FORMULA", nullable = true, length = 200)
     public String getScoreFormula() {
         return scoreFormula;
     }
@@ -209,7 +210,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "DATA_INSERIMENTO")
+    @Column(name = "DATA_INSERIMENTO", nullable = true)
     public Timestamp getDataInserimento() {
         return dataInserimento;
     }
@@ -219,7 +220,7 @@ public class TurniGeneratiStatsEntity {
     }
 
     @Basic
-    @Column(name = "DATA_AGGIORNAMENTO")
+    @Column(name = "DATA_AGGIORNAMENTO", nullable = true)
     public Timestamp getDataAggiornamento() {
         return dataAggiornamento;
     }
@@ -297,12 +298,5 @@ public class TurniGeneratiStatsEntity {
         return result;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    @Id
-    public String getId() {
-        return id;
-    }
 }

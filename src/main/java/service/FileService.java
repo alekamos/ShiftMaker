@@ -1,7 +1,7 @@
 package service;
 
-import it.costanza.controllers.model.FailedGenerationTurno;
-import it.costanza.controllers.model.Run;
+import it.costanza.model.FailedGenerationTurno;
+import it.costanza.model.Run;
 
 import java.io.File;
 import java.io.IOException;

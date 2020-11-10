@@ -1,4 +1,4 @@
-package it.costanza.controllers.model;
+package it.costanza.model;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package it.costanza.model.databaseBeans;
+package it.costanza.entityDb2;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -7,12 +7,13 @@ import java.sql.Timestamp;
 @Table(name = "RUN", schema = "EUROPE", catalog = "")
 public class RunEntity {
     private long idRun;
+    private String annomese;
     private Timestamp dataInizioRun;
     private Timestamp dataFineRun;
     private String tipoRun;
 
     @Id
-    @Column(name = "ID_RUN")
+    @Column(name = "ID_RUN", nullable = false)
     public long getIdRun() {
         return idRun;
     }
@@ -22,7 +23,17 @@ public class RunEntity {
     }
 
     @Basic
-    @Column(name = "DATA_INIZIO_RUN")
+    @Column(name = "ANNOMESE", nullable = true, length = 6)
+    public String getAnnomese() {
+        return annomese;
+    }
+
+    public void setAnnomese(String annomese) {
+        this.annomese = annomese;
+    }
+
+    @Basic
+    @Column(name = "DATA_INIZIO_RUN", nullable = true)
     public Timestamp getDataInizioRun() {
         return dataInizioRun;
     }
@@ -32,7 +43,7 @@ public class RunEntity {
     }
 
     @Basic
-    @Column(name = "DATA_FINE_RUN")
+    @Column(name = "DATA_FINE_RUN", nullable = true)
     public Timestamp getDataFineRun() {
         return dataFineRun;
     }
@@ -42,7 +53,7 @@ public class RunEntity {
     }
 
     @Basic
-    @Column(name = "TIPO_RUN")
+    @Column(name = "TIPO_RUN", nullable = true, length = 100)
     public String getTipoRun() {
         return tipoRun;
     }
@@ -59,6 +70,7 @@ public class RunEntity {
         RunEntity runEntity = (RunEntity) o;
 
         if (idRun != runEntity.idRun) return false;
+        if (annomese != null ? !annomese.equals(runEntity.annomese) : runEntity.annomese != null) return false;
         if (dataInizioRun != null ? !dataInizioRun.equals(runEntity.dataInizioRun) : runEntity.dataInizioRun != null)
             return false;
         if (dataFineRun != null ? !dataFineRun.equals(runEntity.dataFineRun) : runEntity.dataFineRun != null)
@@ -71,6 +83,7 @@ public class RunEntity {
     @Override
     public int hashCode() {
         int result = (int) (idRun ^ (idRun >>> 32));
+        result = 31 * result + (annomese != null ? annomese.hashCode() : 0);
         result = 31 * result + (dataInizioRun != null ? dataInizioRun.hashCode() : 0);
         result = 31 * result + (dataFineRun != null ? dataFineRun.hashCode() : 0);
         result = 31 * result + (tipoRun != null ? tipoRun.hashCode() : 0);

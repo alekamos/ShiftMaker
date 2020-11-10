@@ -1,4 +1,4 @@
-package it.costanza.model.databaseBeans2;
+package it.costanza.entityDb2;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
