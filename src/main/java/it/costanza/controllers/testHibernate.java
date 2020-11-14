@@ -2,7 +2,7 @@ package it.costanza.controllers;
 
 import it.costanza.entityDb.mysql.RunEntity;
 import org.hibernate.Session;
-import service.HibernateUtil;
+import it.costanza.dao.Util.HibernateUtilMySql;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class testHibernate {
 
 
     public static long create(RunEntity e) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
         session.beginTransaction();
         session.save(e);
         session.getTransaction().commit();
@@ -21,7 +21,7 @@ public class testHibernate {
     }
 
     public static void clearAllRun() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
         session.beginTransaction();
         session.createSQLQuery("DELETE FROM RUN").executeUpdate();
         session.getTransaction().commit();
@@ -33,7 +33,7 @@ public class testHibernate {
     }
 
     public static void clearAllTurniGenerati() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
         session.beginTransaction();
         session.createSQLQuery("DELETE FROM TURNI_GENERATI").executeUpdate();
         session.getTransaction().commit();
@@ -45,7 +45,7 @@ public class testHibernate {
     }
 
     public static List<RunEntity> read() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
         @SuppressWarnings("unchecked")
         List<RunEntity> runEntity = session.createQuery("FROM RunEntity").list();
         session.close();

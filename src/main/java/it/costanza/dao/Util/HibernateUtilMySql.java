@@ -1,4 +1,4 @@
-package service;
+package it.costanza.dao.Util;
 
 
 
@@ -8,7 +8,7 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-public class HibernateUtil {
+public class HibernateUtilMySql{
 
     private static final SessionFactory sessionFactory = buildSessionFactory();
 

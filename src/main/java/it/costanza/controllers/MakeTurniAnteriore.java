@@ -1,6 +1,6 @@
 package it.costanza.controllers;
 
-import it.costanza.controllers.command.WeeklyLimitGenerator;
+import it.costanza.controllers.command.generator.WeeklyLimitGenerator;
 import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;

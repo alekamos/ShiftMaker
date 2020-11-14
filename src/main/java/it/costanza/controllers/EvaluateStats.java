@@ -1,5 +1,7 @@
 package it.costanza.controllers;
 
+import it.costanza.controllers.command.generator.RandomGenerator;
+import it.costanza.controllers.command.generator.TurnoGenerator;
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.model.Run;
@@ -49,12 +51,14 @@ public class EvaluateStats {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati(file);
 
+        TurnoGenerator generator = new RandomGenerator(persone,turniMese,turniGiaAssergnati);
+
 
         int i = 0;
         long t1 = System.currentTimeMillis();
         id = sdf.format(new Date())+"_"+i;
         try {
-            listaRun.add(turniService.doRun(id,turniGiaAssergnati, turniMese, persone));
+            ArrayList<Turno> turniGenerati = generator.generate();
         }catch (FailedGenerationTurno e){
             System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
         }

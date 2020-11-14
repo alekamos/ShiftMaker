@@ -1,4 +1,4 @@
-package it.costanza.controllers.command;
+package it.costanza.controllers.command.generator;
 
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
@@ -8,8 +8,11 @@ import service.TurniService;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class WeeklyLimitDbGenerator{
+public class WeeklyLimitDbGenerator implements TurnoGenerator{
 
+
+    //Service
+    TurniService turnoService = new TurniService();
 
 
     //persone
@@ -21,16 +24,24 @@ public class WeeklyLimitDbGenerator{
     //caricamento turni gia assegnati
     ArrayList<Turno> turniAssegnati;
 
-    public WeeklyLimitDbGenerator(ArrayList<Persona> persone, ArrayList<Turno> skeletonTurni, ArrayList<Turno> turniAssegnati) {
+    //Id del run che sta eseguendo
+    Long idRun;
+
+    public WeeklyLimitDbGenerator(ArrayList<Persona> persone, ArrayList<Turno> skeletonTurni, ArrayList<Turno> turniAssegnati,Long idRun) {
         this.persone = persone;
         this.skeletonTurni = skeletonTurni;
         this.turniAssegnati = turniAssegnati;
+        this.idRun=idRun;
     }
 
 
-    TurniService turnoService = new TurniService();
-
-    public ArrayList<Turno> generate(Long idRun) throws FailedGenerationTurno, IOException {
+    /**
+     * Crea un turno in maniera da non sforare nella settimana il numero massimo di giorni in cui una persona può lavorare appoggiandosi sul databse
+     * @return
+     * @throws FailedGenerationTurno
+     * @throws IOException
+     */
+    public ArrayList<Turno> generate() throws FailedGenerationTurno, IOException {
 
 
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();

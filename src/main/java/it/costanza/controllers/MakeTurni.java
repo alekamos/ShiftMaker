@@ -1,11 +1,12 @@
 package it.costanza.controllers;
 
-import it.costanza.model.FailedGenerationTurno;
-import it.costanza.model.Persona;
-import it.costanza.model.Run;
-import it.costanza.model.Turno;
+import it.costanza.controllers.command.generator.RandomGenerator;
+import it.costanza.controllers.command.generator.TurnoGenerator;
+import it.costanza.controllers.command.generator.WeeklyLimitGenerator;
+import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;
+import service.StatService;
 import service.TurniService;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class MakeTurni {
 
 
         TurniService turniService = new TurniService();
+        StatService statService = new StatService();
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati;
         String prefixFile = UUID.randomUUID().toString().substring(0,5);
@@ -48,12 +50,33 @@ public class MakeTurni {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
+        TurnoGenerator generator = new RandomGenerator(persone,turniMese,turniGiaAssergnati);
+
 
         for (int i = 0; i < numeroGiriTurni; i++) {
             long t1 = System.currentTimeMillis();
             id = sdf.format(new Date())+"_"+i;
             try {
-                listaRun.add(turniService.doRun(id,turniGiaAssergnati, turniMese, persone));
+
+
+                ArrayList<Turno> turniGenerati = generator.generate();
+
+
+
+                //generazione statistiche sulle persone
+                ArrayList<Persona> personeStats = turniService.generaPersoneConStatistiche(turniGenerati, persone);
+                //elaborazione statistiche sul run
+                Run run = statService.elaborazioneStat(id, personeStats, turniGenerati);
+
+                boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
+                //quality check
+                if (doQualityCheck)
+                    statService.checkRunQuality(run);
+
+                listaRun.add(run);
+
+
+
             }catch (FailedGenerationTurno e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }

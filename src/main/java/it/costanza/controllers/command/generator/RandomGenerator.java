@@ -1,15 +1,20 @@
-package it.costanza.controllers.command;
+package it.costanza.controllers.command.generator;
 
-import it.costanza.model.FailedGenerationTurno;
-import it.costanza.model.Persona;
-import it.costanza.model.Turno;
+import it.costanza.model.*;
+import service.PropertiesServices;
+import service.StatService;
 import service.TurniService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class WeeklyLimitGenerator{
+public class RandomGenerator implements TurnoGenerator {
 
+
+
+
+    //Service
+    TurniService turnoService = new TurniService();
 
 
     //persone
@@ -21,22 +26,27 @@ public class WeeklyLimitGenerator{
     //caricamento turni gia assegnati
     ArrayList<Turno> turniAssegnati;
 
-    public WeeklyLimitGenerator(ArrayList<Persona> persone, ArrayList<Turno> skeletonTurni, ArrayList<Turno> turniAssegnati) {
+    //Id del run che sta eseguendo
+    Long idRun;
+
+    public RandomGenerator(ArrayList<Persona> persone, ArrayList<Turno> skeletonTurni, ArrayList<Turno> turniAssegnati) {
         this.persone = persone;
         this.skeletonTurni = skeletonTurni;
         this.turniAssegnati = turniAssegnati;
     }
 
 
-    TurniService turnoService = new TurniService();
-
+    /**
+     * Prima versione, crea un turno semplice mettendo le persone totalmente a caso
+     *
+     * @return
+     * @throws FailedGenerationTurno
+     */
     public ArrayList<Turno> generate() throws FailedGenerationTurno, IOException {
 
 
-        ArrayList<Turno> turniFinale = new ArrayList<Turno>();
-
         //inizio algoritmo
-
+        ArrayList<Turno> turniFinale = new ArrayList<Turno>();
 
 
         for (Turno turno : skeletonTurni) {
@@ -55,7 +65,7 @@ public class WeeklyLimitGenerator{
                 //true se il turno è libero
                 if (turnoService.checkTurnoLiberoTurnoAssegnato(turniAssegnati, turno)) {
 
-                    Turno attempt = attemptPutQualityPersonInTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
+                    Turno attempt = attemptPutRandomPersonInTurno(persone, turno, skeletonTurni, turniAssegnati);
                     if (attempt != null) {
                         turniFinale.add(attempt);
                         personaDaPiazzare = false;
@@ -77,16 +87,8 @@ public class WeeklyLimitGenerator{
 
 
 
-    /**
-     * Cerca di piazzare una persona valutando il suo stress score
-     *
-     * @param persone
-     * @param turnoDaAssegnare
-     * @param turniMese
-     * @param turniSchedulati
-     * @return
-     */
-    public Turno attemptPutQualityPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
+
+    private Turno attemptPutRandomPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList turniGiaAssergnati) {
 
 
         boolean isDisponibile = false;
@@ -94,7 +96,6 @@ public class WeeklyLimitGenerator{
         boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
         boolean isNotGiaInTurno = false;
         boolean isNotGiaInTurnoAssegnati = false;
-        boolean okQualityCheck = false;
 
 
         //scelgo una persona a casa
@@ -111,7 +112,7 @@ public class WeeklyLimitGenerator{
 
         //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
         if (isDisponibile && isNotGiaInTurno) {
-            isNotGiaInTurnoAssegnati = turnoService.checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniSchedulati);
+            isNotGiaInTurnoAssegnati = turnoService.checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniGiaAssergnati);
         }
 
 
@@ -122,16 +123,12 @@ public class WeeklyLimitGenerator{
 
 
         if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
-            isTurnoSuccessivoSeAssegnatoFattibile = turnoService.checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniSchedulati);
-        }
-
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-            okQualityCheck = turnoService.candidatoQualityCheck(turniAssegnatiNelMese, candidato, turnoDaAssegnare);
+            isTurnoSuccessivoSeAssegnatoFattibile = turnoService.checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniGiaAssergnati);
         }
 
 
         //se sono valide le conidizoni precedenti mettilo in turno
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati && okQualityCheck) {
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
             Turno finale = new Turno();
             finale = turnoService.deepCopyTurno(turnoDaAssegnare);
             finale.setPersonaInTurno(candidato);

@@ -3,7 +3,7 @@ package it.costanza.controllers;
 
 import it.costanza.entityDb.h2.RunEntity;
 import org.hibernate.Session;
-import service.HibernateUtilH2;
+import it.costanza.dao.Util.HibernateUtilH2;
 
 import java.sql.Timestamp;
 import java.util.Date;

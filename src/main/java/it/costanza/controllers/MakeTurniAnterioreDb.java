@@ -1,6 +1,6 @@
 package it.costanza.controllers;
 
-import it.costanza.controllers.command.WeeklyLimitDbGenerator;
+import it.costanza.controllers.command.generator.WeeklyLimitDbGenerator;
 import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.model.*;
@@ -59,7 +59,7 @@ public class MakeTurniAnterioreDb {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
-        WeeklyLimitDbGenerator generator = new WeeklyLimitDbGenerator(persone,turniMese,turniGiaAssergnati);
+        WeeklyLimitDbGenerator commandAlgoritmo = new WeeklyLimitDbGenerator(persone,turniMese,turniGiaAssergnati,idRun);
 
         long t10=System.currentTimeMillis();
         for (int i = 0; i < numeroGiriTurni; i++) {
@@ -69,7 +69,7 @@ public class MakeTurniAnterioreDb {
 
 
 
-                ArrayList<Turno> turniGenerati = generator.generate(idRun);
+                ArrayList<Turno> turniGenerati = commandAlgoritmo.generate();
 
                 //generazione statistiche sulle persone
                 ArrayList<Persona> personeStats = turniService.generaPersoneConStatistiche(turniGenerati, persone);

@@ -1,6 +1,6 @@
 package it.costanza.controllers;
 
-import it.costanza.controllers.command.WeeklyLimitGenerator;
+import it.costanza.controllers.command.generator.WeeklyLimitGenerator;
 import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;
@@ -10,8 +10,6 @@ import service.TurniService;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.UUID;
 
 public class MakeTurniAnterioreSenzaStats {
