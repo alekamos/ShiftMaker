@@ -30,7 +30,7 @@ public class WeeklyLimitDbGenerator{
 
     TurniService turnoService = new TurniService();
 
-    public ArrayList<Turno> generate(Integer idRun) throws FailedGenerationTurno, IOException {
+    public ArrayList<Turno> generate(Long idRun) throws FailedGenerationTurno, IOException {
 
 
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();

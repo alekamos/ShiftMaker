@@ -50,7 +50,7 @@ public class MakeTurniAnteriore {
 
         WeeklyLimitGenerator generator = new WeeklyLimitGenerator(persone,turniMese,turniGiaAssergnati);
 
-
+        long t10=System.currentTimeMillis();
         for (int i = 0; i < numeroGiriTurni; i++) {
             long t1 = System.currentTimeMillis();
 
@@ -80,7 +80,8 @@ public class MakeTurniAnteriore {
             }
             System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
         }
-
+        long t11=System.currentTimeMillis();
+        System.out.println("Run concluso in :" +(t11-t10) +" ms");
 
         //ordino la lista
         Collections.sort(listaRun);

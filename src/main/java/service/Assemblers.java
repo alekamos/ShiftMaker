@@ -6,7 +6,7 @@ import it.costanza.model.Turno;
 public class Assemblers {
 
 
-    public static TurniGeneratiEntity mappingTurni(Integer idRun, Turno turno){
+    public static TurniGeneratiEntity mappingTurni(Long idRun, Turno turno){
 
 
         TurniGeneratiEntity turniGeneratiEntity = new TurniGeneratiEntity();

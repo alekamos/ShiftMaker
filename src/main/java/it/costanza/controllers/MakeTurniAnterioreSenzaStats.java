@@ -1,9 +1,6 @@
 package it.costanza.controllers;
 
-import it.costanza.controllers.command.WeeklyLimitDbGenerator;
 import it.costanza.controllers.command.WeeklyLimitGenerator;
-import it.costanza.dao.RunDao;
-import it.costanza.entityDb.RunEntity;
 import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;
@@ -11,14 +8,13 @@ import service.StatService;
 import service.TurniService;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
-public class MakeTurniAnterioreDb {
+public class MakeTurniAnterioreSenzaStats {
 
 
     public static void main(String[] args) throws IOException, FailedGenerationTurno {
@@ -39,15 +35,6 @@ public class MakeTurniAnterioreDb {
         String path = PropertiesServices.getProperties("pathFile");
         String id;
 
-        //salvo il run sul db
-        RunDao dao = new RunDao();
-        RunEntity runEntity = new RunEntity();
-        runEntity.setAnnomese(PropertiesServices.getProperties("anno")+(PropertiesServices.getProperties("mese")));
-        runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
-        runEntity.setTipoRun("TEST da"+numeroGiriTurni);
-        Long idRun = dao.salva(runEntity);
-
-
 
         //creazionifile
         FileService.createFilesInPath(fileName, fileNameTurni, path);
@@ -61,7 +48,7 @@ public class MakeTurniAnterioreDb {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
-        WeeklyLimitDbGenerator generator = new WeeklyLimitDbGenerator(persone,turniMese,turniGiaAssergnati);
+        WeeklyLimitGenerator generator = new WeeklyLimitGenerator(persone,turniMese,turniGiaAssergnati);
 
         long t10=System.currentTimeMillis();
         for (int i = 0; i < numeroGiriTurni; i++) {
@@ -71,21 +58,14 @@ public class MakeTurniAnterioreDb {
 
 
 
-                ArrayList<Turno> turniGenerati = generator.generate(idRun);
+                ArrayList<Turno> turniGenerati = generator.generate();
 
                 //generazione statistiche sulle persone
                 ArrayList<Persona> personeStats = turniService.generaPersoneConStatistiche(turniGenerati, persone);
 
-                //elaborazione statistiche sul run
-                id = sdf.format(new Date())+"_"+i;
-                Run run = statService.elaborazioneStat(id,personeStats, turniGenerati);
 
-                boolean doQualityCheck = Boolean.parseBoolean(PropertiesServices.getProperties(Const.QUALITY_CHECK));
-                //quality check
-                if(doQualityCheck)
-                    statService.checkRunQuality(run);
 
-                listaRun.add(run);
+
 
 
             }catch (FailedGenerationTurno e){
@@ -95,7 +75,6 @@ public class MakeTurniAnterioreDb {
         }
         long t11=System.currentTimeMillis();
         System.out.println("Run concluso in :" +(t11-t10) +" ms");
-
 
 
     }

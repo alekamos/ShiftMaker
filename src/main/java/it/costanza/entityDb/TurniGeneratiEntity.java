@@ -6,20 +6,21 @@ import java.sql.Date;
 @Entity
 @Table(name = "TURNI_GENERATI", schema = "EUROPE")
 public class TurniGeneratiEntity {
-    private long idTurno;
+    private Long idTurno;
     private Date dataTurno;
     private String tipoTurno;
     private String ruoloTurno;
     private String personaTurno;
-    private Integer idRun;
+    private Long idRun;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_TURNO", nullable = false)
-    public long getIdTurno() {
+    public Long getIdTurno() {
         return idTurno;
     }
 
-    public void setIdTurno(long idTurno) {
+    public void setIdTurno(Long idTurno) {
         this.idTurno = idTurno;
     }
 
@@ -65,11 +66,11 @@ public class TurniGeneratiEntity {
 
     @Basic
     @Column(name = "ID_RUN", nullable = true)
-    public Integer getIdRun() {
+    public Long getIdRun() {
         return idRun;
     }
 
-    public void setIdRun(Integer idRun) {
+    public void setIdRun(Long idRun) {
         this.idRun = idRun;
     }
 

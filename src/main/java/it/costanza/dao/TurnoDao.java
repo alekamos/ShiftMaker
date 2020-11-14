@@ -9,12 +9,14 @@ public class TurnoDao implements Crud<TurniGeneratiEntity> {
 
 
     public long salva(TurniGeneratiEntity e) {
+        long t1 = System.currentTimeMillis();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         session.save(e);
         session.getTransaction().commit();
         session.close();
-        System.out.println("Successfully created " + e.toString());
+        long t2 = System.currentTimeMillis();
+        System.out.println("Transaction in: " + (t2 - t1)+" ms");
         return e.getIdRun();
     }
 }

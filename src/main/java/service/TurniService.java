@@ -808,7 +808,7 @@ public class TurniService {
     }
 
 
-    public void salvaGiornata(Integer id,Turno turno) {
+    public void salvaGiornata(Long id,Turno turno) {
 
         TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(id, turno);
         TurnoDao dao = new TurnoDao();

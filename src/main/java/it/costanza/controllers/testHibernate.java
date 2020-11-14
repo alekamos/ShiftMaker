@@ -17,7 +17,7 @@ public class testHibernate {
         session.save(e);
         session.getTransaction().commit();
         session.close();
-        System.out.println("Successfully created " + e.toString());
+        System.out.println("Successfully created " + e.getIdRun());
         return e.getIdRun();
     }
 
@@ -27,7 +27,7 @@ public class testHibernate {
         session.createSQLQuery("DELETE FROM RUN").executeUpdate();
         session.getTransaction().commit();
         session.close();
-        System.out.println("TRUNCATE TABLE RUN");
+        System.out.println("DELETE FROM RUN");
 
 
 
@@ -39,7 +39,7 @@ public class testHibernate {
         session.createSQLQuery("DELETE FROM TURNI_GENERATI").executeUpdate();
         session.getTransaction().commit();
         session.close();
-        System.out.println("TRUNCATE TABLE RUN");
+        System.out.println("DELETE FROM TURNI_GENERATI");
 
 
 

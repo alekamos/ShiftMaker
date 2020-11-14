@@ -8,19 +8,20 @@ import java.sql.Timestamp;
 @Table(name = "RUN", schema = "EUROPE")
 public class RunEntity {
 
-    private long idRun;
+    private Long idRun;
     private String annomese;
     private Timestamp dataInizioRun;
     private Timestamp dataFineRun;
     private String tipoRun;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_RUN", nullable = false)
-    public long getIdRun() {
+    public Long getIdRun() {
         return idRun;
     }
 
-    public void setIdRun(long idRun) {
+    public void setIdRun(Long idRun) {
         this.idRun = idRun;
     }
 
