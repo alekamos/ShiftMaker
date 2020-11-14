@@ -1,17 +1,20 @@
 package it.costanza.controllers;
 
-import it.costanza.entityDb.mysql.RunEntity;
-import org.hibernate.Session;
-import service.HibernateUtil;
 
+import it.costanza.entityDb.h2.RunEntity;
+import org.hibernate.Session;
+import service.HibernateUtilH2;
+
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
-public class testHibernate {
+public class testH2 {
 
 
 
     public static long create(RunEntity e) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
         session.beginTransaction();
         session.save(e);
         session.getTransaction().commit();
@@ -21,7 +24,7 @@ public class testHibernate {
     }
 
     public static void clearAllRun() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
         session.beginTransaction();
         session.createSQLQuery("DELETE FROM RUN").executeUpdate();
         session.getTransaction().commit();
@@ -33,7 +36,7 @@ public class testHibernate {
     }
 
     public static void clearAllTurniGenerati() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
         session.beginTransaction();
         session.createSQLQuery("DELETE FROM TURNI_GENERATI").executeUpdate();
         session.getTransaction().commit();
@@ -45,7 +48,7 @@ public class testHibernate {
     }
 
     public static List<RunEntity> read() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
         @SuppressWarnings("unchecked")
         List<RunEntity> runEntity = session.createQuery("FROM RunEntity").list();
         session.close();
@@ -55,16 +58,17 @@ public class testHibernate {
 
     public static void main(String[] args) {
 
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
+        session.beginTransaction();
+        // Add new Employee object
         RunEntity e = new RunEntity();
         e.setTipoRun("TESTRUN");
+        e.setDataInizioRun(new Timestamp(new Date().getTime()));
+        session.save(e);
+        session.getTransaction().commit();
+        HibernateUtilH2.shutdown();
 
 
-        RunEntity e2 = new RunEntity();
-        e2.setTipoRun("TESTRUN2");
-        clearAllTurniGenerati();
-        clearAllRun();
-        create(e);
-        create(e2);
 
 
 

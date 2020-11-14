@@ -1,9 +1,8 @@
 package it.costanza.controllers;
 
 import it.costanza.controllers.command.WeeklyLimitDbGenerator;
-import it.costanza.controllers.command.WeeklyLimitGenerator;
 import it.costanza.dao.RunDao;
-import it.costanza.entityDb.RunEntity;
+import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 

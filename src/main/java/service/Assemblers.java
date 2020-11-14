@@ -1,6 +1,6 @@
 package service;
 
-import it.costanza.entityDb.TurniGeneratiEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.model.Turno;
 
 public class Assemblers {

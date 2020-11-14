@@ -1,7 +1,7 @@
 package service;
 
 import it.costanza.dao.TurnoDao;
-import it.costanza.entityDb.TurniGeneratiEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.model.*;
 
 import java.io.IOException;

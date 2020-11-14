@@ -1,4 +1,4 @@
-package it.costanza.entityDb;
+package it.costanza.entityDb.mysql;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

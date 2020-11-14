@@ -9,9 +9,9 @@
     <property name="connection.username">app</property>
     <property name="connection.password">palomb00</property>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
-    <mapping class="it.costanza.entityDb.RunEntity"/>
-    <mapping class="it.costanza.entityDb.TurniGeneratiEntity"/>
-    <mapping class="it.costanza.entityDb.TurniGeneratiStatsEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.RunEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.TurniGeneratiEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.TurniGeneratiStatsEntity"/>
 
 
     <!-- DB schema will be updated if needed -->

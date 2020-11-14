@@ -1,7 +1,7 @@
 package it.costanza.dao;
 
 
-import it.costanza.entityDb.RunEntity;
+import it.costanza.entityDb.mysql.RunEntity;
 import org.hibernate.Session;
 import service.HibernateUtil;
 

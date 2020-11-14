@@ -1,10 +1,12 @@
-package it.costanza.entityDb;
+package it.costanza.entityDb.h2;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table(name = "TURNI_GENERATI", schema = "EUROPE")
+@Table(name = "TURNI_GENERATI")
 public class TurniGeneratiEntity {
     private Long idTurno;
     private Date dataTurno;
@@ -14,7 +16,8 @@ public class TurniGeneratiEntity {
     private Long idRun;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     @Column(name = "ID_TURNO", nullable = false)
     public Long getIdTurno() {
         return idTurno;
