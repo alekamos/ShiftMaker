@@ -1,13 +1,10 @@
 package it.costanza.controllers;
 
-import it.costanza.dao.RunDao;
 import it.costanza.entityDb.RunEntity;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import service.HibernateUtil;
-import service.PropertiesServices;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 public class testHibernate {
@@ -24,6 +21,30 @@ public class testHibernate {
         return e.getIdRun();
     }
 
+    public static void clearAllRun() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createSQLQuery("DELETE FROM RUN").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+        System.out.println("TRUNCATE TABLE RUN");
+
+
+
+    }
+
+    public static void clearAllTurniGenerati() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createSQLQuery("DELETE FROM TURNI_GENERATI").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+        System.out.println("TRUNCATE TABLE RUN");
+
+
+
+    }
+
     public static List<RunEntity> read() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         @SuppressWarnings("unchecked")
@@ -37,12 +58,12 @@ public class testHibernate {
 
         RunEntity e = new RunEntity();
         e.setTipoRun("TESTRUN");
-        e.setIdRun(26);
+
 
         RunEntity e2 = new RunEntity();
         e2.setTipoRun("TESTRUN2");
-        e2.setIdRun(27);
-
+        clearAllTurniGenerati();
+        clearAllRun();
         create(e);
         create(e2);
 

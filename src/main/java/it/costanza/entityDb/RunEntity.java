@@ -1,11 +1,13 @@
 package it.costanza.entityDb;
 
+import javax.annotation.Generated;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "RUN", schema = "EUROPE")
 public class RunEntity {
+
     private long idRun;
     private String annomese;
     private Timestamp dataInizioRun;

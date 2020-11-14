@@ -57,7 +57,7 @@ public class WeeklyLimitDbGenerator{
 
                     Turno attempt = attemptPutQualityPersonInTurno(idRun,persone, turno, skeletonTurni, turniAssegnati,turniFinale);
                     if (attempt != null) {
-                        turnoService.salvaGiornata(idRun,turno);
+                        turnoService.salvaGiornata(idRun,attempt);
                         turniFinale.add(attempt);
                         personaDaPiazzare = false;
                     }
