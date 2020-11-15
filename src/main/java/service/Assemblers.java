@@ -12,7 +12,6 @@ public class Assemblers {
         TurniGeneratiEntity turniGeneratiEntity = new TurniGeneratiEntity();
         turniGeneratiEntity.setDataTurno(new java.sql.Date(turno.getData().getTime()));
         turniGeneratiEntity.setPersonaTurno(turno.getPersonaInTurno().getNome());
-        turniGeneratiEntity.setIdRun(idRun);
         turniGeneratiEntity.setRuoloTurno(turno.getRuoloTurno());
         turniGeneratiEntity.setTipoTurno(turno.getTipoTurno());
 

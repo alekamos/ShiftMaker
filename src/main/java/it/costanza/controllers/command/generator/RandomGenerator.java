@@ -1,8 +1,8 @@
 package it.costanza.controllers.command.generator;
 
-import it.costanza.model.*;
-import service.PropertiesServices;
-import service.StatService;
+import it.costanza.model.FailedGenerationTurno;
+import it.costanza.model.Persona;
+import it.costanza.model.Turno;
 import service.TurniService;
 
 import java.io.IOException;
