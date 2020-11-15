@@ -1,8 +1,15 @@
 package it.costanza.controllers.command.generator;
 
+import it.costanza.dao.TurniGeneratiMonitorDao;
+import it.costanza.dao.TurnoDao;
+import it.costanza.entityDb.mysql.RunEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
+import it.costanza.model.Const;
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.model.Turno;
+import service.Assemblers;
 import service.TurniService;
 
 import java.io.IOException;
@@ -25,13 +32,13 @@ public class LocalDbGenerator implements TurnoGenerator{
     ArrayList<Turno> turniAssegnati;
 
     //Id del run che sta eseguendo
-    Long idRun;
+    RunEntity run;
 
-    public LocalDbGenerator(ArrayList<Persona> persone, ArrayList<Turno> skeletonTurni, ArrayList<Turno> turniAssegnati, Long idRun) {
+    public LocalDbGenerator(ArrayList<Persona> persone, ArrayList<Turno> skeletonTurni, ArrayList<Turno> turniAssegnati, RunEntity run) {
         this.persone = persone;
         this.skeletonTurni = skeletonTurni;
         this.turniAssegnati = turniAssegnati;
-        this.idRun=idRun;
+        this.run=run;
     }
 
 
@@ -46,8 +53,24 @@ public class LocalDbGenerator implements TurnoGenerator{
 
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
 
+        TurniGeneratiMonitorDao tgmDao = new TurniGeneratiMonitorDao();
+        TurnoDao tgDao = new TurnoDao();
+
+
+        //mi salvo sul database associazione tra turno e run
+        TurniGeneratiMonitorEntity turnGenMon = new TurniGeneratiMonitorEntity();
+        turnGenMon.setRunByIdRun(run);
+        turnGenMon.setStato(Const.MAKING);
+
+        tgmDao.salva(turnGenMon);
+
+
+
+
         //inizio algoritmo
 
+        //svuoto cache locale
+        tgDao.svuotaLocal();
 
 
         for (Turno turno : skeletonTurni) {
@@ -55,20 +78,18 @@ public class LocalDbGenerator implements TurnoGenerator{
             boolean personaDaPiazzare = true;
 
             while (personaDaPiazzare) {
-                giri++;
 
-                if (giri > 150) {
-                    FailedGenerationTurno e = new FailedGenerationTurno();
-                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
-                    throw e;
-                }
+
+
 
                 //true se il turno è libero
                 if (turnoService.checkTurnoLiberoTurnoAssegnato(turniAssegnati, turno)) {
 
-                    Turno attempt = attemptPutQualityPersonInTurno(idRun,persone, turno, skeletonTurni, turniAssegnati,turniFinale);
+                    Turno attempt = attemptPutQualityPersonInTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
                     if (attempt != null) {
                         turniFinale.add(attempt);
+                        TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(run.getIdRun(), attempt);
+                        tgDao.salvaLocal(turniGeneratiEntity);
                         personaDaPiazzare = false;
                     }
 
@@ -79,9 +100,20 @@ public class LocalDbGenerator implements TurnoGenerator{
                     turniFinale.add(trnComplete);
                     personaDaPiazzare = false;
                 }
+
+                //circuit breaker
+                giri++;
+                if (giri > 150) {
+                    FailedGenerationTurno e = new FailedGenerationTurno();
+                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
+                    throw e;
+                }
+
             }
         }
 
+        turnGenMon.setStato(Const.GENERATED);
+        tgmDao.update(turnGenMon);
 
         return turniFinale;
     }
@@ -97,7 +129,7 @@ public class LocalDbGenerator implements TurnoGenerator{
      * @param turniSchedulati
      * @return
      */
-    public Turno attemptPutQualityPersonInTurno(long idRun,ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
+    public Turno attemptPutQualityPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
 
 
         boolean isDisponibile = false;

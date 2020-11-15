@@ -53,7 +53,7 @@ public class MakeTurniSmart {
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
-        TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,turniMese,turniGiaAssergnati,idRun);
+        TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,turniMese,turniGiaAssergnati,runEntity);
 
         long t10=System.currentTimeMillis();
         for (int i = 0; i < numeroGiriTurni; i++) {

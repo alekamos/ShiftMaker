@@ -41,5 +41,6 @@ public class Const {
     public static final String ECCEZIONI_TURNI_NOTTE = "ECCEZIONE_NOTTE";
 
 
-
+    public static final String MAKING = "MAKING";
+    public static final String GENERATED = "CREATED";
 }
