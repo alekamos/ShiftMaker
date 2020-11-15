@@ -12,6 +12,7 @@
     <mapping class="it.costanza.entityDb.mysql.RunEntity"/>
     <mapping class="it.costanza.entityDb.mysql.TurniGeneratiEntity"/>
     <mapping class="it.costanza.entityDb.mysql.TurniGeneratiStatsEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity"/>
 
 
     <!-- DB schema will be updated if needed -->

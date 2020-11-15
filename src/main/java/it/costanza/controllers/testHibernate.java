@@ -1,9 +1,13 @@
 package it.costanza.controllers;
 
+import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
 import org.hibernate.Session;
 import it.costanza.dao.Util.HibernateUtilMySql;
+import service.PropertiesServices;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class testHibernate {
@@ -55,16 +59,17 @@ public class testHibernate {
 
     public static void main(String[] args) {
 
-        RunEntity e = new RunEntity();
-        e.setTipoRun("TESTRUN");
+
+        RunEntity runEntity = new RunEntity();
+        runEntity.setAnnomese("202011");
+        runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
+        runEntity.setTipoRun("MakeTurniSmart"+10);
 
 
-        RunEntity e2 = new RunEntity();
-        e2.setTipoRun("TESTRUN2");
-        clearAllTurniGenerati();
-        clearAllRun();
-        create(e);
-        create(e2);
+
+        RunDao dao = new RunDao();
+        dao.salva(runEntity);
+
 
 
 

@@ -18,8 +18,20 @@ public class TurnoDao implements Crud<TurniGeneratiEntity> {
 
 
 
-        return e.getIdRun();
+        return e.getIdTurno();
     }
+
+    @Override
+    public long update(TurniGeneratiEntity e) {
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.update(e);
+        session.getTransaction().commit();
+        session.close();
+        System.out.println("Successfully created " + e.toString());
+        return e.getIdTurno();
+    }
+
 
     @Override
     public Object getById(Long id) {

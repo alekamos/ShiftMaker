@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "TURNI_GENERATI_STATS", schema = "EUROPE")
+@Table(name = "TURNI_GENERATI_STATS", schema = "EUROPE", catalog = "")
 public class TurniGeneratiStatsEntity {
     private Long idTurno;
     private Double mediaTurniTot;
@@ -26,11 +26,10 @@ public class TurniGeneratiStatsEntity {
     private String scoreFormula;
     private Timestamp dataInserimento;
     private Timestamp dataAggiornamento;
-
+    private TurniGeneratiMonitorEntity turniGeneratiMonitorByIdTurno;
 
     @Id
-    @Basic
-    @Column(name = "ID_TURNO", nullable = true)
+    @Column(name = "ID_TURNO", nullable = false)
     public Long getIdTurno() {
         return idTurno;
     }
@@ -298,5 +297,13 @@ public class TurniGeneratiStatsEntity {
         return result;
     }
 
+    @OneToOne
+    @JoinColumn(name = "ID_TURNO", referencedColumnName = "ID_TURNO", nullable = false)
+    public TurniGeneratiMonitorEntity getTurniGeneratiMonitorByIdTurno() {
+        return turniGeneratiMonitorByIdTurno;
+    }
 
+    public void setTurniGeneratiMonitorByIdTurno(TurniGeneratiMonitorEntity turniGeneratiMonitorByIdTurno) {
+        this.turniGeneratiMonitorByIdTurno = turniGeneratiMonitorByIdTurno;
+    }
 }

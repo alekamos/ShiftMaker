@@ -4,17 +4,16 @@ import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table(name = "TURNI_GENERATI", schema = "EUROPE")
+@Table(name = "TURNI_GENERATI", schema = "EUROPE", catalog = "")
 public class TurniGeneratiEntity {
     private Long idTurno;
     private Date dataTurno;
     private String tipoTurno;
     private String ruoloTurno;
     private String personaTurno;
-    private Long idRun;
+    private TurniGeneratiMonitorEntity turniGeneratiMonitorByIdTurno;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_TURNO", nullable = false)
     public Long getIdTurno() {
         return idTurno;
@@ -64,16 +63,6 @@ public class TurniGeneratiEntity {
         this.personaTurno = personaTurno;
     }
 
-    @Basic
-    @Column(name = "ID_RUN", nullable = true)
-    public Long getIdRun() {
-        return idRun;
-    }
-
-    public void setIdRun(Long idRun) {
-        this.idRun = idRun;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,28 +70,32 @@ public class TurniGeneratiEntity {
 
         TurniGeneratiEntity that = (TurniGeneratiEntity) o;
 
-        if (idTurno != that.idTurno) return false;
+        if (idTurno != null ? !idTurno.equals(that.idTurno) : that.idTurno != null) return false;
         if (dataTurno != null ? !dataTurno.equals(that.dataTurno) : that.dataTurno != null) return false;
         if (tipoTurno != null ? !tipoTurno.equals(that.tipoTurno) : that.tipoTurno != null) return false;
         if (ruoloTurno != null ? !ruoloTurno.equals(that.ruoloTurno) : that.ruoloTurno != null) return false;
         if (personaTurno != null ? !personaTurno.equals(that.personaTurno) : that.personaTurno != null) return false;
-        if (idRun != null ? !idRun.equals(that.idRun) : that.idRun != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (idTurno ^ (idTurno >>> 32));
+        int result = idTurno != null ? idTurno.hashCode() : 0;
         result = 31 * result + (dataTurno != null ? dataTurno.hashCode() : 0);
         result = 31 * result + (tipoTurno != null ? tipoTurno.hashCode() : 0);
         result = 31 * result + (ruoloTurno != null ? ruoloTurno.hashCode() : 0);
         result = 31 * result + (personaTurno != null ? personaTurno.hashCode() : 0);
-        result = 31 * result + (idRun != null ? idRun.hashCode() : 0);
         return result;
     }
 
+    @OneToOne
+    @JoinColumn(name = "ID_TURNO", referencedColumnName = "ID_TURNO", nullable = false)
+    public TurniGeneratiMonitorEntity getTurniGeneratiMonitorByIdTurno() {
+        return turniGeneratiMonitorByIdTurno;
+    }
 
-
-
+    public void setTurniGeneratiMonitorByIdTurno(TurniGeneratiMonitorEntity turniGeneratiMonitorByIdTurno) {
+        this.turniGeneratiMonitorByIdTurno = turniGeneratiMonitorByIdTurno;
+    }
 }
