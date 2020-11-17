@@ -1,7 +1,6 @@
 package service;
 
 import it.costanza.dao.TurnoDao;
-import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.model.*;
 
 import java.io.IOException;
@@ -691,11 +690,11 @@ public class TurniService {
     }
 
 
-    public void salvaTurni(ArrayList<Turno> turniGenerati) {
+    public void salvaTurni(long idCalTurni, ArrayList<Turno> turniGenerati) {
         TurnoDao dao = new TurnoDao();
 
 
-        dao.salvaTurniMultipli(Assemblers.mappingTurni(turniGenerati));
+        dao.salvaTurniMultipli(Assemblers.mappingTurni(idCalTurni,turniGenerati));
 
 
     }

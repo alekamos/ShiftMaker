@@ -11,6 +11,7 @@ public class TurniGeneratiEntity {
     private String tipoTurno;
     private String ruoloTurno;
     private String personaTurno;
+    private TurniGeneratiMonitorEntity turniGeneratiMonitorByIdCalTurni;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,5 +88,15 @@ public class TurniGeneratiEntity {
         result = 31 * result + (ruoloTurno != null ? ruoloTurno.hashCode() : 0);
         result = 31 * result + (personaTurno != null ? personaTurno.hashCode() : 0);
         return result;
+    }
+
+    @OneToOne
+    @JoinColumn(name = "ID_CAL_TURNI", referencedColumnName = "ID_CAL_TURNI", nullable = false)
+    public TurniGeneratiMonitorEntity getTurniGeneratiMonitorByIdCalTurni() {
+        return turniGeneratiMonitorByIdCalTurni;
+    }
+
+    public void setTurniGeneratiMonitorByIdCalTurni(TurniGeneratiMonitorEntity turniGeneratiMonitorByIdCalTurni) {
+        this.turniGeneratiMonitorByIdCalTurni = turniGeneratiMonitorByIdCalTurni;
     }
 }

@@ -64,7 +64,7 @@ public class LocalDbGenerator implements TurnoGenerator{
         turnGenMon.setRunByIdRun(run);
         turnGenMon.setStato(Const.MAKING);
 
-        long idTurno = tgmDao.salva(turnGenMon);
+        long idCalTurni = tgmDao.salva(turnGenMon);
 
 
         //inizio algoritmo
@@ -114,7 +114,7 @@ public class LocalDbGenerator implements TurnoGenerator{
         }
 
         //salvataggio di tutti i turni
-        turnoService.salvaTurni(turniFinale);
+        turnoService.salvaTurni(idCalTurni,turniFinale);
 
 
         turnGenMon.setStato(Const.GENERATED);

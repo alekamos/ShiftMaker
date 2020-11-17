@@ -2,22 +2,17 @@ package it.costanza.controllers;
 
 import it.costanza.controllers.command.generator.LocalDbGenerator;
 import it.costanza.controllers.command.generator.TurnoGenerator;
-import it.costanza.controllers.command.generator.WeeklyLimitDbGenerator;
 import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
-import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
 import it.costanza.model.*;
-import service.FileService;
 import service.PropertiesServices;
 import service.StatService;
 import service.TurniService;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.UUID;
 
 public class MakeTurniSmart {
 
@@ -66,7 +61,7 @@ public class MakeTurniSmart {
 
 
                 ArrayList<Turno> turniGenerati = commandAlgoritmo.generate();
-                turniService.salvaTurni(turniGenerati);
+
             }catch (FailedGenerationTurno e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }
