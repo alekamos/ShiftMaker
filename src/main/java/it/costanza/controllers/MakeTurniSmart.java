@@ -5,6 +5,7 @@ import it.costanza.controllers.command.generator.TurnoGenerator;
 import it.costanza.controllers.command.generator.WeeklyLimitDbGenerator;
 import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
 import it.costanza.model.*;
 import service.FileService;
 import service.PropertiesServices;
@@ -37,6 +38,7 @@ public class MakeTurniSmart {
 
         //salvo il run sul db
         RunDao dao = new RunDao();
+
         RunEntity runEntity = new RunEntity();
         runEntity.setAnnomese(PropertiesServices.getProperties("anno")+(PropertiesServices.getProperties("mese")));
         runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
@@ -64,10 +66,7 @@ public class MakeTurniSmart {
 
 
                 ArrayList<Turno> turniGenerati = commandAlgoritmo.generate();
-
-
-
-
+                turniService.salvaTurni(turniGenerati);
             }catch (FailedGenerationTurno e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }

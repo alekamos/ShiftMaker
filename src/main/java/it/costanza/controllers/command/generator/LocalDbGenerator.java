@@ -10,6 +10,7 @@ import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.model.Turno;
 import service.Assemblers;
+import service.TurniLocalService;
 import service.TurniService;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class LocalDbGenerator implements TurnoGenerator{
 
     //Service
     TurniService turnoService = new TurniService();
+    TurniLocalService turnoLocalService = new TurniLocalService();
 
 
     //persone
@@ -54,7 +56,7 @@ public class LocalDbGenerator implements TurnoGenerator{
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
 
         TurniGeneratiMonitorDao tgmDao = new TurniGeneratiMonitorDao();
-        TurnoDao tgDao = new TurnoDao();
+
 
 
         //mi salvo sul database associazione tra turno e run
@@ -62,15 +64,13 @@ public class LocalDbGenerator implements TurnoGenerator{
         turnGenMon.setRunByIdRun(run);
         turnGenMon.setStato(Const.MAKING);
 
-        tgmDao.salva(turnGenMon);
-
-
+        long idTurno = tgmDao.salva(turnGenMon);
 
 
         //inizio algoritmo
 
         //svuoto cache locale
-        tgDao.svuotaLocal();
+        turnoLocalService.svuotaLocal();
 
 
         for (Turno turno : skeletonTurni) {
@@ -88,8 +88,8 @@ public class LocalDbGenerator implements TurnoGenerator{
                     Turno attempt = attemptPutQualityPersonInTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
                     if (attempt != null) {
                         turniFinale.add(attempt);
-                        TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(run.getIdRun(), attempt);
-                        tgDao.salvaLocal(turniGeneratiEntity);
+                        TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(attempt);
+                        turnoLocalService.salvaLocal(attempt);
                         personaDaPiazzare = false;
                     }
 
@@ -97,6 +97,7 @@ public class LocalDbGenerator implements TurnoGenerator{
                     Persona personaAssegnata = turnoService.copyTurnoAssegnato(turniAssegnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
                     Turno trnComplete = turnoService.deepCopyTurno(turno);
                     trnComplete.setPersonaInTurno(personaAssegnata);
+                    turnoLocalService.salvaLocal(trnComplete);
                     turniFinale.add(trnComplete);
                     personaDaPiazzare = false;
                 }
@@ -111,6 +112,10 @@ public class LocalDbGenerator implements TurnoGenerator{
 
             }
         }
+
+        //salvataggio di tutti i turni
+        turnoService.salvaTurni(turniFinale);
+
 
         turnGenMon.setStato(Const.GENERATED);
         tgmDao.update(turnGenMon);

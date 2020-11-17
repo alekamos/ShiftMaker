@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "TURNI_GENERATI_STATS", schema = "EUROPE", catalog = "")
 public class TurniGeneratiStatsEntity {
-    private Long idTurno;
+    private Long idCalTurni;
     private Double mediaTurniTot;
     private Double sdevTurniTot;
     private Double mediaPresFest;
@@ -26,16 +26,16 @@ public class TurniGeneratiStatsEntity {
     private String scoreFormula;
     private Timestamp dataInserimento;
     private Timestamp dataAggiornamento;
-    private TurniGeneratiMonitorEntity turniGeneratiMonitorByIdTurno;
+    private TurniGeneratiMonitorEntity turniGeneratiMonitorByIdCalTurni;
 
     @Id
-    @Column(name = "ID_TURNO", nullable = false)
-    public Long getIdTurno() {
-        return idTurno;
+    @Column(name = "ID_CAL_TURNI", nullable = false)
+    public Long getIdCalTurni() {
+        return idCalTurni;
     }
 
-    public void setIdTurno(Long idTurno) {
-        this.idTurno = idTurno;
+    public void setIdCalTurni(Long idCalTurni) {
+        this.idCalTurni = idCalTurni;
     }
 
     @Basic
@@ -235,7 +235,7 @@ public class TurniGeneratiStatsEntity {
 
         TurniGeneratiStatsEntity that = (TurniGeneratiStatsEntity) o;
 
-        if (idTurno != null ? !idTurno.equals(that.idTurno) : that.idTurno != null) return false;
+        if (idCalTurni != null ? !idCalTurni.equals(that.idCalTurni) : that.idCalTurni != null) return false;
         if (mediaTurniTot != null ? !mediaTurniTot.equals(that.mediaTurniTot) : that.mediaTurniTot != null)
             return false;
         if (sdevTurniTot != null ? !sdevTurniTot.equals(that.sdevTurniTot) : that.sdevTurniTot != null) return false;
@@ -274,7 +274,7 @@ public class TurniGeneratiStatsEntity {
 
     @Override
     public int hashCode() {
-        int result = idTurno != null ? idTurno.hashCode() : 0;
+        int result = idCalTurni != null ? idCalTurni.hashCode() : 0;
         result = 31 * result + (mediaTurniTot != null ? mediaTurniTot.hashCode() : 0);
         result = 31 * result + (sdevTurniTot != null ? sdevTurniTot.hashCode() : 0);
         result = 31 * result + (mediaPresFest != null ? mediaPresFest.hashCode() : 0);
@@ -298,12 +298,12 @@ public class TurniGeneratiStatsEntity {
     }
 
     @OneToOne
-    @JoinColumn(name = "ID_TURNO", referencedColumnName = "ID_TURNO", nullable = false)
-    public TurniGeneratiMonitorEntity getTurniGeneratiMonitorByIdTurno() {
-        return turniGeneratiMonitorByIdTurno;
+    @JoinColumn(name = "ID_CAL_TURNI", referencedColumnName = "ID_CAL_TURNI", nullable = false)
+    public TurniGeneratiMonitorEntity getTurniGeneratiMonitorByIdCalTurni() {
+        return turniGeneratiMonitorByIdCalTurni;
     }
 
-    public void setTurniGeneratiMonitorByIdTurno(TurniGeneratiMonitorEntity turniGeneratiMonitorByIdTurno) {
-        this.turniGeneratiMonitorByIdTurno = turniGeneratiMonitorByIdTurno;
+    public void setTurniGeneratiMonitorByIdCalTurni(TurniGeneratiMonitorEntity turniGeneratiMonitorByIdCalTurni) {
+        this.turniGeneratiMonitorByIdCalTurni = turniGeneratiMonitorByIdCalTurni;
     }
 }

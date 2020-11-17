@@ -23,11 +23,11 @@ create index RUN_ID_RUN_index
 
 create table TURNI_GENERATI_MONITOR
 (
-    ID_TURNO bigint(10) auto_increment primary key,
+    ID_CAL_TURNI bigint(10) auto_increment primary key,
     ID_RUN   bigint(10)  null,
     STATO    varchar(50) null,
     constraint TURNI_GENERATI_MONITOR_pk
-        unique (ID_TURNO),
+        unique (ID_CAL_TURNI),
     constraint TURNI_GENERATI_MONITOR_RUN_ID_RUN_fk
         foreign key (ID_RUN) references RUN (ID_RUN)
             on delete cascade
@@ -37,20 +37,20 @@ create table TURNI_GENERATI_MONITOR
 create index TURNI_GENERATI_MONITOR_ID_RUN_index
     on TURNI_GENERATI_MONITOR (ID_RUN);
 
-create index TURNI_GENERATI_MONITOR_ID_TURNO_index
-    on TURNI_GENERATI_MONITOR (ID_TURNO);
+create index TURNI_GENERATI_MONITOR_ID_CAL_TURNI_index
+    on TURNI_GENERATI_MONITOR (ID_CAL_TURNI);
 
 
 create table TURNI_GENERATI
 (
-    ID_TURNO bigint(10)
-        primary key,
+    ID_SING_TURNO bigint(10) auto_increment primary key,
+    ID_CAL_TURNI bigint(10),
     DATA_TURNO date null,
     TIPO_TURNO varchar(100) null,
     RUOLO_TURNO varchar(100) null,
     PERSONA_TURNO varchar(100) null,
-    constraint TURNI_GENERATI_ID_TURNO_fk
-        foreign key (ID_TURNO) references TURNI_GENERATI_MONITOR (ID_TURNO) on delete cascade
+    constraint TURNI_GENERATI_ID_CAL_TURNI_fk
+        foreign key (ID_CAL_TURNI) references TURNI_GENERATI_MONITOR (ID_CAL_TURNI) on delete cascade
 )
     comment 'Tabella contenente i turni generati dal sw';
 
@@ -59,7 +59,7 @@ create table TURNI_GENERATI
 
 create table TURNI_GENERATI_STATS
 (
-    ID_TURNO bigint(10) primary key,
+    ID_CAL_TURNI bigint(10) primary key,
     MEDIA_TURNI_TOT double(5,5) null,
     SDEV_TURNI_TOT double(5,5) null,
     MEDIA_PRES_FEST double(5,5) null,
@@ -79,19 +79,19 @@ create table TURNI_GENERATI_STATS
     SCORE_FORMULA varchar(200) null,
     DATA_INSERIMENTO datetime null,
     DATA_AGGIORNAMENTO datetime null,
-        constraint TURNI_GENERATI_STATS_ID_TURNO_fk
-        foreign key (ID_TURNO) references TURNI_GENERATI_MONITOR (ID_TURNO)
+    constraint TURNI_GENERATI_STATS_ID_CAL_TURNI_fk
+        foreign key (ID_CAL_TURNI) references TURNI_GENERATI_MONITOR (ID_CAL_TURNI)
 )
     comment 'statistiche collegate al turno generato';
 
-create index TURNI_GENERATI_STATS_ID_TURNO_index
-    on TURNI_GENERATI_STATS (ID_TURNO);
+create index TURNI_GENERATI_STATS_ID_CAL_TURNI_index
+    on TURNI_GENERATI_STATS (ID_CAL_TURNI);
 
 
 
 
-create index TURNI_GENERATI_ID_TURNO_index
-    on TURNI_GENERATI (ID_TURNO);
+create index TURNI_GENERATI_ID_CAL_TURNI_index
+    on TURNI_GENERATI (ID_CAL_TURNI);
 
 
 

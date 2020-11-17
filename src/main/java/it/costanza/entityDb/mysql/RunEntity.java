@@ -2,7 +2,6 @@ package it.costanza.entityDb.mysql;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
 
 @Entity
 @Table(name = "RUN", schema = "EUROPE", catalog = "")
@@ -12,7 +11,6 @@ public class RunEntity {
     private Timestamp dataInizioRun;
     private Timestamp dataFineRun;
     private String tipoRun;
-    private Collection<TurniGeneratiMonitorEntity> turniGeneratiMonitorsByIdRun;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,14 +89,5 @@ public class RunEntity {
         result = 31 * result + (dataFineRun != null ? dataFineRun.hashCode() : 0);
         result = 31 * result + (tipoRun != null ? tipoRun.hashCode() : 0);
         return result;
-    }
-
-    @OneToMany(mappedBy = "runByIdRun")
-    public Collection<TurniGeneratiMonitorEntity> getTurniGeneratiMonitorsByIdRun() {
-        return turniGeneratiMonitorsByIdRun;
-    }
-
-    public void setTurniGeneratiMonitorsByIdRun(Collection<TurniGeneratiMonitorEntity> turniGeneratiMonitorsByIdRun) {
-        this.turniGeneratiMonitorsByIdRun = turniGeneratiMonitorsByIdRun;
     }
 }

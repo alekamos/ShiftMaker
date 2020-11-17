@@ -691,10 +691,20 @@ public class TurniService {
     }
 
 
-    public void salvaGiornata(Long id,Turno turno) {
-
-        TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(id, turno);
+    public void salvaTurni(ArrayList<Turno> turniGenerati) {
         TurnoDao dao = new TurnoDao();
-        dao.salva(turniGeneratiEntity);
+
+
+        dao.salvaTurniMultipli(Assemblers.mappingTurni(turniGenerati));
+
+
     }
+
+
+    public void salvaTurno(Turno attempt) {
+        TurnoDao dao = new TurnoDao();
+        dao.salva(Assemblers.mappingTurni(attempt));
+    }
+
+
 }

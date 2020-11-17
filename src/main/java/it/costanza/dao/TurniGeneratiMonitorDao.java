@@ -19,7 +19,7 @@ public class TurniGeneratiMonitorDao implements Crud<TurniGeneratiMonitorEntity>
 
 
 
-        return e.getIdTurno();
+        return e.getIdCalTurni();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class TurniGeneratiMonitorDao implements Crud<TurniGeneratiMonitorEntity>
         session.getTransaction().commit();
         session.close();
         System.out.println("Successfully created " + e.toString());
-        return e.getIdTurno();
+        return e.getIdCalTurni();
     }
 
 

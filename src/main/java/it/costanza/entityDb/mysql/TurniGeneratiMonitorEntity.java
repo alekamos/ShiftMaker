@@ -3,23 +3,21 @@ package it.costanza.entityDb.mysql;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "TURNI_GENERATI_MONITOR", schema = "EUROPE")
+@Table(name = "TURNI_GENERATI_MONITOR", schema = "EUROPE", catalog = "")
 public class TurniGeneratiMonitorEntity {
-    private Long idTurno;
+    private Long idCalTurni;
     private String stato;
-    private TurniGeneratiEntity turniGeneratiByIdTurno;
     private RunEntity runByIdRun;
-    private TurniGeneratiStatsEntity turniGeneratiStatsByIdTurno;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_TURNO", nullable = false)
-    public Long getIdTurno() {
-        return idTurno;
+    @Column(name = "ID_CAL_TURNI", nullable = false)
+    public Long getIdCalTurni() {
+        return idCalTurni;
     }
 
-    public void setIdTurno(Long idTurno) {
-        this.idTurno = idTurno;
+    public void setIdCalTurni(Long idCalTurni) {
+        this.idCalTurni = idCalTurni;
     }
 
     @Basic
@@ -39,7 +37,7 @@ public class TurniGeneratiMonitorEntity {
 
         TurniGeneratiMonitorEntity that = (TurniGeneratiMonitorEntity) o;
 
-        if (idTurno != null ? !idTurno.equals(that.idTurno) : that.idTurno != null) return false;
+        if (idCalTurni != null ? !idCalTurni.equals(that.idCalTurni) : that.idCalTurni != null) return false;
         if (stato != null ? !stato.equals(that.stato) : that.stato != null) return false;
 
         return true;
@@ -47,18 +45,9 @@ public class TurniGeneratiMonitorEntity {
 
     @Override
     public int hashCode() {
-        int result = idTurno != null ? idTurno.hashCode() : 0;
+        int result = idCalTurni != null ? idCalTurni.hashCode() : 0;
         result = 31 * result + (stato != null ? stato.hashCode() : 0);
         return result;
-    }
-
-    @OneToOne(mappedBy = "turniGeneratiMonitorByIdTurno")
-    public TurniGeneratiEntity getTurniGeneratiByIdTurno() {
-        return turniGeneratiByIdTurno;
-    }
-
-    public void setTurniGeneratiByIdTurno(TurniGeneratiEntity turniGeneratiByIdTurno) {
-        this.turniGeneratiByIdTurno = turniGeneratiByIdTurno;
     }
 
     @ManyToOne
@@ -69,14 +58,5 @@ public class TurniGeneratiMonitorEntity {
 
     public void setRunByIdRun(RunEntity runByIdRun) {
         this.runByIdRun = runByIdRun;
-    }
-
-    @OneToOne(mappedBy = "turniGeneratiMonitorByIdTurno")
-    public TurniGeneratiStatsEntity getTurniGeneratiStatsByIdTurno() {
-        return turniGeneratiStatsByIdTurno;
-    }
-
-    public void setTurniGeneratiStatsByIdTurno(TurniGeneratiStatsEntity turniGeneratiStatsByIdTurno) {
-        this.turniGeneratiStatsByIdTurno = turniGeneratiStatsByIdTurno;
     }
 }

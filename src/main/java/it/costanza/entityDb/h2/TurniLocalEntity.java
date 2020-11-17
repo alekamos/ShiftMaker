@@ -1,27 +1,30 @@
-package it.costanza.entityDb.mysql;
+package it.costanza.entityDb.h2;
 
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table(name = "TURNI_GENERATI", schema = "EUROPE", catalog = "")
-public class TurniGeneratiEntity {
-    private Long idSingTurno;
+@Table(name = "TURNI_GENERATI")
+public class TurniLocalEntity {
+
+    private Long idTurno;
     private Date dataTurno;
     private String tipoTurno;
     private String ruoloTurno;
     private String personaTurno;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_SING_TURNO", nullable = false)
-    public Long getIdSingTurno() {
-        return idSingTurno;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID_TURNO", nullable = false)
+    public Long getIdTurno() {
+        return idTurno;
     }
 
-    public void setIdSingTurno(Long idSingTurno) {
-        this.idSingTurno = idSingTurno;
+    public void setIdTurno(Long idTurno) {
+        this.idTurno = idTurno;
     }
+
+
 
     @Basic
     @Column(name = "DATA_TURNO", nullable = true)
@@ -68,9 +71,8 @@ public class TurniGeneratiEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TurniGeneratiEntity that = (TurniGeneratiEntity) o;
+        TurniLocalEntity that = (TurniLocalEntity) o;
 
-        if (idSingTurno != null ? !idSingTurno.equals(that.idSingTurno) : that.idSingTurno != null) return false;
         if (dataTurno != null ? !dataTurno.equals(that.dataTurno) : that.dataTurno != null) return false;
         if (tipoTurno != null ? !tipoTurno.equals(that.tipoTurno) : that.tipoTurno != null) return false;
         if (ruoloTurno != null ? !ruoloTurno.equals(that.ruoloTurno) : that.ruoloTurno != null) return false;
@@ -81,11 +83,13 @@ public class TurniGeneratiEntity {
 
     @Override
     public int hashCode() {
-        int result = idSingTurno != null ? idSingTurno.hashCode() : 0;
+        int result = dataTurno != null ? dataTurno.hashCode() : 0;
         result = 31 * result + (dataTurno != null ? dataTurno.hashCode() : 0);
         result = 31 * result + (tipoTurno != null ? tipoTurno.hashCode() : 0);
         result = 31 * result + (ruoloTurno != null ? ruoloTurno.hashCode() : 0);
         result = 31 * result + (personaTurno != null ? personaTurno.hashCode() : 0);
         return result;
     }
+
+
 }
