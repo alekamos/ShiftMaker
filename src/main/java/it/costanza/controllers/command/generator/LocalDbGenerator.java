@@ -1,7 +1,6 @@
 package it.costanza.controllers.command.generator;
 
 import it.costanza.dao.TurniGeneratiMonitorDao;
-import it.costanza.dao.TurnoDao;
 import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
@@ -12,6 +11,7 @@ import it.costanza.model.Turno;
 import service.Assemblers;
 import service.TurniLocalService;
 import service.TurniService;
+import service.TurnoGeneratorService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class LocalDbGenerator implements TurnoGenerator{
 
     //Service
     TurniService turnoService = new TurniService();
+    TurnoGeneratorService generatorService = new TurnoGeneratorService();
     TurniLocalService turnoLocalService = new TurniLocalService();
 
 
@@ -85,7 +86,7 @@ public class LocalDbGenerator implements TurnoGenerator{
                 //true se il turno è libero
                 if (turnoService.checkTurnoLiberoTurnoAssegnato(turniAssegnati, turno)) {
 
-                    Turno attempt = attemptPutQualityPersonInTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
+                    Turno attempt = generaTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
                     if (attempt != null) {
                         turniFinale.add(attempt);
                         TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(attempt);
@@ -134,7 +135,7 @@ public class LocalDbGenerator implements TurnoGenerator{
      * @param turniSchedulati
      * @return
      */
-    public Turno attemptPutQualityPersonInTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
+    public Turno generaTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
 
 
         boolean isDisponibile = false;
@@ -142,11 +143,10 @@ public class LocalDbGenerator implements TurnoGenerator{
         boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
         boolean isNotGiaInTurno = false;
         boolean isNotGiaInTurnoAssegnati = false;
-        boolean okQualityCheck = false;
 
 
         //scelgo una persona a casa
-        Persona candidato = turnoService.getRandomPersona(persone);
+        Persona candidato = generatorService.getBestCandidateTurno(persone,turnoDaAssegnare);
 
         //controllo 1 la persona è disponibile
         isDisponibile = turnoService.checkDisponibilita(candidato, turnoDaAssegnare);
@@ -173,13 +173,11 @@ public class LocalDbGenerator implements TurnoGenerator{
             isTurnoSuccessivoSeAssegnatoFattibile = turnoService.checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniSchedulati);
         }
 
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-            okQualityCheck = turnoService.candidatoQualityCheck(turniAssegnatiNelMese,candidato, turnoDaAssegnare);
-        }
+
 
 
         //se sono valide le conidizoni precedenti mettilo in turno
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati && okQualityCheck) {
+        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
             Turno finale = new Turno();
             finale = turnoService.deepCopyTurno(turnoDaAssegnare);
             finale.setPersonaInTurno(candidato);

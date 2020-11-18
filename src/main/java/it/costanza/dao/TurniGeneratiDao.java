@@ -2,13 +2,19 @@ package it.costanza.dao;
 
 import it.costanza.dao.Util.HibernateUtilH2;
 import it.costanza.dao.Util.HibernateUtilMySql;
+import it.costanza.entityDb.h2.PersonGroup;
 import it.costanza.entityDb.h2.TurniLocalEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.List;
 
-public class TurnoDao implements Crud<TurniGeneratiEntity> {
+public class TurniGeneratiDao implements Crud<TurniGeneratiEntity> {
 
 
     public long salva(TurniGeneratiEntity e) {
@@ -25,28 +31,6 @@ public class TurnoDao implements Crud<TurniGeneratiEntity> {
         return e.getIdSingTurno();
     }
 
-
-    public void salvaLocal(TurniLocalEntity e) {
-
-
-        Session session = HibernateUtilH2.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.save(e);
-        session.getTransaction().commit();
-        session.close();
-
-
-    }
-
-    public void svuotaLocal() {
-        Session session = HibernateUtilH2.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.createSQLQuery("DELETE FROM TURNI_GENERATI").executeUpdate();
-        session.getTransaction().commit();
-        session.close();
-
-
-    }
 
 
 
@@ -80,4 +64,6 @@ public class TurnoDao implements Crud<TurniGeneratiEntity> {
 
 
     }
+
+
 }
