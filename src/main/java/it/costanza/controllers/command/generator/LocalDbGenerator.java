@@ -55,7 +55,6 @@ public class LocalDbGenerator implements TurnoGenerator{
 
 
         ArrayList<Turno> turniFinale = new ArrayList<Turno>();
-
         TurniGeneratiMonitorDao tgmDao = new TurniGeneratiMonitorDao();
 
 
@@ -75,24 +74,69 @@ public class LocalDbGenerator implements TurnoGenerator{
 
 
         for (Turno turno : skeletonTurni) {
-            int giri = 0;
+            int giri = 1;
             boolean personaDaPiazzare = true;
 
             while (personaDaPiazzare) {
 
 
-
-
                 //true se il turno è libero
                 if (turnoService.checkTurnoLiberoTurnoAssegnato(turniAssegnati, turno)) {
 
-                    Turno attempt = generaTurno(persone, turno, skeletonTurni, turniAssegnati,turniFinale);
-                    if (attempt != null) {
-                        turniFinale.add(attempt);
-                        TurniGeneratiEntity turniGeneratiEntity = Assemblers.mappingTurni(attempt);
-                        turnoLocalService.salvaLocal(attempt);
-                        personaDaPiazzare = false;
+                    boolean isDisponibile = false;
+                    boolean isTurnoFattibile = false;
+                    boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
+                    boolean isNotGiaInTurno = false;
+                    boolean isNotGiaInTurnoAssegnati = false;
+
+
+                    //scelgo una persona a casa
+                    Persona candidato = generatorService.getBestCandidateTurno(persone,turno,giri);
+
+                    //controllo 1 la persona è disponibile
+                    isDisponibile = turnoService.checkDisponibilita(candidato, turno);
+
+
+                    //controllo che non sia gia in turno come altro reparto
+                    if (isDisponibile) {
+                        isNotGiaInTurno = turnoService.checkIsNotGiaInTurno(candidato, turno, skeletonTurni);
                     }
+
+                    //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
+                    if (isDisponibile && isNotGiaInTurno) {
+                        isNotGiaInTurnoAssegnati = turnoService.checkIsNotGiaInTurnoTraIPrenotati(candidato, turno, turniAssegnati);
+                    }
+
+
+                    if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
+                        //controllo che il turno precedente non abbia fatto notte o giorno
+                        isTurnoFattibile = turnoService.checkFattibilitaTurno(candidato, turno, skeletonTurni);
+                    }
+
+
+                    if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
+                        isTurnoSuccessivoSeAssegnatoFattibile = turnoService.checkFattibilitaTurnoSuccessivo(candidato, turno, skeletonTurni, turniAssegnati);
+                    }
+
+
+
+
+                    //se sono valide le conidizoni precedenti mettilo in turno
+                    if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
+                        Turno finale = new Turno();
+                        finale = turnoService.deepCopyTurno(turno);
+                        finale.setPersonaInTurno(candidato);
+                        turniFinale.add(finale);
+                        turnoLocalService.salvaLocal(finale);
+                        personaDaPiazzare = false;
+
+                    }
+
+
+
+
+
+
 
                 } else {
                     Persona personaAssegnata = turnoService.copyTurnoAssegnato(turniAssegnati, turno.getData(), turno.getTipoTurno(), turno.getRuoloTurno());
@@ -105,7 +149,7 @@ public class LocalDbGenerator implements TurnoGenerator{
 
                 //circuit breaker
                 giri++;
-                if (giri > 150) {
+                if (giri > persone.size()) {
                     FailedGenerationTurno e = new FailedGenerationTurno();
                     e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
                     throw e;
@@ -126,65 +170,5 @@ public class LocalDbGenerator implements TurnoGenerator{
 
 
 
-    /**
-     * Cerca di piazzare una persona valutando il suo stress score
-     *
-     * @param persone
-     * @param turnoDaAssegnare
-     * @param turniMese
-     * @param turniSchedulati
-     * @return
-     */
-    public Turno generaTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare, ArrayList<Turno> turniMese, ArrayList<Turno> turniSchedulati, ArrayList<Turno> turniAssegnatiNelMese) throws IOException {
 
-
-        boolean isDisponibile = false;
-        boolean isTurnoFattibile = false;
-        boolean isTurnoSuccessivoSeAssegnatoFattibile = false;
-        boolean isNotGiaInTurno = false;
-        boolean isNotGiaInTurnoAssegnati = false;
-
-
-        //scelgo una persona a casa
-        Persona candidato = generatorService.getBestCandidateTurno(persone,turnoDaAssegnare);
-
-        //controllo 1 la persona è disponibile
-        isDisponibile = turnoService.checkDisponibilita(candidato, turnoDaAssegnare);
-
-
-        //controllo che non sia gia in turno come altro reparto
-        if (isDisponibile) {
-            isNotGiaInTurno = turnoService.checkIsNotGiaInTurno(candidato, turnoDaAssegnare, turniMese);
-        }
-
-        //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
-        if (isDisponibile && isNotGiaInTurno) {
-            isNotGiaInTurnoAssegnati = turnoService.checkIsNotGiaInTurnoTraIPrenotati(candidato, turnoDaAssegnare, turniSchedulati);
-        }
-
-
-        if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
-            //controllo che il turno precedente non abbia fatto notte o giorno
-            isTurnoFattibile = turnoService.checkFattibilitaTurno(candidato, turnoDaAssegnare, turniMese);
-        }
-
-
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isNotGiaInTurnoAssegnati) {
-            isTurnoSuccessivoSeAssegnatoFattibile = turnoService.checkFattibilitaTurnoSuccessivo(candidato, turnoDaAssegnare, turniMese, turniSchedulati);
-        }
-
-
-
-
-        //se sono valide le conidizoni precedenti mettilo in turno
-        if (isDisponibile && isNotGiaInTurno && isTurnoFattibile && isTurnoSuccessivoSeAssegnatoFattibile && isNotGiaInTurnoAssegnati) {
-            Turno finale = new Turno();
-            finale = turnoService.deepCopyTurno(turnoDaAssegnare);
-            finale.setPersonaInTurno(candidato);
-            return finale;
-
-        }
-
-        return null;
-    }
 }

@@ -1,15 +1,31 @@
 package it.costanza.entityDb.h2;
 
-public class PersonGroup {
+import it.costanza.model.Run;
 
-    private long hit;
+public class PersonGroup implements Comparable<PersonGroup>{
+
+    private Integer hit;
     private String persona;
 
-    public long getHit() {
+    public Integer getHit() {
         return hit;
     }
 
-    public void setHit(long hit) {
+    public void setHit(Integer hit) {
         this.hit = hit;
+    }
+
+    public String getPersona() {
+        return persona;
+    }
+
+    public void setPersona(String persona) {
+        this.persona = persona;
+    }
+
+    @Override
+    public int compareTo(PersonGroup o) {
+
+        return hit.compareTo(o.getHit());
     }
 }

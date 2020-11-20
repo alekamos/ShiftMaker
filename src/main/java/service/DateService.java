@@ -134,7 +134,7 @@ public class DateService {
     }
 
     /**
-     * Prende la nEsima settimana feriale se è da più di 3 giorni
+     * Prende la nEsima settimana feriale, ritorna una lista di date già senza orario
      * @param anno
      * @param mese
      * @param weekNumber
@@ -156,11 +156,6 @@ public class DateService {
         }
 
 
-
-
-       // if (nesimaSettimanaMensile.size()<3)
-         //   return null;
-        //else
             return nesimaSettimanaMensile;
 
     }

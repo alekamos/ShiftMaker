@@ -6,6 +6,7 @@ import it.costanza.entityDb.h2.TurniLocalEntity;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public class TurniLocalDao implements Crud<TurniLocalEntity> {
@@ -52,7 +53,7 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
 
 
 
-    public List<PersonGroup> getGroupByPersonaLocal(long i) {
+    public List<PersonGroup> getGroupByPersonaLocal() {
 
         Session session = HibernateUtilH2.getSessionFactory().openSession();
         Query q = session.createNativeQuery("SELECT count(1) as  hit,persona_turno as persona from TURNI_GENERATI\n" +
@@ -63,4 +64,26 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
 
 
     }
+
+
+    public List<PersonGroup> getGroupBySettimanaTurno(Date dateMin, Date dateMax, String tipoTurno) {
+//TODO qua ci vuole una outer join con la lista di persone che va aggiunta a parte così anche eventuali 0 vengono calcolati
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
+        Query q = session.createNativeQuery("SELECT count(1) as hit , persona_turno as persona from TURNI_GENERATI\n" +
+                "WHERE DATA_TURNO >= :dateMin " +
+                "AND DATA_TURNO <= :dateMax " +
+                "AND TIPO_TURNO = :tipoTurno " +
+                "GROUP BY persona_turno");
+
+        q.setParameter("dateMin", dateMin);
+        q.setParameter("dateMax", dateMax);
+        q.setParameter("tipoTurno", tipoTurno);
+
+        List<PersonGroup> out = q.getResultList();
+        return out;
+
+
+    }
+
+
 }

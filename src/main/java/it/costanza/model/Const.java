@@ -1,8 +1,12 @@
 package it.costanza.model;
 
+
+
 import service.PropertiesServices;
 
-import java.io.InputStream;
+import java.io.IOException;
+
+import static service.PropertiesServices.getProperties;
 
 public class Const {
 
@@ -43,4 +47,15 @@ public class Const {
 
     public static final String MAKING = "MAKING";
     public static final String GENERATED = "CREATED";
+    public static int CURRENT_ANNO = 0;
+    public static int CURRENT_MESE = 0;
+
+    static {
+        try {
+            CURRENT_ANNO = Integer.parseInt(PropertiesServices.getProperties("anno"));
+            CURRENT_MESE = Integer.parseInt(PropertiesServices.getProperties("mese"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
