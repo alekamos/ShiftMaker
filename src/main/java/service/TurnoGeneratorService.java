@@ -32,10 +32,9 @@ public class TurnoGeneratorService {
 
         List<PersonGroup> groupBySettimanaTurno = localDao.getGroupBySettimanaTurno(listaDate.get(0), listaDate.get(listaDate.size() - 1), turnoDaAssegnare.getTipoTurno());
 
-        //ordino la lista
-        Collections.sort(groupBySettimanaTurno);
+        String persona = groupBySettimanaTurno.get(index - 1).getPersona();
 
-        out.setNome(groupBySettimanaTurno.get(index).getPersona());
+        out.setNome(persona);
 
         return out;
 

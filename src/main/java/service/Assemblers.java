@@ -1,5 +1,6 @@
 package service;
 
+import it.costanza.entityDb.h2.Persona;
 import it.costanza.entityDb.h2.TurniLocalEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
@@ -59,6 +60,20 @@ public class Assemblers {
 
 
             out.add(turniGeneratiEntity);
+        }
+        return out;
+    }
+
+    public static ArrayList<Persona> mappingPersone(ArrayList<it.costanza.model.Persona> persone) {
+
+        ArrayList<Persona> out = new ArrayList<>();
+
+
+        for (it.costanza.model.Persona person : persone) {
+            Persona personaElem = new Persona();
+            personaElem.setPersonaTurno(person.getNome());
+            out.add(personaElem);
+
         }
         return out;
     }

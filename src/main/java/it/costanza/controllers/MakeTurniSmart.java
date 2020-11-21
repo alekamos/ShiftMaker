@@ -2,9 +2,11 @@ package it.costanza.controllers;
 
 import it.costanza.controllers.command.generator.LocalDbGenerator;
 import it.costanza.controllers.command.generator.TurnoGenerator;
+import it.costanza.dao.PersonaDao;
 import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.model.*;
+import service.Assemblers;
 import service.PropertiesServices;
 import service.StatService;
 import service.TurniService;
@@ -33,6 +35,7 @@ public class MakeTurniSmart {
 
         //salvo il run sul db
         RunDao dao = new RunDao();
+        PersonaDao personaLocalDao = new PersonaDao();
 
         RunEntity runEntity = new RunEntity();
         runEntity.setAnnomese(PropertiesServices.getProperties("anno")+(PropertiesServices.getProperties("mese")));
@@ -43,6 +46,13 @@ public class MakeTurniSmart {
 
         //caricamento persone
         ArrayList<Persona> persone = turniService.caricaPersone();
+
+        //salvataggio persone sul db locale
+        ArrayList<it.costanza.entityDb.h2.Persona> personeLocal = Assemblers.mappingPersone(persone);
+        for (it.costanza.entityDb.h2.Persona persona : personeLocal) {
+            personaLocalDao.salva(persona);
+        }
+
 
         //caricamento turni
         ArrayList<Turno> turniMese = turniService.caricaMese();

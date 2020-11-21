@@ -2,11 +2,20 @@ package it.costanza.entityDb.h2;
 
 import it.costanza.model.Run;
 
-public class PersonGroup implements Comparable<PersonGroup>{
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class PersonGroup{
 
     private Integer hit;
+    @Id
     private String persona;
 
+    @Basic
+    @Column(name = "HIT", nullable = false)
     public Integer getHit() {
         return hit;
     }
@@ -15,6 +24,8 @@ public class PersonGroup implements Comparable<PersonGroup>{
         this.hit = hit;
     }
 
+    @Basic
+    @Column(name = "PERSONA", nullable = false)
     public String getPersona() {
         return persona;
     }
@@ -23,9 +34,5 @@ public class PersonGroup implements Comparable<PersonGroup>{
         this.persona = persona;
     }
 
-    @Override
-    public int compareTo(PersonGroup o) {
 
-        return hit.compareTo(o.getHit());
-    }
 }
