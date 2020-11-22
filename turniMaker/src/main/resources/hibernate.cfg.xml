@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="connection.url">jdbc:mariadb://192.168.1.53:32769/EUROPE</property>
+    <property name="connection.driver_class">org.mariadb.jdbc.Driver</property>
+    <property name="connection.username">app</property>
+    <property name="connection.password">palomb00</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+    <mapping class="it.costanza.entityDb.mysql.RunEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.TurniGeneratiEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.TurniGeneratiStatsEntity"/>
+    <mapping class="it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity"/>
+
+
+    <!-- DB schema will be updated if needed -->
+    <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
+  </session-factory>
+</hibernate-configuration>
