@@ -79,7 +79,7 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
                 "AND TIPO_TURNO = :tipoTurno " +
                 "GROUP BY PERSONA_TURNO) " +
                 "RIGHT JOIN PERSONE ON PERSONA_TURNO = PERSONA " +
-                "ORDER BY HIT ASC",PersonGroup.class);
+                "ORDER BY HIT ASC, RAND()",PersonGroup.class);
 
         q.setParameter("dateMin", dateMin);
         q.setParameter("dateMax", dateMax);

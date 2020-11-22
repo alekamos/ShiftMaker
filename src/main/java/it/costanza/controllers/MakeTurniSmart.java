@@ -6,15 +6,15 @@ import it.costanza.dao.PersonaDao;
 import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.model.*;
-import service.Assemblers;
-import service.PropertiesServices;
-import service.StatService;
-import service.TurniService;
+import service.*;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 
 public class MakeTurniSmart {
 
@@ -27,6 +27,17 @@ public class MakeTurniSmart {
         StatService statService = new StatService();
         ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati;
+
+
+        //TODO da rimuovere
+        String prefixFile = UUID.randomUUID().toString().substring(0,5);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        String fileName = prefixFile+PropertiesServices.getProperties("fileName");
+        String fileNameTurni = prefixFile+PropertiesServices.getProperties("fileNameTurni");
+        String path = PropertiesServices.getProperties("pathFile");
+        //creazionifile
+        FileService.createFilesInPath(fileName, fileNameTurni, path);
+
 
 
         //Configurazioni
@@ -72,6 +83,13 @@ public class MakeTurniSmart {
 
                 ArrayList<Turno> turniGenerati = commandAlgoritmo.generate();
 
+                //generazione statistiche sulle persone
+                ArrayList<Persona> personeStats = turniService.generaPersoneConStatistiche(turniGenerati, persone);
+                //elaborazione statistiche sul run
+                id = sdf.format(new Date())+"_"+i;
+                Run run = statService.elaborazioneStat(id, personeStats, turniGenerati);
+                listaRun.add(run);
+
             }catch (FailedGenerationTurno e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
             }
@@ -86,6 +104,14 @@ public class MakeTurniSmart {
 
         long t11=System.currentTimeMillis();
         System.out.println("Run concluso in :" +(t11-t10) +" ms");
+
+
+
+        //ordino la lista
+        Collections.sort(listaRun);
+
+        //stampo le stats
+        FileService.printStats(listaRun,prefixFile);
 
 
 
