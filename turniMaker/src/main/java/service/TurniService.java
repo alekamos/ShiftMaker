@@ -47,29 +47,29 @@ public class TurniService {
             boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(candidato.getNome());
 
             //Controlli sui turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
-            if (we1 != null && isTurnoInWeek(turno, we1) && personaInTurnoSameAsPersonaElem)
+            if (we1 != null && isTurnoInSettimanaLavorativa(turno, we1) && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[0]++;
 
-            if (we2 != null && isTurnoInWeek(turno, we2) && personaInTurnoSameAsPersonaElem)
+            if (we2 != null && isTurnoInSettimanaLavorativa(turno, we2) && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[1]++;
 
-            if (we3 != null && isTurnoInWeek(turno, we3) && personaInTurnoSameAsPersonaElem)
+            if (we3 != null && isTurnoInSettimanaLavorativa(turno, we3) && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[2]++;
 
-            if (we4 != null && isTurnoInWeek(turno, we4) && personaInTurnoSameAsPersonaElem)
+            if (we4 != null && isTurnoInSettimanaLavorativa(turno, we4) && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[3]++;
 
-            if (we5 != null && isTurnoInWeek(turno, we5)  && personaInTurnoSameAsPersonaElem)
+            if (we5 != null && isTurnoInSettimanaLavorativa(turno, we5)  && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[4]++;
 
-            if (we6 != null && isTurnoInWeek(turno, we6)  && personaInTurnoSameAsPersonaElem)
+            if (we6 != null && isTurnoInSettimanaLavorativa(turno, we6)  && personaInTurnoSameAsPersonaElem)
                 presenzaFeriale[5]++;
 
         }
 
 
 
-        int indicePresFeriale = DateService.getWeekNumberOfDay(turnoDaAssegnare.getData())-1;
+        int indicePresFeriale = DateService.getNumeroSettimanaFeriale(turnoDaAssegnare.getData())-1;
         if (presenzaFeriale[indicePresFeriale] >= Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE)))
             return false;
 
@@ -159,40 +159,40 @@ public class TurniService {
 
 
                 //Controlli sui turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
-                if(we1!=null && isTurnoInWeek(turno,we1) && personaInTurnoSameAsPersonaElem)
+                if(we1!=null && isTurnoInSettimanaLavorativa(turno,we1) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[0]++;
 
-                if(we2!=null && isTurnoInWeek(turno,we2) && personaInTurnoSameAsPersonaElem)
+                if(we2!=null && isTurnoInSettimanaLavorativa(turno,we2) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[1]++;
 
-                if(we3!=null && isTurnoInWeek(turno,we3) && personaInTurnoSameAsPersonaElem)
+                if(we3!=null && isTurnoInSettimanaLavorativa(turno,we3) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[2]++;
 
-                if(we4!=null && isTurnoInWeek(turno,we4) && personaInTurnoSameAsPersonaElem)
+                if(we4!=null && isTurnoInSettimanaLavorativa(turno,we4) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[3]++;
 
-                if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem)
+                if(we5!=null && isTurnoInSettimanaLavorativa(turno,we5) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[4]++;
 
 
 
                 //Controlli sui turni nel weekend
-                if(wend1!=null && isTurnoInWeek(turno,wend1) && personaInTurnoSameAsPersonaElem)
+                if(wend1!=null && isTurnoInSettimanaLavorativa(turno,wend1) && personaInTurnoSameAsPersonaElem)
                     presenzaFestiva[0]++;
 
-                if(wend2!=null && isTurnoInWeek(turno,wend2) && personaInTurnoSameAsPersonaElem)
+                if(wend2!=null && isTurnoInSettimanaLavorativa(turno,wend2) && personaInTurnoSameAsPersonaElem)
                     presenzaFestiva[1]++;
 
-                if(wend3!=null && isTurnoInWeek(turno,wend3) && personaInTurnoSameAsPersonaElem)
+                if(wend3!=null && isTurnoInSettimanaLavorativa(turno,wend3) && personaInTurnoSameAsPersonaElem)
                     presenzaFestiva[2]++;
 
-                if(wend4!=null && isTurnoInWeek(turno,wend4) && personaInTurnoSameAsPersonaElem)
+                if(wend4!=null && isTurnoInSettimanaLavorativa(turno,wend4) && personaInTurnoSameAsPersonaElem)
                     presenzaFestiva[3]++;
 
-                if(wend5!=null && isTurnoInWeek(turno,wend5) && personaInTurnoSameAsPersonaElem)
+                if(wend5!=null && isTurnoInSettimanaLavorativa(turno,wend5) && personaInTurnoSameAsPersonaElem)
                     presenzaFestiva[4]++;
 
-                if(wend6!=null && isTurnoInWeek(turno,wend6) && personaInTurnoSameAsPersonaElem)
+                if(wend6!=null && isTurnoInSettimanaLavorativa(turno,wend6) && personaInTurnoSameAsPersonaElem)
                     presenzaFestiva[5]++;
 
 
@@ -223,12 +223,13 @@ public class TurniService {
 
 
     /**
-     * Controlla se il turno è feriale nei giorni indicati e passati come parametro
+     * Controlla se il turno è feriale (non festivo) weekend nei giorni indicati e passati come parametro
+     * in pratica controlla se è turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
      * @param turno
      * @param dateSettimana
      * @return
      */
-    private boolean isTurnoInWeek(Turno turno,ArrayList<Date> dateSettimana){
+    private boolean isTurnoInSettimanaLavorativa(Turno turno, ArrayList<Date> dateSettimana){
 
         //se il turno è un venerdì notte è non è da contare
         Calendar cal = Calendar.getInstance();
@@ -502,7 +503,7 @@ public class TurniService {
      *
      * @return
      */
-    public ArrayList<Turno> caricaMese() throws IOException {
+    public static ArrayList<Turno> caricaMese() throws IOException {
 
         ArrayList<Turno> turni = new ArrayList<>();
 
@@ -680,6 +681,23 @@ public class TurniService {
         return null;
     }
 
+
+    /**
+     * Mi controlla se il turno è un feriale o un turno festivo (sab dom o venerdì notte)
+     * @param turno
+     * @return
+     */
+    public static String isTurnoFerialeFestivo(Turno turno){
+        Date date = DateService.removeTime(turno.getData());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY ||  cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals("NOTTE"))
+            return Const.FESTIVO;
+        else
+            return Const.FERIALE;
+    }
+
     public Turno deepCopyTurno(Turno turno){
         Turno trn = new Turno();
         trn.setPersonaInTurno(turno.getPersonaInTurno());
@@ -705,5 +723,126 @@ public class TurniService {
         dao.salva(Assemblers.mappingTurni(attempt));
     }
 
+    /**
+     *
+     * @return
+     */
+    public static ArrayList<Turno> getTurniWeekendMese() throws IOException {
+        int numeroTurniFestivi = 0;
+
+        ArrayList<Turno> turniFestivi = new ArrayList<>();
+        ArrayList<Turno> turniMese = caricaMese();
+        for (Turno turno : turniMese) {
+
+            if(isTurnoFerialeFestivo(turno).equals(Const.FESTIVO))
+                turniFestivi.add(turno);
+        }
+        return turniFestivi;
+    }
+
+
+    /**
+     * Estrae gli altri turni al quale appartiene il turno passato come parametro, si suppone che il turno passato come parametro sia già un turno festivo del weekend
+     * @param turnoDaAssegnare
+     * @return
+     */
+    @Deprecated
+    public ArrayList<Turno> getTurniWeekendDelTurno(Turno turnoDaAssegnare) {
+
+
+        //TODO qua in fase di generazione turni si potrebbe già etichettare quali sono feriali e quali sono festivi
+        //PORCATA incredibile
+
+        ArrayList<Turno> output = new ArrayList<>();
+
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(turnoDaAssegnare.getData());
+        int meseCorrente = cal.get(Calendar.MONTH);
+        ArrayList<Date> nEsimaSettimanaMensileFestiva = DateService.getNEsimaSettimanaMensileFestiva(Const.CURRENT_ANNO, Const.CURRENT_MESE, DateService.getWeekendNumberOfDay(turnoDaAssegnare.getData()));
+
+
+
+
+        //potrebbe essere un venerdì
+        cal.setTime(nEsimaSettimanaMensileFestiva.get(0));
+        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY) {
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.NOTTE, Const.RUOLO_REPARTO_1));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.NOTTE, Const.RUOLO_REPARTO_2));
+
+
+            cal.setTime(DateService.aumentaTogliGiorno(nEsimaSettimanaMensileFestiva.get(0), 1));
+            //devo verificare che non sia sforato il mese
+            if (cal.get(Calendar.MONTH) == meseCorrente) {
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.GIORNO, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.GIORNO, Const.RUOLO_REPARTO_2));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.NOTTE, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.NOTTE, Const.RUOLO_REPARTO_2));
+            }
+
+            cal.setTime(DateService.aumentaTogliGiorno(nEsimaSettimanaMensileFestiva.get(0), 2));
+            //devo verificare che non sia sforato il mese
+            if (cal.get(Calendar.MONTH) == meseCorrente) {
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(2), Const.GIORNO, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(2), Const.GIORNO, Const.RUOLO_REPARTO_2));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(2), Const.NOTTE, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(2), Const.NOTTE, Const.RUOLO_REPARTO_2));
+            }
+
+            return output;
+        }else if (cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY) {
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.GIORNO, Const.RUOLO_REPARTO_1));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.GIORNO, Const.RUOLO_REPARTO_2));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.NOTTE, Const.RUOLO_REPARTO_1));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.NOTTE, Const.RUOLO_REPARTO_2));
+
+            //domenica
+            cal.setTime(DateService.aumentaTogliGiorno(nEsimaSettimanaMensileFestiva.get(0), 1));
+            //devo verificare che non sia sforato il mese
+            if (cal.get(Calendar.MONTH) == meseCorrente) {
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.GIORNO, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.GIORNO, Const.RUOLO_REPARTO_2));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.NOTTE, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(nEsimaSettimanaMensileFestiva.get(1), Const.NOTTE, Const.RUOLO_REPARTO_2));
+            }
+
+            //venerdì
+            cal.setTime(DateService.aumentaTogliGiorno(nEsimaSettimanaMensileFestiva.get(0), -1));
+            //devo verificare che non sia sforato il mese
+            if (cal.get(Calendar.MONTH) == meseCorrente) {
+                output.add(new Turno(DateService.aumentaTogliGiorno(nEsimaSettimanaMensileFestiva.get(0), -1), Const.NOTTE, Const.RUOLO_REPARTO_1));
+                output.add(new Turno(DateService.aumentaTogliGiorno(nEsimaSettimanaMensileFestiva.get(0), -1), Const.NOTTE, Const.RUOLO_REPARTO_2));
+            }
+            return output;
+        }else if (cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
+            //la domenica è per forza di un giorno soltanto
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.GIORNO, Const.RUOLO_REPARTO_1));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.GIORNO, Const.RUOLO_REPARTO_2));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.NOTTE, Const.RUOLO_REPARTO_1));
+            output.add(new Turno(nEsimaSettimanaMensileFestiva.get(0), Const.NOTTE, Const.RUOLO_REPARTO_2));
+            return output;
+
+
+        }
+
+
+
+        return output;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
 
 }
+
+
+

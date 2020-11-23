@@ -4,12 +4,14 @@ import it.costanza.dao.Util.HibernateUtilH2;
 import it.costanza.entityDb.h2.PersonGroup;
 import it.costanza.entityDb.h2.Persona;
 import it.costanza.entityDb.h2.TurniLocalEntity;
+import it.costanza.model.Turno;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class TurniLocalDao implements Crud<TurniLocalEntity> {
 
@@ -69,7 +71,7 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
 
 
     public List<PersonGroup> getGroupBySettimanaTurno(Date dateMin, Date dateMax, String tipoTurno) {
-//TODO qua ci vuole una outer join con la lista di persone che va aggiunta a parte così anche eventuali 0 vengono calcolati
+
         Session session = HibernateUtilH2.getSessionFactory().openSession();
         Query q = session.createNativeQuery("SELECT PERSONA, HIT FROM ( " +
                 "SELECT COUNT(1) AS HIT,PERSONA_TURNO " +
@@ -95,4 +97,74 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
     }
 
 
+
+    public List<PersonGroup> getGroupByListTurni(ArrayList<Turno> turni) {
+
+
+        String query = "SELECT PERSONA, HIT FROM (SELECT COUNT(1) AS HIT,PERSONA_TURNO FROM TURNI_GENERATI WHERE ";
+
+        for (int i = 0; i < turni.size(); i++) {
+
+            query = query + " TIPO_TURNO = :tipo"+i+" and trunc(data_turno) = trunc( :date"+i+" ) ";
+            if(i!=turni.size()-1)
+                query = query + " OR ";
+
+        }
+
+
+        query = query + "GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE ON PERSONA_TURNO = PERSONA ORDER BY HIT DESC";
+
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
+        Query q = session.createNativeQuery(query,PersonGroup.class);
+
+        for (int i = 0; i < turni.size(); i++) {
+            q.setParameter("tipo"+i, turni.get(i).getTipoTurno());
+            q.setParameter("date"+i, turni.get(i).getData());
+        }
+
+
+        List<PersonGroup> out = q.getResultList();
+
+
+
+        return out;
+
+
+    }
+
+
+    public List<PersonGroup> getGroupByListTurniPersona(ArrayList<Turno> turni, String persona) {
+
+
+        String query = "SELECT COUNT(1) AS HIT,PERSONA_TURNO as PERSONA FROM TURNI_GENERATI WHERE PERSONA_TURNO = :persona AND ";
+
+        for (int i = 0; i < turni.size(); i++) {
+
+            query = query + " TIPO_TURNO = :tipo"+i+" and trunc(data_turno) = trunc( :date"+i+" ) ";
+            if(i!=turni.size()-1)
+                query = query + " OR ";
+
+        }
+        query = query + "GROUP BY PERSONA_TURNO";
+
+
+
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
+        Query q = session.createNativeQuery(query,PersonGroup.class);
+
+        for (int i = 0; i < turni.size(); i++) {
+            q.setParameter("tipo"+i, turni.get(i).getTipoTurno());
+            q.setParameter("date"+i, turni.get(i).getData());
+        }
+        q.setParameter("persona",persona);
+
+
+        List<PersonGroup> out = q.getResultList();
+
+
+
+        return out;
+
+
+    }
 }

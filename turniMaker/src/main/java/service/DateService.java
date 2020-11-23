@@ -19,6 +19,11 @@ public class DateService {
                 && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
     }
 
+    /**
+     * Restituisce un booleans se la data fornita è un sabato o una domenica
+     * @param dataCorrenteInput
+     * @return
+     */
     public static boolean isWeekendDate(Date dataCorrenteInput) {
         Calendar dataCorrente = Calendar.getInstance();
         dataCorrente.setTime(dataCorrenteInput);
@@ -101,10 +106,10 @@ public class DateService {
 
 
     /**
-     * Il metodo restituisce l'intera settimana feriale al quale appartiene una data
+     * Il metodo restituisce il numero della settimana feriale al quale appartiene una data
      * @return
      */
-    public static int getWeekNumberOfDay(Date date) {
+    public static int getNumeroSettimanaFeriale(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
@@ -113,6 +118,25 @@ public class DateService {
         for (int i = 1; i < 7; i++) {
             ArrayList<Date> nEsimaSettimanaMensileFeriale = getNEsimaSettimanaMensileFeriale(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, i);
             if (nEsimaSettimanaMensileFeriale.size()>0 && isInRageDate(nEsimaSettimanaMensileFeriale.get(0),nEsimaSettimanaMensileFeriale.get(nEsimaSettimanaMensileFeriale.size()-1),date))
+                return i;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Il metodo restituisce il numero della settimana feriale al quale appartiene una data
+     * @return
+     */
+    public static int getWeekendNumberOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int nSettimana = 1;
+
+        for (int i = 1; i < 7; i++) {
+            ArrayList<Date> nEsimoWeekend = getNEsimaSettimanaMensileFestiva(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, i);
+            if (nEsimoWeekend.size()>0 && isInRageDate(nEsimoWeekend.get(0),nEsimoWeekend.get(nEsimoWeekend.size()-1),date))
                 return i;
         }
 
@@ -163,15 +187,29 @@ public class DateService {
     public static ArrayList<Date> getNEsimaSettimanaMensileFestiva(int anno, int mese,int weekNumber) {
         ArrayList<Date> nesimaSettimanaMensile = getNesimaSettimanaMensile(anno, mese, weekNumber);
         Calendar cal = Calendar.getInstance();
+        ArrayList<Integer> listaElementiDaRimuovere = new ArrayList<>();
 
         for (int j = 0; j < nesimaSettimanaMensile.size(); j++) {
             cal.setTime(nesimaSettimanaMensile.get(j));
             if (cal.get(Calendar.DAY_OF_WEEK)!=Calendar.SATURDAY && cal.get(Calendar.DAY_OF_WEEK)!=Calendar.SUNDAY)
-                nesimaSettimanaMensile.remove(j);
+                listaElementiDaRimuovere.add(j);
+
 
         }
+
+        //rimozione elementi
+        for (int i = listaElementiDaRimuovere.size()-1; i >= 0; i--) {
+            int simpleInt = listaElementiDaRimuovere.get(i);
+            nesimaSettimanaMensile.remove(simpleInt);
+        }
+
+
+
+
 
         return nesimaSettimanaMensile;
 
     }
+
+
 }
