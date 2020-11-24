@@ -99,7 +99,7 @@ public class LocalDbGenerator implements TurnoGenerator{
 
                     //controllo che non sia gia in turno come altro reparto
                     if (isDisponibile) {
-                        isNotGiaInTurno = turnoService.checkIsNotGiaInTurno(candidato, turno, skeletonTurni);
+                        isNotGiaInTurno = turnoService.checkIsNotGiaInTurno(candidato, turno, turniFinale);
                     }
 
                     //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
@@ -110,7 +110,7 @@ public class LocalDbGenerator implements TurnoGenerator{
 
                     if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
                         //controllo che il turno precedente non abbia fatto notte o giorno
-                        isTurnoFattibile = turnoService.checkFattibilitaTurno(candidato, turno, skeletonTurni);
+                        isTurnoFattibile = turnoService.checkFattibilitaTurno(candidato, turno, turniFinale);
                     }
 
 
