@@ -76,9 +76,16 @@ public class TurnoGeneratorService {
             persona = service.getRandomPersona(persone).getNome();
         }
 
-        out.setNome(persona);
-        return out;
 
+
+        //qui devo scegliere la persona che ho scelto dall'elenco iniziale
+        for (Persona candidateList : persone) {
+            if(candidateList.getNome().equals(persona))
+                return candidateList;
+        }
+
+
+        return null;
 
 
     }

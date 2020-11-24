@@ -507,12 +507,14 @@ public class TurniService {
 
         ArrayList<Turno> turni = new ArrayList<>();
 
+        Calendar cal = Calendar.getInstance();
 
         int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
         int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
 
         ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
         for (Date data : datesOfMonth) {
+            cal.setTime(data);
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
             boolean weekendDate = DateService.isWeekendDate(data);
@@ -523,7 +525,7 @@ public class TurniService {
             turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1));
             turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2));
 
-            if (!weekendDate)
+            if (!weekendDate && cal.get(Calendar.DAY_OF_MONTH)!=25)
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA));
 
             turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1));
