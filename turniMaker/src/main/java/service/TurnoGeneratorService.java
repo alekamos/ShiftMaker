@@ -1,6 +1,7 @@
 package service;
 
 import it.costanza.dao.TurniLocalDao;
+import it.costanza.entityDb.h2.CustomPersonGroup;
 import it.costanza.entityDb.h2.PersonGroup;
 import it.costanza.model.Const;
 import it.costanza.model.Persona;
@@ -24,9 +25,14 @@ public class TurnoGeneratorService {
     public Persona getBestCandidateTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare,int index) {
 
         TurniLocalDao localDao = new TurniLocalDao();
-        Persona out = new Persona();
         TurniService service = new TurniService();
         String persona = "";
+
+
+
+        if(index>persone.size())
+            return service.getRandomPersona(persone);
+
 
         if(service.isTurnoFerialeFestivo(turnoDaAssegnare).equals(Const.FERIALE)) {
             ArrayList<Date> listaDate = DateService.getNEsimaSettimanaMensileFeriale(Const.CURRENT_ANNO, Const.CURRENT_MESE, DateService.getNumeroSettimanaFeriale(turnoDaAssegnare.getData()));
@@ -41,41 +47,26 @@ public class TurnoGeneratorService {
             Integer minValue = mediaTurniFerXPersona.intValue();
             Integer maxValue = minValue+1;
 
-            ArrayList<Turno> turniWeekend = service.getTurniWeekendDelTurno(turnoDaAssegnare);
+            ArrayList<Turno> turniCurrWeekend = service.getTurniWeekendDelTurno(turnoDaAssegnare);
+            List<CustomPersonGroup> groupByWeekend = localDao.getCustomQueryTurniWe(turniCurrWeekend,Const.TURNI_FESTIVI_WEEKEND);
 
 
-            List<PersonGroup> groupBySettimanaTurno = localDao.getGroupByListTurni(turniWeekend);
+            //il criterio qui è scorrere la lista fino a trovare il candidato che ha lavorato 1 giorno già il weekend (chi ne ha fatti 2 è da escludere),
+            //che non abbia ancora sforato il numero massimo maxValue di weekend per persona
+
+            for (int i = 0+index-1; i < groupByWeekend.size(); i++) {
 
 
-
-            //l'array è ordinato dal più grande al più piccolo senza ordine casuale, quindi è sempre lo stesso
-            for (int i = 0; i < groupBySettimanaTurno.size(); i++) {
-                if(groupBySettimanaTurno.get(i).getHit()!=null && 1==groupBySettimanaTurno.get(i).getHit()){
-                    //qua abbiamo il numeretto che incrementa in base al tentativo
-                    int k = i+index-1;
-
-                    //abbiamo il primo candidato ipotizzando di essere all'index 1 (primo tentativo)
-                    //guardo se non ha ecceduto già come massimo turni fatti, qui sotto ci sarà sempre e solo un valore
-                    int turniWeekendMese = localDao.getGroupByListTurniPersona(Const.TURNI_FESTIVI_WEEKEND,groupBySettimanaTurno.get(k).getPersona()).get(0).getHit();
-                    if(turniWeekendMese<minValue){
-                        out.setNome(persona);
-                        return out;
+                //tolgo quelli che hanno già lavorato 2 volte
+                if(groupByWeekend.get(i).getHit()<2){
+                    if(groupByWeekend.get(i).getTotal()<maxValue) {
+                        persona = groupByWeekend.get(i).getPersona();
+                        break;
                     }
-                    //se non siamo in queste condizioni tutti hanno fatto il numero minimo di turni nel weekend quindi scelgo a caso
-
-
-
 
                 }
             }
         }
-
-        //se non trovo niente vado a caso
-        if("".equals(persona)) {
-            System.out.println("Scelgo a caso");
-            persona = service.getRandomPersona(persone).getNome();
-        }
-
 
 
         //qui devo scegliere la persona che ho scelto dall'elenco iniziale

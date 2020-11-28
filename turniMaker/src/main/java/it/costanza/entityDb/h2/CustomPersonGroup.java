@@ -6,15 +6,18 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class PersonGroup{
+public class CustomPersonGroup {
 
-    private Integer hit;
+
 
     @Id
     private String persona;
 
+    private Integer hit;
+    private Integer total;
+
     @Basic
-    @Column(name = "HIT", nullable = true)
+    @Column(name = "HIT", nullable = false)
     public Integer getHit() {
         return hit;
     }
@@ -33,5 +36,13 @@ public class PersonGroup{
         this.persona = persona;
     }
 
+    @Basic
+    @Column(name = "TOTAL", nullable = false)
+    public Integer getTotal() {
+        return total;
+    }
 
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
 }
