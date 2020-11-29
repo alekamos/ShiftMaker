@@ -1,13 +1,10 @@
 package it.costanza.dao;
 
-import it.costanza.dao.Util.HibernateUtilH2;
 import it.costanza.entityDb.h2.PersonGroup;
-import it.costanza.entityDb.h2.Persona;
 import it.costanza.entityDb.h2.TurniLocalEntity;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

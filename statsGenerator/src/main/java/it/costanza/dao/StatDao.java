@@ -6,7 +6,7 @@ import org.hibernate.Session;
 
 import java.util.ArrayList;
 
-public class TurniGeneratiDao implements Crud<TurniGeneratiEntity> {
+public class StatDao implements Crud<TurniGeneratiEntity> {
 
 
     public long salva(TurniGeneratiEntity e) {

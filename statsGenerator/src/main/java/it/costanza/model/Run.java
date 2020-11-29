@@ -1,6 +1,6 @@
 package it.costanza.model;
 
-import service.PropertiesServices;
+import it.costanza.service.PropertiesServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
