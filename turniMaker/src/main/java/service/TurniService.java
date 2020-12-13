@@ -237,8 +237,8 @@ public class TurniService {
         if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals(Const.NOTTE))
             return false;
 
-        for (Date date : dateSettimana) {
-            if(DateService.isSameDay(date,turno.getData()))
+        for (Date giorniIndicati : dateSettimana) {
+            if(DateService.isSameDay(giorniIndicati,turno.getData()))
                 return true;
         }
 

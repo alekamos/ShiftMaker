@@ -1,6 +1,6 @@
 package it.costanza.model;
 
-import service.PropertiesServices;
+import it.costanza.service.PropertiesServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +23,10 @@ public class Run implements Comparable<Run>{
     private double mediaPresenzaWe;
     private double sdPresenzaWe;
     private Double score;
+
+    public Run() {
+
+    }
 
     public double getMediaPresenzaWe() {
         return mediaPresenzaWe;

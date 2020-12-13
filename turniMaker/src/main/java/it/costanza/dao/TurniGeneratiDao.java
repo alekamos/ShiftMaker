@@ -11,6 +11,7 @@ import org.hibernate.query.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +23,13 @@ public class TurniGeneratiDao implements Crud<TurniGeneratiEntity> {
 
         Session session = HibernateUtilMySql.getSessionFactory().openSession();
         session.beginTransaction();
-        session.save(e);
+        Long id2 = (Long) session.save(e);
         session.getTransaction().commit();
         session.close();
 
 
 
-        return e.getIdSingTurno();
+        return id2;
     }
 
 
