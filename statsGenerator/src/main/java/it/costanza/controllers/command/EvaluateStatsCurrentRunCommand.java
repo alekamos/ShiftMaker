@@ -29,7 +29,7 @@ public class EvaluateStatsCurrentRunCommand implements ICommand {
     PersoneService personeService = new PersoneService();
 
     @Override
-    public void execute() throws IOException {
+    public void execute() throws IOException, InterruptedException {
 
         //get run in corso o selezione run
         RunEntity run = runDao.getRunInCorso();
@@ -44,12 +44,15 @@ public class EvaluateStatsCurrentRunCommand implements ICommand {
 
 
         //ciclo finoche il run non ha finito
-        while (turniDaStatistic != null && turniDaStatistic.size()>0) {
+        while (turniDaStatistic != null && turniDaStatistic.size()>0 ) {
+
+            int i = 1;
 
 
 
             //da questa lista devo ciclare per ogni turno calendario
             for (TurniGeneratiMonitorEntity turniGeneratiMonitorEntity : turniDaStatistic) {
+                long t1 = System.currentTimeMillis();
                 List<TurniGeneratiEntity> calendarioTurni = turniGeneratiDao.getByIdCalendario(turniGeneratiMonitorEntity.getIdCalTurni());
 
 
@@ -65,13 +68,20 @@ public class EvaluateStatsCurrentRunCommand implements ICommand {
 
                 //update dello stato
                 turniGeneratiMonitorEntity.setStato(Const.STATO_COMPLETE);
-                turniGeneratiStatsEntityDao.update(turniGeneratiStatsEntity);
+                turniGeneratiMonitorDao.update(turniGeneratiMonitorEntity);
+
+                System.out.println("Elaborate stat Turno: " + turniGeneratiMonitorEntity.getIdCalTurni()+" progr: "+i+++"/"+turniDaStatistic.size()+" Elapsed: "+(System.currentTimeMillis()-t1)+" ms");
 
             }
+            System.out.println("Wait 2s..");
+            Thread.sleep(2000);
+
 
             //riverifico se c'è qualcosa da fare
             turniDaStatistic = turniGeneratiMonitorDao.getListTurniDaElaborare(run.getIdRun());
             System.out.println("Estratti turni da elaborare statistiche: " + turniDaStatistic.size());
+
+
 
         }
 
