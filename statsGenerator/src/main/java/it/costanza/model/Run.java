@@ -24,6 +24,10 @@ public class Run implements Comparable<Run>{
     private double sdPresenzaWe;
     private Double score;
 
+    public Run() {
+
+    }
+
     public double getMediaPresenzaWe() {
         return mediaPresenzaWe;
     }

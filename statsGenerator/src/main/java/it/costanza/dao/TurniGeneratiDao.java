@@ -1,10 +1,19 @@
 package it.costanza.dao;
 
 import it.costanza.dao.Util.HibernateUtilMySql;
+import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiEntity;
+import it.costanza.model.Const;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TurniGeneratiDao implements Crud<TurniGeneratiEntity> {
 
@@ -43,19 +52,27 @@ public class TurniGeneratiDao implements Crud<TurniGeneratiEntity> {
         return null;
     }
 
-    public void salvaTurniMultipli(ArrayList<TurniGeneratiEntity> mappingTurni) {
 
+    public List<TurniGeneratiEntity> getByIdCalendario(Long idCalTurni) {
 
         Session session = HibernateUtilMySql.getSessionFactory().openSession();
-        session.beginTransaction();
-        for (TurniGeneratiEntity turniGeneratiEntity : mappingTurni) {
-            session.save(turniGeneratiEntity);
-        }
-        session.getTransaction().commit();
-        session.close();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<TurniGeneratiEntity> critQuery = cb.createQuery(TurniGeneratiEntity.class);
+        Root<TurniGeneratiEntity> rootQuery = critQuery.from(TurniGeneratiEntity.class);
+
+
+
+
+        critQuery.select(rootQuery).where(cb.equal(rootQuery.get("turniGeneratiMonitorByIdCalTurni"),idCalTurni));
+
+        Query<TurniGeneratiEntity> query = session.createQuery(critQuery);
+        List<TurniGeneratiEntity> results = query.getResultList();
+
+
+        return results;
+
+
 
 
     }
-
-
 }

@@ -1,14 +1,19 @@
 package it.costanza.service;
 
+import it.costanza.dao.TurniGeneratiMonitorDao;
 import it.costanza.entityDb.mysql.TurniGeneratiEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
 import it.costanza.model.*;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class StatService {
 
@@ -21,10 +26,9 @@ public class StatService {
     /**
      * Elabora statistiche del run
      * @param persone
-     * @param turniDelMese
      * @return
      */
-    public TurniGeneratiStatsEntity elaborazioneStat(String idRun,ArrayList<Persona> persone, ArrayList<TurniGeneratiEntity> turniDelMese) {
+    public TurniGeneratiStatsEntity elaborazioneStat(ArrayList<Persona> persone) {
 
 
 
@@ -37,7 +41,7 @@ public class StatService {
         int[] presenza3s = new int[persone.size()];
         int[] presenza4s = new int[persone.size()];
         int[] presenza5s = new int[persone.size()];
-        int[] turniGG = new int[persone.size()];
+        int[] turniGiorno = new int[persone.size()];
         int[] turniNotte = new int[persone.size()];
 
 
@@ -46,7 +50,7 @@ public class StatService {
 
             turni[i] = persone.get(i).getNumeroTurni();
             turniWe[i] = persone.get(i).getNumeroTurniWe();
-            turniGG[i] = persone.get(i).getNumeroTurniGiorno();
+            turniGiorno[i] = persone.get(i).getNumeroTurniGiorno();
             turniNotte[i] = persone.get(i).getNumeroTurniNotte();
             presenza1s[i] = persone.get(i).getPresenzaFeriale()[0];
             presenza2s[i] = persone.get(i).getPresenzaFeriale()[1];
@@ -62,7 +66,7 @@ public class StatService {
 
         double mediaTurni = MathService.getMedia(turni);
         double mediaTurniWe = MathService.getMedia(turniWe);
-        double mediaTurniGG = MathService.getMedia(turniGG);
+        double mediaTurniGG = MathService.getMedia(turniGiorno);
         double mediaTurniNotte = MathService.getMedia(turniNotte);
         double mediaPresenzaWe = MathService.getMedia(presenzaWend);
         double mediaPresenza1 = MathService.getMedia(presenza1s);
@@ -74,7 +78,7 @@ public class StatService {
 
         double sdTurni = MathService.getDeviazioneStandard(turni, mediaTurni);
         double sdTurniWe = MathService.getDeviazioneStandard(turniWe, mediaTurniWe);
-        double sdTurniGg = MathService.getDeviazioneStandard(turniGG, mediaTurniGG);
+        double sdTurniGg = MathService.getDeviazioneStandard(turniGiorno, mediaTurniGG);
         double sdTurniNotte = MathService.getDeviazioneStandard(turniNotte, mediaTurniNotte);
         double sdPresenza1 = MathService.getDeviazioneStandard(presenza1s , mediaPresenza1);
         double sdPresenza2 = MathService.getDeviazioneStandard(presenza2s, mediaPresenza2);
@@ -86,16 +90,16 @@ public class StatService {
         double sdPresenzaSettimanale = Math.sqrt(Math.pow(sdPresenza1, 2) + Math.pow(sdPresenza2, 2) + Math.pow(sdPresenza3, 2) + Math.pow(sdPresenza4, 2)+ Math.pow(sdPresenza5, 2));
 
 
-        Run run = new Run(idRun,turniDelMese,persone,sdTurni,sdTurniWe,sdTurniGg,sdTurniNotte);
-        run.setSdPresenzaSettimanale(sdPresenzaSettimanale);
-        run.setMediaTurni(mediaTurni);
-        run.setMediaNrTurniGG(mediaTurniGG);
-        run.setMediaTurniNotte(mediaTurniNotte);
-        run.setMediaPresenzaWe(mediaPresenzaWe);
-        run.setMediaNrturniWe(mediaTurniWe);
-        run.setSdPresenzaWe(sdPresenzaWe);
-        run.setScore(run.calculateScore());
-        return run;
+        TurniGeneratiStatsEntity run = new TurniGeneratiStatsEntity();
+        run.setSdev1Settimana(sdPresenza1);
+        run.setSdev2Settimana(sdPresenza2);
+        run.setSdev3Settimana(sdPresenza3);
+        run.setSdev4Settimana(sdPresenza4);
+        run.setSdev5Settimana(sdPresenza5);
+
+
+
+        return null;
 
 
     }
@@ -109,7 +113,7 @@ public class StatService {
      * @return
      * @throws IOException
      */
-    public ArrayList<Persona> generaPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
+    public ArrayList<Persona> generaPersoneConStatistiche(List<TurniGeneratiEntity> turniFinale, ArrayList<Persona> persone) throws IOException {
 
 
 
@@ -143,8 +147,9 @@ public class StatService {
             int[] presenzaFeriale = new int[5];
             int[] presenzaFestiva = new int[6];
 
-            for (Turno turno : turniFinale) {
-                boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome());
+            for (TurniGeneratiEntity turno : turniFinale) {
+
+                boolean personaInTurnoSameAsPersonaElem = turno.getPersonaTurno().equals(persone.get(i).getNome());
 
                 //controllo numero turni
                 if (personaInTurnoSameAsPersonaElem)
@@ -161,7 +166,7 @@ public class StatService {
                         numeroTurniNotte++;
 
                 //controllo numero turni weekend
-                if (DateService.isWeekendDate(turno.getData()))
+                if (DateService.isWeekendDate(turno.getDataTurno()))
                     if (personaInTurnoSameAsPersonaElem)
                         numeroTurniWe++;
 
@@ -181,8 +186,6 @@ public class StatService {
 
                 if(we5!=null && isTurnoInWeek(turno,we5) && personaInTurnoSameAsPersonaElem)
                     presenzaFeriale[4]++;
-
-
 
                 //Controlli sui turni nel weekend
                 if(wend1!=null && isTurnoInWeek(turno,wend1) && personaInTurnoSameAsPersonaElem)
@@ -230,4 +233,49 @@ public class StatService {
     }
 
 
+
+
+    /**
+     * Wrapper per dao
+     * @param idRun
+     * @return
+     */
+    public List<TurniGeneratiMonitorEntity> getListTurniDaElaborare(Long idRun) {
+
+        TurniGeneratiMonitorDao dao = new TurniGeneratiMonitorDao();
+        return dao.getListTurniDaElaborare(idRun);
+
+
+
+    }
+
+
+
+    /**
+     * Controlla se il turno è feriale nei giorni indicati e passati come parametro
+     * @param turno
+     * @param dateSettimana
+     * @return
+     */
+    private boolean isTurnoInWeek(TurniGeneratiEntity turno,ArrayList<Date> dateSettimana){
+
+        //se il turno è un venerdì notte è non è da contare
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(turno.getDataTurno());
+        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals(Const.NOTTE))
+            return false;
+
+        for (Date giorniIndicati : dateSettimana) {
+            if(DateService.isSameDay(giorniIndicati,turno.getDataTurno()))
+                return true;
+        }
+
+
+        return false;
+
+
+
+
+
+    }
 }
