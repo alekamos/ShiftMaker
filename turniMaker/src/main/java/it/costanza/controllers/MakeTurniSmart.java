@@ -53,6 +53,7 @@ public class MakeTurniSmart {
         runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
         runEntity.setTipoRun("MakeTurniSmart"+numeroGiriTurni);
         Long idRun = dao.salva(runEntity);
+        System.out.println("idRun "+idRun);
 
 
         //caricamento persone

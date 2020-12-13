@@ -47,13 +47,31 @@ public class Const {
 
     public static final String MAKING = "MAKING";
     public static final String GENERATED = "CREATED";
+    public static final String STATO_COMPLETE = "STAT_COMPLETE";
     public static int CURRENT_ANNO = 0;
     public static int CURRENT_MESE = 0;
+    public static double  K_TURNI = 1;
+    public static double  K_GIORNO = 1;
+    public static double  K_NOTTE = 1;
+    public static double  K_WE = 1;
+    public static double  K_PRES_FES = 1;
+    public static double  K_SD_FES = 1;
+    public static double  K_SD_FER = 1;
+
+
+
 
     static {
         try {
             CURRENT_ANNO = Integer.parseInt(PropertiesServices.getProperties("anno"));
             CURRENT_MESE = Integer.parseInt(PropertiesServices.getProperties("mese"));
+            K_TURNI = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_TURNI));
+            K_GIORNO = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_GIORNO));
+            K_NOTTE = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_NOTTE));
+            K_WE = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_WE));
+            K_PRES_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_PRES_FES));
+            K_SD_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_FES));
+            K_SD_FER = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_PRES_FER));
         } catch (IOException e) {
             e.printStackTrace();
         }

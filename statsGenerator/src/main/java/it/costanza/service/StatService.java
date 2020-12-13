@@ -8,6 +8,8 @@ import it.costanza.model.*;
 
 import java.awt.image.AreaAveragingScaleFilter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,42 +66,54 @@ public class StatService {
         }
 
 
-        double mediaTurni = MathService.getMedia(turni);
-        double mediaTurniWe = MathService.getMedia(turniWe);
-        double mediaTurniGG = MathService.getMedia(turniGiorno);
-        double mediaTurniNotte = MathService.getMedia(turniNotte);
-        double mediaPresenzaWe = MathService.getMedia(presenzaWend);
-        double mediaPresenza1 = MathService.getMedia(presenza1s);
-        double mediaPresenza2 = MathService.getMedia(presenza2s);
-        double mediaPresenza3 = MathService.getMedia(presenza3s);
-        double mediaPresenza4 = MathService.getMedia(presenza4s);
-        double mediaPresenza5 = MathService.getMedia(presenza5s);
+
+        Double mediaTurni = MathService.getMedia(turni);
+        Double mediaTurniWe = MathService.getMedia(turniWe);
+        Double mediaTurniGG = MathService.getMedia(turniGiorno);
+        Double mediaTurniNotte = MathService.getMedia(turniNotte);
+        Double mediaPresenzaWe = MathService.getMedia(presenzaWend);
+        Double mediaPresenza1 = MathService.getMedia(presenza1s);
+        Double mediaPresenza2 = MathService.getMedia(presenza2s);
+        Double mediaPresenza3 = MathService.getMedia(presenza3s);
+        Double mediaPresenza4 = MathService.getMedia(presenza4s);
+        Double mediaPresenza5 = MathService.getMedia(presenza5s);
 
 
-        double sdTurni = MathService.getDeviazioneStandard(turni, mediaTurni);
-        double sdTurniWe = MathService.getDeviazioneStandard(turniWe, mediaTurniWe);
-        double sdTurniGg = MathService.getDeviazioneStandard(turniGiorno, mediaTurniGG);
-        double sdTurniNotte = MathService.getDeviazioneStandard(turniNotte, mediaTurniNotte);
-        double sdPresenza1 = MathService.getDeviazioneStandard(presenza1s , mediaPresenza1);
-        double sdPresenza2 = MathService.getDeviazioneStandard(presenza2s, mediaPresenza2);
-        double sdPresenza3 = MathService.getDeviazioneStandard(presenza3s, mediaPresenza3);
-        double sdPresenza4 = MathService.getDeviazioneStandard(presenza4s, mediaPresenza4);
-        double sdPresenza5 = MathService.getDeviazioneStandard(presenza5s, mediaPresenza5);
-        double sdPresenzaWe = MathService.getDeviazioneStandard(presenzaWend, mediaPresenzaWe );
+        Double sdTurni = MathService.getDeviazioneStandard(turni, mediaTurni);
+        Double sdTurniWe = MathService.getDeviazioneStandard(turniWe, mediaTurniWe);
+        Double sdTurniGg = MathService.getDeviazioneStandard(turniGiorno, mediaTurniGG);
+        Double sdTurniNotte = MathService.getDeviazioneStandard(turniNotte, mediaTurniNotte);
+        Double sdPresenza1 = MathService.getDeviazioneStandard(presenza1s , mediaPresenza1);
+        Double sdPresenza2 = MathService.getDeviazioneStandard(presenza2s, mediaPresenza2);
+        Double sdPresenza3 = MathService.getDeviazioneStandard(presenza3s, mediaPresenza3);
+        Double sdPresenza4 = MathService.getDeviazioneStandard(presenza4s, mediaPresenza4);
+        Double sdPresenza5 = MathService.getDeviazioneStandard(presenza5s, mediaPresenza5);
+        Double sdPresenzaWe = MathService.getDeviazioneStandard(presenzaWend, mediaPresenzaWe );
 
-        double sdPresenzaSettimanale = Math.sqrt(Math.pow(sdPresenza1, 2) + Math.pow(sdPresenza2, 2) + Math.pow(sdPresenza3, 2) + Math.pow(sdPresenza4, 2)+ Math.pow(sdPresenza5, 2));
-
+        Double sdPresenzaSettimanale = Math.sqrt(Math.pow(sdPresenza1, 2) + Math.pow(sdPresenza2, 2) + Math.pow(sdPresenza3, 2) + Math.pow(sdPresenza4, 2)+ Math.pow(sdPresenza5, 2));
+        Double score = Math.sqrt(Const.K_TURNI * Math.pow(sdTurni, 2) + Const.K_WE * Math.pow(sdTurniWe, 2) + Const.K_GIORNO * Math.pow(sdTurniGg, 2) + Const.K_NOTTE * Math.pow(sdTurniNotte, 2) + Const.K_SD_FER * Math.pow(sdPresenzaSettimanale, 2));
 
         TurniGeneratiStatsEntity run = new TurniGeneratiStatsEntity();
-        run.setSdev1Settimana(sdPresenza1);
-        run.setSdev2Settimana(sdPresenza2);
-        run.setSdev3Settimana(sdPresenza3);
-        run.setSdev4Settimana(sdPresenza4);
-        run.setSdev5Settimana(sdPresenza5);
 
 
 
-        return null;
+        run.setSdev1Settimana(new BigDecimal(sdPresenza1).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdev2Settimana(new BigDecimal(sdPresenza2).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdev3Settimana(new BigDecimal(sdPresenza3).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdev4Settimana(new BigDecimal(sdPresenza4).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdev5Settimana(new BigDecimal(sdPresenza5).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdevGiorniFer(new BigDecimal(sdPresenzaSettimanale).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdevGiorniFest(new BigDecimal(sdTurniWe).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdevTurniTot(new BigDecimal(sdTurni).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdevNotti(new BigDecimal(sdTurniNotte).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setSdevPresFest(new BigDecimal(sdPresenzaWe).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setMediaNotti(new BigDecimal(mediaTurniNotte).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setMediaTurniTot(new BigDecimal(mediaTurni).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setScore(new BigDecimal(score).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+
+
+
+        return run;
 
 
     }
