@@ -80,7 +80,7 @@ public class Run implements Comparable<Run>{
      * @return
      */
     public double calculateScore(){
-        return Math.sqrt(K_TURNI*Math.pow(sdTurni,2)+K_WE*Math.pow(sdNrturniWe,2)+K_GIORNO*Math.pow(sdNrTurniGG,2)+K_NOTTE*Math.pow(sdTurniNotte,2)+K_SD_FER*Math.pow(sdPresenzaSettimanale,2));
+        return Math.sqrt(K_TURNI*Math.pow(sdTurni,2)+K_WE*Math.pow(sdNrturniWe,2)+K_NOTTE*Math.pow(sdTurniNotte,2)+K_SD_FER*Math.pow(sdPresenzaSettimanale,2));
 
     }
 
