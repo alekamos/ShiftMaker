@@ -46,10 +46,10 @@ public class EvaluateStats {
         ArrayList<Persona> persone = turniService.caricaPersone();
 
         //caricamento turni
-        ArrayList<Turno> turniMese = turniService.caricaMese();
+        ArrayList<Turno> turniMese = turniService.caricaPatternTurniMese();
 
         //caricamento turni gia assegnati
-        turniGiaAssergnati = turniService.caricaTurniSchedulati(file);
+        turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
         TurnoGenerator generator = new RandomGenerator(persone,turniMese,turniGiaAssergnati);
 

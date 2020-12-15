@@ -2,7 +2,13 @@ package service;
 
 import it.costanza.dao.TurniGeneratiDao;
 import it.costanza.model.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -476,8 +482,8 @@ public class TurniService {
      */
     public boolean checkDisponibilita(Persona randomPersona, Turno turno) {
 
-        Date dataTurno = turno.getData();
-        boolean result = true;
+
+        boolean result;
         ArrayList<Turno> turniIndisponibilita = randomPersona.getIndisponibilitaList();
 
         if (turniIndisponibilita != null && turniIndisponibilita.contains(turno))
@@ -503,7 +509,7 @@ public class TurniService {
      *
      * @return
      */
-    public static ArrayList<Turno> caricaMese() throws IOException {
+    public static ArrayList<Turno> caricaPatternTurniMese() throws IOException {
 
         ArrayList<Turno> turni = new ArrayList<>();
 
@@ -518,15 +524,15 @@ public class TurniService {
 
             //Se il turno non è del weekend ci vuole anche quello di ricerca
             boolean weekendDate = DateService.isWeekendDate(data);
-            if (!weekendDate)
+            if (!weekendDate) {
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA));
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA));
+            }
 
 
             turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1));
             turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2));
 
-            if (!weekendDate && cal.get(Calendar.DAY_OF_MONTH)!=25)
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA));
 
             turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1));
             turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2));
@@ -572,97 +578,179 @@ public class TurniService {
      * @return
      * @throws IOException
      */
-    public ArrayList<Persona> caricaPersone() throws IOException{
+    public ArrayList<Persona> caricaPersone() throws IOException {
 
 
-
-        ArrayList<Persona> persone = new ArrayList<>();
-        String personeLine = "";
-        List<String> listaIndisponibilitaPersona = null;
-        String[] nomePersoneList;
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
+        FileInputStream file = new FileInputStream("turniMaker/src/main/resources/dati.xlsx");
 
 
-        personeLine = PropertiesServices.getProperties(Const.PERSONE_ARRAY);
-        nomePersoneList = personeLine.split(Const.LIST_SEPARATOR);
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet persone = workbook.getSheetAt(0);
+        Iterator<Row> iterator = persone.iterator();
 
+        ArrayList<Persona> personeList = new ArrayList<>();
 
-        for (int i = 0; i < nomePersoneList.length; i++) {
-            Persona personaElem = new Persona();
-            ArrayList<Turno> turnistaIndisponibilita = new ArrayList<>();
+        //ciclo tutte le righe
+        while (iterator.hasNext()) {
+            Row nextRow = iterator.next();
 
-            //mi comincio a settare il nome
-            personaElem.setNome(nomePersoneList[i]);
+            //considero solo le righe maggiori di 1 perchè la 0 sono le date
+            if (nextRow.getRowNum() >= 1) {
+                Iterator<Cell> cellIterator = nextRow.cellIterator();
+                //qui devo iterare
+                Persona rigaPersona = new Persona();
+                ArrayList<Turno> indispPersona = new ArrayList<>();
+                //ciclo tutte le celle, le colonne
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
 
-            //prendo la lista di persone dal file di properties
-            String indisponibilitaLine = PropertiesServices.getProperties(Const.PREFIX_INDISPONIBILITA + nomePersoneList[i]);
+                    if (cell.getColumnIndex() == 0)
+                        rigaPersona.setNome(cell.getStringCellValue());
 
-            //me le separo in stringhe con il mio bel separatore, se non ce niente chiaramente salto tutto e lo lascio senza indisponmibilita
-            if (indisponibilitaLine != null && !"".equals(indisponibilitaLine)) {
-                listaIndisponibilitaPersona = Arrays.asList(indisponibilitaLine.split(Const.LIST_SEPARATOR));
-
-                if (listaIndisponibilitaPersona != null)
-                    for (String indisponibilitaElem : listaIndisponibilitaPersona) {
-                        //per ogni data, quindi tolgo tutte le lettere dalla stringa calcolata
-                        String dataNumber = indisponibilitaElem.replaceAll("[^0-9]", "");
-                        if (indisponibilitaElem.contains(Const.GIORNO)) {
-                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_1));
-                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_REPARTO_2));
-                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_URGENTISTA));
-                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.GIORNO, Const.RUOLO_RICERCA));
-                        }
-                        if (indisponibilitaElem.contains(Const.NOTTE)) {
-                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_1));
-                            turnistaIndisponibilita.add(new Turno(DateService.getData(anno, mese, Integer.parseInt(dataNumber)), Const.NOTTE, Const.RUOLO_REPARTO_2));
-                        }
+                    if ("G".equals(cell.getStringCellValue())) {
+                        Turno indispElem = new Turno();
+                        //Vado a prendere la rispettiva cella della prima riga
+                        indispElem.setData(persone.getRow(0).getCell(cell.getColumnIndex()).getDateCellValue());
+                        indispElem.setTipoTurno(Const.GIORNO);
+                        indispPersona.add(indispElem);
                     }
-            }
-            personaElem.setIndisponibilitaList(turnistaIndisponibilita);
-            persone.add(personaElem);
 
+                    if ("N".equals(cell.getStringCellValue())) {
+                        Turno indispElem = new Turno();
+                        //Vado a prendere la rispettiva cella della prima riga
+                        indispElem.setData(persone.getRow(0).getCell(cell.getColumnIndex()).getDateCellValue());
+                        indispElem.setTipoTurno(Const.NOTTE);
+                        indispPersona.add(indispElem);
+                    }
+
+                    if ("GN".equals(cell.getStringCellValue()) || "NG".equals(cell.getStringCellValue())) {
+                        Turno indispElem = new Turno();
+                        //Vado a prendere la rispettiva cella della prima riga
+                        indispElem.setData(persone.getRow(0).getCell(cell.getColumnIndex()).getDateCellValue());
+                        indispElem.setTipoTurno(Const.GIORNO);
+                        indispPersona.add(indispElem);
+
+                        Turno indispElemNotte = new Turno();
+                        //Vado a prendere la rispettiva cella della prima riga
+                        indispElemNotte.setData(persone.getRow(0).getCell(cell.getColumnIndex()).getDateCellValue());
+                        indispElemNotte.setTipoTurno(Const.NOTTE);
+                        indispPersona.add(indispElemNotte);
+
+                    }
+
+
+                }
+                rigaPersona.setIndisponibilitaList(indispPersona);
+                personeList.add(rigaPersona);
+            }
         }
-        return persone;
+
+        return personeList;
     }
 
     /**
-     * Carica i turni già schedulati dal file di props
+     * Carica i turni già schedulati dal file excel
      * @return
      * @throws IOException
      */
     public ArrayList<Turno> caricaTurniSchedulati() throws IOException {
 
+        ArrayList<Turno> turniSchedulatiOut = new ArrayList<>();
 
-        return caricaTurniSchedulati(null);
-    }
-
-    /**
-     * Carica i turni già schedulati dal file specificato
-     * @return
-     * @throws IOException
-     */
-    public ArrayList<Turno> caricaTurniSchedulati(String fileTurni) throws IOException {
+        FileInputStream file = new FileInputStream("turniMaker/src/main/resources/dati.xlsx");
 
 
 
-        ArrayList<Turno> turniAssegnati = new ArrayList<>();
+
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet turniAssegnati = workbook.getSheetAt(1);
+        Iterator<Row> turniAssIter = turniAssegnati.iterator();
+
+        while (turniAssIter.hasNext()) {
+
+            Row nextRow = turniAssIter.next();
+            //da qui iniziano i dati
+            if(nextRow.getRowNum()>=2) {
+                //qui vado secco sulla posizione
+                int i = 1;
+                //GIORNO RICERCA
+                if(nextRow.getCell(i)!=null && !"".equals(nextRow.getCell(i).getStringCellValue())) {
+                    Turno turno = new Turno();
+                    turno.setTipoTurno(Const.GIORNO);
+                    turno.setRuoloTurno(Const.RUOLO_RICERCA);
+                    turno.setData(nextRow.getCell(0).getDateCellValue());
+                    turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+                    turniSchedulatiOut.add(turno);
+                }
+                i++;
+                //GIORNO reparto 1
+                if(nextRow.getCell(i)!=null && !"".equals(nextRow.getCell(i).getStringCellValue())) {
+                    Turno turno = new Turno();
+                    turno.setTipoTurno(Const.GIORNO);
+                    turno.setRuoloTurno(Const.RUOLO_REPARTO_1);
+                    turno.setData(nextRow.getCell(0).getDateCellValue());
+                    turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+                    turniSchedulatiOut.add(turno);
+                }
+                i++;
+                //GIORNO reparto 1
+                if(nextRow.getCell(i)!=null && !"".equals(nextRow.getCell(i).getStringCellValue())) {
+                    Turno turno = new Turno();
+                    turno.setTipoTurno(Const.GIORNO);
+                    turno.setRuoloTurno(Const.RUOLO_REPARTO_2);
+                    turno.setData(nextRow.getCell(0).getDateCellValue());
+                    turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+                    turniSchedulatiOut.add(turno);
+                }
+                i++;
+                //GIORNO urgentista
+                if(nextRow.getCell(i)!=null && !"".equals(nextRow.getCell(i).getStringCellValue())) {
+                    Turno turno = new Turno();
+                    turno.setTipoTurno(Const.GIORNO);
+                    turno.setRuoloTurno(Const.RUOLO_URGENTISTA);
+                    turno.setData(nextRow.getCell(0).getDateCellValue());
+                    turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+                    turniSchedulatiOut.add(turno);
+                }
+                i++;
+                //NOTTE reparto 1
+                if(nextRow.getCell(i)!=null && !"".equals(nextRow.getCell(i).getStringCellValue())) {
+                    Turno turno = new Turno();
+                    turno.setTipoTurno(Const.NOTTE);
+                    turno.setRuoloTurno(Const.RUOLO_REPARTO_1);
+                    turno.setData(nextRow.getCell(0).getDateCellValue());
+                    turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+                    turniSchedulatiOut.add(turno);
+                }
+
+                i++;
+                //NOTTE reparto 1
+                if(nextRow.getCell(i)!=null && !"".equals(nextRow.getCell(i).getStringCellValue())) {
+                    Turno turno = new Turno();
+                    turno.setTipoTurno(Const.NOTTE);
+                    turno.setRuoloTurno(Const.RUOLO_REPARTO_2);
+                    turno.setData(nextRow.getCell(0).getDateCellValue());
+                    turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+                    turniSchedulatiOut.add(turno);
+                }
 
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("d");
-
-        ArrayList<Turno> turniMese = caricaMese();
-
-        for (Turno turno : turniMese) {
-            String ricercaProps = sdf.format(turno.getData())+"|"+turno.getTipoTurno()+"|"+turno.getRuoloTurno();
-            String personaAssegnataAlTurno = PropertiesServices.getProperties(ricercaProps,fileTurni);
-            if(personaAssegnataAlTurno!=null && !"".equals(personaAssegnataAlTurno))
-                turniAssegnati.add(new Turno(turno.getData(),turno.getTipoTurno(),turno.getRuoloTurno(),new Persona(personaAssegnataAlTurno)));
 
 
+
+
+            }
         }
-        return turniAssegnati;
+
+        workbook.close();
+        file.close();
+
+        return turniSchedulatiOut;
+
     }
+
+
 
 
     /**
@@ -733,7 +821,7 @@ public class TurniService {
         int numeroTurniFestivi = 0;
 
         ArrayList<Turno> turniFestivi = new ArrayList<>();
-        ArrayList<Turno> turniMese = caricaMese();
+        ArrayList<Turno> turniMese = caricaPatternTurniMese();
         for (Turno turno : turniMese) {
 
             if(isTurnoFerialeFestivo(turno).equals(Const.FESTIVO))
