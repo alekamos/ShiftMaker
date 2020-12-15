@@ -67,7 +67,7 @@ public class MakeTurniSmart {
 
 
         //caricamento turni
-        ArrayList<Turno> turniMese = turniService.caricaMese();
+        ArrayList<Turno> turniMese = turniService.caricaPatternTurniMese();
 
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();

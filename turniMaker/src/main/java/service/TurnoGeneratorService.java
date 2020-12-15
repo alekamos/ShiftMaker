@@ -4,10 +4,12 @@ import it.costanza.dao.TurniLocalDao;
 import it.costanza.entityDb.h2.CustomPersonGroup;
 import it.costanza.entityDb.h2.PersonGroup;
 import it.costanza.model.Const;
+import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.model.Turno;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class TurnoGeneratorService {
      * @param index deve partire da 1 al primo tentativo
      * @return
      */
-    public Persona getBestCandidateTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare,int index) {
+    public Persona getBestCandidateTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare,int index) throws FailedGenerationTurno {
 
         TurniLocalDao localDao = new TurniLocalDao();
         TurniService service = new TurniService();
@@ -56,7 +58,6 @@ public class TurnoGeneratorService {
 
             for (int i = 0+index-1; i < groupByWeekend.size(); i++) {
 
-
                 //tolgo quelli che hanno già lavorato 2 volte
                 if(groupByWeekend.get(i).getHit()<2){
                     if(groupByWeekend.get(i).getTotal()<maxValue) {
@@ -76,9 +77,11 @@ public class TurnoGeneratorService {
         }
 
 
+        if(persona=="")
+            throw new FailedGenerationTurno();
+
+        //qui non ci arriva mai
         return null;
-
-
     }
 
 
