@@ -78,7 +78,7 @@ public class TurnoGeneratorService {
 
 
         if(persona=="")
-            throw new FailedGenerationTurno();
+            throw new FailedGenerationTurno("Sforato nr max weekend sulla data: "+turnoDaAssegnare.getData());
 
         //qui non ci arriva mai
         return null;

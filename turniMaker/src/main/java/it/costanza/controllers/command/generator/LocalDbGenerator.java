@@ -150,8 +150,7 @@ public class LocalDbGenerator implements TurnoGenerator{
                 //circuit breaker
                 giri++;
                 if (giri > persone.size()*3) {
-                    FailedGenerationTurno e = new FailedGenerationTurno();
-                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
+                    FailedGenerationTurno e = new FailedGenerationTurno("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
                     throw e;
                 }
 

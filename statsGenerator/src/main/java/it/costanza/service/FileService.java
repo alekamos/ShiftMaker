@@ -84,8 +84,8 @@ public class FileService {
         msg = msg + "sdev  pres 5s\t\t"+df.format(stats.getSdev5Settimana())+"\r\n";
         msg = msg + "media nr notti\t\t"+df.format(stats.getMediaNotti())+"\r\n";
         msg = msg + "sdev  nr notti\t\t"+df.format(stats.getSdevNotti())+"\r\n";
-        msg = msg + "media nr feriali\t\t"+df.format(stats.getMediaGiorniFer())+"\r\n";
-        msg = msg + "sdev  nr ferial\t\t"+df.format(stats.getSdevGiorniFer())+"\r\n";
+        msg = msg + "media nr feria\t\t"+df.format(stats.getMediaGiorniFer())+"\r\n";
+        msg = msg + "sdev  nr feria\t\t"+df.format(stats.getSdevGiorniFer())+"\r\n";
 
 
 
@@ -108,7 +108,7 @@ public class FileService {
         SimpleDateFormat sdf = new SimpleDateFormat("dd");
 
 
-        msg = msg+  Const.SEZIONE_STAMPA_MAIN+" Turno finale id :"+" "+run.get(0).getTurniGeneratiMonitorByIdCalTurni()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n";
+        msg = msg+  Const.SEZIONE_STAMPA_MAIN+" Turno finale id :"+" "+run.get(0).getTurniGeneratiMonitorByIdCalTurni().getIdCalTurni()+" "+Const.SEZIONE_STAMPA_MAIN+"\r\n";
 
         msg = msg + "DAT\t"+"RIC\t"+"REP\t"+"REP\t"+"URG\t"+"REP\t"+"REP\t"+"\r\n";
         int count = 0;
@@ -154,7 +154,7 @@ public class FileService {
 
         msg = msg + "\r\n";
 
-      
+
 
         return msg;
 
@@ -172,7 +172,10 @@ public class FileService {
     private TurniGeneratiEntity getTurnoSpecificoFromList(List<TurniGeneratiEntity> turni, Date data, String tipoTurno, String ruolo){
 
         for (TurniGeneratiEntity turno : turni) {
-            if(turno.equals(new Turno(data,tipoTurno,ruolo)))
+
+            if(DateService.removeTime(turno.getDataTurno()).equals(DateService.removeTime(data)) &&
+                    turno.getTipoTurno().equals(tipoTurno) &&
+                    turno.getRuoloTurno().equals(ruolo))
                 return turno;
 
         }

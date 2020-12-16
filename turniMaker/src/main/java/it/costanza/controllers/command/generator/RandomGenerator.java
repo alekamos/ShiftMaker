@@ -57,8 +57,7 @@ public class RandomGenerator implements TurnoGenerator {
                 giri++;
 
                 if (giri > 150) {
-                    FailedGenerationTurno e = new FailedGenerationTurno();
-                    e.setMessage("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
+                    FailedGenerationTurno e = new FailedGenerationTurno("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
                     throw e;
                 }
 
