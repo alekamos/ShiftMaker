@@ -26,17 +26,21 @@ public class EvaluateStatsCurrentRunCommand implements ICommand {
     TurniGeneratiMonitorDao turniGeneratiMonitorDao = new TurniGeneratiMonitorDao();
 
     TurniGeneratiStatsEntityDao turniGeneratiStatsEntityDao = new TurniGeneratiStatsEntityDao();
-    PersoneService personeService = new PersoneService();
+
+
+    private RunEntity run;
+    private ArrayList<Persona> persone;
+
+    public EvaluateStatsCurrentRunCommand(RunEntity currentRun,ArrayList<Persona> persone) {
+        this.run = currentRun;
+        this.persone = persone;
+    }
 
     @Override
     public void execute() throws IOException, InterruptedException {
 
-        //get run in corso o selezione run
-        RunEntity run = runDao.getRunInCorso();
-        System.out.println("Run in corso: " + run.getIdRun());
 
-        ArrayList<Persona> elencoPersone = personeService.caricaPersone();
-        System.out.println("Reperito elenco persone: " + run.getIdRun());
+
 
         //get dati da cui elaboraare statistiche
         List<TurniGeneratiMonitorEntity> turniDaStatistic = turniGeneratiMonitorDao.getListTurniDaElaborare(run.getIdRun());
@@ -57,7 +61,7 @@ public class EvaluateStatsCurrentRunCommand implements ICommand {
 
 
                 //elaborazione statistiche persone
-                ArrayList<Persona> personas = statService.generaPersoneConStatistiche(calendarioTurni, elencoPersone);
+                ArrayList<Persona> personas = statService.generaPersoneConStatistiche(calendarioTurni, persone);
 
                 //elaborazione statistiche
                 TurniGeneratiStatsEntity turniGeneratiStatsEntity = statService.elaborazioneStat(personas);

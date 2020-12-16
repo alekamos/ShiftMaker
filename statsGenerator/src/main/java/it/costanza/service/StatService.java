@@ -107,8 +107,11 @@ public class StatService {
         run.setSdevTurniTot(new BigDecimal(sdTurni).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
         run.setSdevNotti(new BigDecimal(sdTurniNotte).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
         run.setSdevPresFest(new BigDecimal(sdPresenzaWe).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setMediaPresFest(new BigDecimal(mediaPresenzaWe).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
         run.setMediaNotti(new BigDecimal(mediaTurniNotte).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
         run.setMediaTurniTot(new BigDecimal(mediaTurni).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setMediaGiorniFest(new BigDecimal(mediaTurniWe).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        run.setMediaGiorniFer(new BigDecimal(mediaTurniGG).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
         run.setScore(new BigDecimal(score).setScale(2, RoundingMode.HALF_EVEN).doubleValue());
 
 

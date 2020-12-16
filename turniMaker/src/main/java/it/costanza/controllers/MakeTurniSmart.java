@@ -24,30 +24,16 @@ public class MakeTurniSmart {
 
 
         TurniService turniService = new TurniService();
-        StatService statService = new StatService();
-        ArrayList<Run> listaRun = new ArrayList<>();
         ArrayList<Turno> turniGiaAssergnati;
-
-
-        //TODO da rimuovere
-        String prefixFile = UUID.randomUUID().toString().substring(0,5);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-        String fileName = prefixFile+PropertiesServices.getProperties("fileName");
-        String fileNameTurni = prefixFile+PropertiesServices.getProperties("fileNameTurni");
-        String path = PropertiesServices.getProperties("pathFile");
-        //creazionifile
-        FileService.createFilesInPath(fileName, fileNameTurni, path);
 
 
 
         //Configurazioni
         int numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
-        String id;
 
         //salvo il run sul db
         RunDao dao = new RunDao();
         PersonaDao personaLocalDao = new PersonaDao();
-
         RunEntity runEntity = new RunEntity();
         runEntity.setAnnomese(PropertiesServices.getProperties("anno")+(PropertiesServices.getProperties("mese")));
         runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
@@ -80,16 +66,9 @@ public class MakeTurniSmart {
 
             try {
 
+                commandAlgoritmo.generate();
 
 
-                ArrayList<Turno> turniGenerati = commandAlgoritmo.generate();
-
-                //generazione statistiche sulle persone
-                ArrayList<Persona> personeStats = turniService.generaPersoneConStatistiche(turniGenerati, persone);
-                //elaborazione statistiche sul run
-                id = sdf.format(new Date())+"_"+i;
-                Run run = statService.elaborazioneStat(id, personeStats, turniGenerati);
-                listaRun.add(run);
 
             }catch (FailedGenerationTurno e){
                 System.out.println(i+" Error: Turno non concluso: "+e.getMessage());
@@ -108,11 +87,6 @@ public class MakeTurniSmart {
 
 
 
-        //ordino la lista
-        Collections.sort(listaRun);
-
-        //stampo le stats
-        FileService.printStats(listaRun,prefixFile);
 
 
 

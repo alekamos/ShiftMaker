@@ -26,9 +26,7 @@ public class Const {
     public static final String RUOLO_RICERCA = "RICERCA";
 
 
-    public static final String PERSONE_ARRAY = "PERSONE_ARRAY";
-    public static final String PREFIX_INDISPONIBILITA = "INDISPONIBILITA_";
-    public static final String LIST_SEPARATOR = ";";
+
 
 
     public static final String PESO_TURNI = "PESO_TURNI";
@@ -38,17 +36,8 @@ public class Const {
     public static final String PESO_PRES_FES = "PESO_PRES_FESTIVI";
     public static final String PESO_SD_FES = "PESO_SD_FESTIVI";
     public static final String PESO_SD_PRES_FER ="PESO_PRES_SET";
-    public static final String SEZIONE_STAMPA = "###########################";
-    public static final String SEZIONE_STAMPA_MAIN = "===========================";
-
-    public static final String QUALITY_CHECK = "QUALITY_CHECK";
-    public static final String QC_DIFF_PRESENZ_FERIALE= "QC_DIFF_PRESENZ_FERIALE";
 
 
-    public static final String MIN_NOTTI = "QC_MIN_NOTTI";
-    public static final String MAX_NOTTI = "QC_MAX_NOTTI";
-    public static final String MAX_FERIALE = "QC_MAX_PRESENZ_FERIALE";
-    public static final String ECCEZIONI_TURNI_NOTTE = "ECCEZIONE_NOTTE";
 
 
     public static final String MAKING = "MAKING";

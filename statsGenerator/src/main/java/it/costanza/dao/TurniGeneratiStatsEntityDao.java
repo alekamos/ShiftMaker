@@ -1,7 +1,7 @@
 package it.costanza.dao;
 
 import it.costanza.dao.Util.HibernateUtilMySql;
-import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
+import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
 import it.costanza.model.Const;
 import org.hibernate.Session;
@@ -48,6 +48,40 @@ public class TurniGeneratiStatsEntityDao implements Crud<TurniGeneratiStatsEntit
     }
 
 
+    /**
+     * Estre i migliori bestResult numero di turni basandosi sullo score
+     * @param idRun
+     * @param bestResult
+     * @return
+     */
+    public List<TurniGeneratiStatsEntity> getBestResult(Long idRun, int bestResult) {
+
+        /**
+         * select * from TURNI_GENERATI_STATS a, TURNI_GENERATI_MONITOR m
+         * where m.ID_CAL_TURNI = a.ID_CAL_TURNI
+         * and m.ID_RUN = 150
+         * order by score asc
+         * limit 10
+         */
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
+        Query q = session.createNativeQuery("select a.* from TURNI_GENERATI_STATS a, TURNI_GENERATI_MONITOR m " +
+                "where m.ID_CAL_TURNI = a.ID_CAL_TURNI " +
+                "and m.ID_RUN = :idRun " +
+                "order by score asc " +
+                "limit :limit",TurniGeneratiStatsEntity.class);
 
 
+
+        q.setParameter("idRun", idRun);
+        q.setParameter("limit", bestResult);
+
+
+        List<TurniGeneratiStatsEntity> out = q.getResultList();
+
+
+
+        return out;
+
+
+    }
 }

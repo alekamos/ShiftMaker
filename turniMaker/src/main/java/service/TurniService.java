@@ -20,77 +20,6 @@ public class TurniService {
 
 
 
-
-    /**
-     * Mi controlla che un candidato stia dentro i limiti imposti
-     *
-     * @param turniMese
-     * @return
-     */
-    public boolean candidatoQualityCheck(ArrayList<Turno> turniMese, Persona candidato, Turno turnoDaAssegnare) throws IOException {
-
-
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
-
-        ArrayList<Date> we1 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 1);
-        ArrayList<Date> we2 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 2);
-        ArrayList<Date> we3 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 3);
-        ArrayList<Date> we4 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 4);
-        ArrayList<Date> we5 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 5);
-        ArrayList<Date> we6 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 6);
-
-        int[] presenzaFeriale = new int[6];
-
-
-        for (Turno turno : turniMese) {
-
-
-            //è il primo turno del mese
-            if(turno.getPersonaInTurno()==null)
-                return true;
-
-            boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(candidato.getNome());
-
-            //Controlli sui turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
-            if (we1 != null && isTurnoInSettimanaLavorativa(turno, we1) && personaInTurnoSameAsPersonaElem)
-                presenzaFeriale[0]++;
-
-            if (we2 != null && isTurnoInSettimanaLavorativa(turno, we2) && personaInTurnoSameAsPersonaElem)
-                presenzaFeriale[1]++;
-
-            if (we3 != null && isTurnoInSettimanaLavorativa(turno, we3) && personaInTurnoSameAsPersonaElem)
-                presenzaFeriale[2]++;
-
-            if (we4 != null && isTurnoInSettimanaLavorativa(turno, we4) && personaInTurnoSameAsPersonaElem)
-                presenzaFeriale[3]++;
-
-            if (we5 != null && isTurnoInSettimanaLavorativa(turno, we5)  && personaInTurnoSameAsPersonaElem)
-                presenzaFeriale[4]++;
-
-            if (we6 != null && isTurnoInSettimanaLavorativa(turno, we6)  && personaInTurnoSameAsPersonaElem)
-                presenzaFeriale[5]++;
-
-        }
-
-
-
-        int indicePresFeriale = DateService.getNumeroSettimanaFeriale(turnoDaAssegnare.getData())-1;
-        if (presenzaFeriale[indicePresFeriale] >= Integer.parseInt(PropertiesServices.getProperties(Const.MAX_FERIALE)))
-            return false;
-
-
-
-
-
-
-
-        return true;
-    }
-
-
-
-
     public Persona copyTurnoAssegnato(ArrayList<Turno> turniAssegnati, Date data, String tipoTurno, String ruoloTurno) {
 
         ArrayList<Turno> turnoDelGiorno = getTurniDelGiorno(turniAssegnati, data, tipoTurno, ruoloTurno);
@@ -98,165 +27,6 @@ public class TurniService {
         return turnoDelGiorno.get(0).getPersonaInTurno();
 
     }
-
-
-    /**
-     * Genera un nuovo array di persone con le statistiche
-     * @param turniFinale
-     * @param persone
-     * @return
-     * @throws IOException
-     */
-    public ArrayList<Persona> generaPersoneConStatistiche(ArrayList<Turno> turniFinale, ArrayList<Persona> persone) throws IOException {
-
-
-
-        ArrayList<Persona> personeOut = new ArrayList<>();
-
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
-
-        ArrayList<Date> we1 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 1);
-        ArrayList<Date> we2 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 2);
-        ArrayList<Date> we3 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 3);
-        ArrayList<Date> we4 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 4);
-        ArrayList<Date> we5 = DateService.getNEsimaSettimanaMensileFeriale(anno, mese, 5);
-
-        ArrayList<Date> wend1 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 1);
-        ArrayList<Date> wend2 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 2);
-        ArrayList<Date> wend3 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 3);
-        ArrayList<Date> wend4 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 4);
-        ArrayList<Date> wend5 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 5);
-        ArrayList<Date> wend6 = DateService.getNEsimaSettimanaMensileFestiva(anno, mese, 6);
-        long t1 = System.currentTimeMillis();
-
-        for (int i = 0; i < persone.size(); i++) {
-
-            persone.get(i);
-            int numeroTurni = 0;
-            int numeroTurniGiorno = 0;
-            int numeroTurniNotte = 0;
-            int numeroTurniWe = 0;
-            int counterPresenzaWe = 0;
-            int[] presenzaFeriale = new int[5];
-            int[] presenzaFestiva = new int[6];
-
-            for (Turno turno : turniFinale) {
-                boolean personaInTurnoSameAsPersonaElem = turno.getPersonaInTurno().getNome().equals(persone.get(i).getNome());
-
-                //controllo numero turni
-                if (personaInTurnoSameAsPersonaElem)
-                    numeroTurni++;
-
-                //controllo numero turni giorni
-                if (turno.getTipoTurno().equals(Const.GIORNO))
-                    if (personaInTurnoSameAsPersonaElem)
-                        numeroTurniGiorno++;
-
-                //controllo numero turni notte
-                if (turno.getTipoTurno().equals(Const.NOTTE))
-                    if (personaInTurnoSameAsPersonaElem)
-                        numeroTurniNotte++;
-
-                //controllo numero turni weekend
-                if (DateService.isWeekendDate(turno.getData()))
-                    if (personaInTurnoSameAsPersonaElem)
-                        numeroTurniWe++;
-
-
-                //Controlli sui turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
-                if(we1!=null && isTurnoInSettimanaLavorativa(turno,we1) && personaInTurnoSameAsPersonaElem)
-                    presenzaFeriale[0]++;
-
-                if(we2!=null && isTurnoInSettimanaLavorativa(turno,we2) && personaInTurnoSameAsPersonaElem)
-                    presenzaFeriale[1]++;
-
-                if(we3!=null && isTurnoInSettimanaLavorativa(turno,we3) && personaInTurnoSameAsPersonaElem)
-                    presenzaFeriale[2]++;
-
-                if(we4!=null && isTurnoInSettimanaLavorativa(turno,we4) && personaInTurnoSameAsPersonaElem)
-                    presenzaFeriale[3]++;
-
-                if(we5!=null && isTurnoInSettimanaLavorativa(turno,we5) && personaInTurnoSameAsPersonaElem)
-                    presenzaFeriale[4]++;
-
-
-
-                //Controlli sui turni nel weekend
-                if(wend1!=null && isTurnoInSettimanaLavorativa(turno,wend1) && personaInTurnoSameAsPersonaElem)
-                    presenzaFestiva[0]++;
-
-                if(wend2!=null && isTurnoInSettimanaLavorativa(turno,wend2) && personaInTurnoSameAsPersonaElem)
-                    presenzaFestiva[1]++;
-
-                if(wend3!=null && isTurnoInSettimanaLavorativa(turno,wend3) && personaInTurnoSameAsPersonaElem)
-                    presenzaFestiva[2]++;
-
-                if(wend4!=null && isTurnoInSettimanaLavorativa(turno,wend4) && personaInTurnoSameAsPersonaElem)
-                    presenzaFestiva[3]++;
-
-                if(wend5!=null && isTurnoInSettimanaLavorativa(turno,wend5) && personaInTurnoSameAsPersonaElem)
-                    presenzaFestiva[4]++;
-
-                if(wend6!=null && isTurnoInSettimanaLavorativa(turno,wend6) && personaInTurnoSameAsPersonaElem)
-                    presenzaFestiva[5]++;
-
-
-            }
-
-            //a questo devo sommare le settimane di ricerca
-
-            personeOut.add(new Persona(persone.get(i).getNome()));
-            personeOut.get(i).setNumeroTurni(numeroTurni);
-            personeOut.get(i).setNumeroTurniWe(numeroTurniWe);
-            personeOut.get(i).setNumeroTurniGiorno(numeroTurniGiorno);
-            personeOut.get(i).setNumeroTurniNotte(numeroTurniNotte);
-            personeOut.get(i).setPresenzaFeriale(presenzaFeriale);
-
-
-            for (int j = 0; j < presenzaFestiva.length; j++) {
-                if (presenzaFestiva[j]>0)
-                    counterPresenzaWe++;
-
-            }
-            personeOut.get(i).setPresenzaFestiva(counterPresenzaWe);
-
-        }
-
-
-        return personeOut;
-    }
-
-
-    /**
-     * Controlla se il turno è feriale (non festivo) weekend nei giorni indicati e passati come parametro
-     * in pratica controlla se è turni in settimana, ovvero tutte le date feriali ma non i turni di venerdì notte
-     * @param turno
-     * @param dateSettimana
-     * @return
-     */
-    private boolean isTurnoInSettimanaLavorativa(Turno turno, ArrayList<Date> dateSettimana){
-
-        //se il turno è un venerdì notte è non è da contare
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(turno.getData());
-        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals(Const.NOTTE))
-            return false;
-
-        for (Date giorniIndicati : dateSettimana) {
-            if(DateService.isSameDay(giorniIndicati,turno.getData()))
-                return true;
-        }
-
-
-        return false;
-
-
-
-
-
-    }
-
 
 
 
@@ -294,31 +64,6 @@ public class TurniService {
         return turnoLiberoIlGiornoPrima;
     }
 
-    private boolean checkFattibilitaTurnoDebug(Persona candidatoTurno, Turno turno, ArrayList<Turno> turniMese) {
-
-        Date giornoPrima = DateService.aumentaTogliGiorno(turno.getData(), -1);
-        ArrayList<Turno> listaTurniDellaGiornataPrecedenteDiurnoONotturno = null;
-        boolean turnoLiberoIlGiornoPrima = true;
-
-        //Se giorno controllo che il gg prima non abbia fatto notte
-        if (turno.getTipoTurno().equals(Const.GIORNO)) {
-            listaTurniDellaGiornataPrecedenteDiurnoONotturno = getTurniDelGiorno(turniMese, giornoPrima, Const.NOTTE);
-        }
-
-        if (turno.getTipoTurno().equals(Const.NOTTE)) {
-            listaTurniDellaGiornataPrecedenteDiurnoONotturno = getTurniDelGiorno(turniMese, giornoPrima, Const.NOTTE);
-        }
-
-        for (Turno turnoDelloStessoGiorno : listaTurniDellaGiornataPrecedenteDiurnoONotturno) {
-            if (turnoDelloStessoGiorno.getPersonaInTurno() != null)
-                if (turnoDelloStessoGiorno.getPersonaInTurno().getNome().equals(candidatoTurno.getNome())) {
-                    turnoLiberoIlGiornoPrima = false;
-                }
-        }
-
-
-        return turnoLiberoIlGiornoPrima;
-    }
 
 
     /**
@@ -581,7 +326,7 @@ public class TurniService {
     public ArrayList<Persona> caricaPersone() throws IOException {
 
 
-        FileInputStream file = new FileInputStream("turniMaker/src/main/resources/dati.xlsx");
+        FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
 
 
         Workbook workbook = new XSSFWorkbook(file);
@@ -657,7 +402,7 @@ public class TurniService {
 
         ArrayList<Turno> turniSchedulatiOut = new ArrayList<>();
 
-        FileInputStream file = new FileInputStream("turniMaker/src/main/resources/dati.xlsx");
+        FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
 
 
 
@@ -753,23 +498,7 @@ public class TurniService {
 
 
 
-    /**
-     * Mi cerca un turno specifico dentro l'array che passo
-     * @param turni
-     * @param data
-     * @param tipoTurno
-     * @param ruolo
-     * @return
-     */
-    public Turno getTurnoSpecificoFromList(ArrayList<Turno> turni,Date data,String tipoTurno, String ruolo){
 
-        for (Turno turno : turni) {
-            if(turno.equals(new Turno(data,tipoTurno,ruolo)))
-                return turno;
-
-        }
-        return null;
-    }
 
 
     /**
