@@ -7,6 +7,7 @@ import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.service.PersoneService;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class EvaluateStatsCurrentRun {
 
 
-    public static void main(String[] args) throws IOException, InterruptedException, FailedGenerationTurno {
+    public static void main(String[] args) throws IOException, InterruptedException, FailedGenerationTurno, InvalidFormatException {
 
         int circuitBreaker = 10;
         int i = 0;

@@ -6,19 +6,28 @@ import it.costanza.model.Const;
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.model.Turno;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class FileService {
 
 
-    public void createFilesInPath(String fileName, String fileNameTurni, String path) throws IOException, FailedGenerationTurno {
+    public void createFilesInPath(String fileName, String fileNameTurni,String fileExcel, String path) throws IOException, FailedGenerationTurno {
         //creo i file
 
         boolean newFile = false;
@@ -32,6 +41,14 @@ public class FileService {
         newFile = file2.createNewFile();  //creates a new file
         if(!newFile)
             throw failedGenerationTurno;
+
+        /*
+        File file3 = new File(path +"\\"+ fileExcel);
+        newFile = file3.createNewFile();  //creates a new file
+        if(!newFile)
+            throw failedGenerationTurno;
+            */
+
     }
 
 
@@ -178,6 +195,85 @@ public class FileService {
     }
 
 
+    public void printExcel(String filename, List<TurniGeneratiEntity> turniMese) throws IOException, InvalidFormatException {
+
+        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(Const.CURRENT_ANNO, Const.CURRENT_MESE);
 
 
+
+
+        int count = 0;
+
+
+        // Create a Workbook
+        Workbook turniFinale = new XSSFWorkbook(); // new HSSFWorkbook() for generating `.xls` file
+
+        /* CreationHelper helps us create instances of various things like DataFormat,
+           Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
+        CreationHelper createHelper = turniFinale.getCreationHelper();
+
+
+        Font headerFont = turniFinale.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 16 );
+
+        // Create a CellStyle with the font
+        CellStyle headerCellStyle = turniFinale.createCellStyle();
+        headerCellStyle.setFont(headerFont);
+
+        CellStyle dateCellStyle = turniFinale.createCellStyle();
+        dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+
+
+
+        Sheet sheet = turniFinale.createSheet(turniMese.get(0).getTurniGeneratiMonitorByIdCalTurni().getIdCalTurni().toString());
+
+        int headCount = 0;
+        Row rowhead = sheet.createRow(0);
+        rowhead.createCell(headCount++).setCellValue("DATA");
+        rowhead.createCell(headCount++).setCellValue("REP_1");
+        rowhead.createCell(headCount++).setCellValue("REP_1");
+        rowhead.createCell(headCount++).setCellValue("URG");
+        rowhead.createCell(headCount++).setCellValue("REPN_1");
+        rowhead.createCell(headCount++).setCellValue("REPN_2");
+        rowhead.createCell(headCount++).setCellValue("RICERCA");
+        rowhead.setRowStyle(headerCellStyle);
+
+        while (datesOfMonth.size()>count) {
+
+            Date date = datesOfMonth.get(count++);
+
+            Row row = sheet.createRow(count);
+            int columnCount = 0;
+
+            Cell dateOfMonth = row.createCell(columnCount++);
+            dateOfMonth.setCellValue(date);
+            dateOfMonth.setCellStyle(dateCellStyle);
+
+            if (getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_REPARTO_1) != null)
+                row.createCell(columnCount++).setCellValue(getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_REPARTO_1).getPersonaTurno());
+            if (getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_REPARTO_2) != null)
+                row.createCell(columnCount++).setCellValue(getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_REPARTO_2).getPersonaTurno());
+            if (getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_URGENTISTA) != null)
+                row.createCell(columnCount++).setCellValue(getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_URGENTISTA).getPersonaTurno());
+            if (getTurnoSpecificoFromList(turniMese, date, Const.NOTTE, Const.RUOLO_REPARTO_1) != null)
+                row.createCell(columnCount++).setCellValue(getTurnoSpecificoFromList(turniMese, date, Const.NOTTE, Const.RUOLO_REPARTO_1).getPersonaTurno());
+            if (getTurnoSpecificoFromList(turniMese, date, Const.NOTTE, Const.RUOLO_REPARTO_2) != null)
+                row.createCell(columnCount++).setCellValue(getTurnoSpecificoFromList(turniMese, date, Const.NOTTE, Const.RUOLO_REPARTO_2).getPersonaTurno());
+            if (getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_RICERCA) != null)
+                row.createCell(columnCount++).setCellValue(getTurnoSpecificoFromList(turniMese, date, Const.GIORNO, Const.RUOLO_RICERCA).getPersonaTurno());
+
+
+
+        }
+
+        // Write the output to a file
+        FileOutputStream fileOutputStream = new FileOutputStream(filename);
+        turniFinale.write(fileOutputStream);
+        fileOutputStream.close();
+
+        // Closing the workbook
+        turniFinale.close();
+        System.out.println("Your excel file has been generated!");
+    }
 }

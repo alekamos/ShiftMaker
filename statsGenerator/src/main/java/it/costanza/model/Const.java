@@ -33,6 +33,7 @@ public class Const {
 
     public static final String GENERATED = "CREATED";
     public static final String STATO_COMPLETE = "STAT_COMPLETE";
+    public static final String PATHFILE = "pathFile";
     public static int CURRENT_ANNO = 0;
     public static int CURRENT_MESE = 0;
     public static double  K_TURNI = 1;

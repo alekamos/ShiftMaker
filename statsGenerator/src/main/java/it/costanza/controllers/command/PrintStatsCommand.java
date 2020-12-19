@@ -6,10 +6,12 @@ import it.costanza.dao.TurniGeneratiStatsEntityDao;
 import it.costanza.entityDb.mysql.RunEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
+import it.costanza.model.Const;
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.service.FileService;
 import it.costanza.service.PropertiesServices;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +37,7 @@ public class PrintStatsCommand implements ICommand {
     }
 
     @Override
-    public void execute() throws IOException, InterruptedException, FailedGenerationTurno {
+    public void execute() throws IOException, InterruptedException, FailedGenerationTurno, InvalidFormatException {
 
 
         //prendo i migliori risultati
@@ -43,14 +45,15 @@ public class PrintStatsCommand implements ICommand {
         String prefixFile = "IDRUN_"+run.getIdRun()+"_"+ UUID.randomUUID().toString().substring(0,5);
         String fileName = prefixFile+PropertiesServices.getProperties("fileName");
         String fileNameTurni = prefixFile+PropertiesServices.getProperties("fileNameTurni");
-        String path = PropertiesServices.getProperties("pathFile");
+        String fileNameExcel = prefixFile+PropertiesServices.getProperties("fileNameExcel");
+        String path = PropertiesServices.getProperties(Const.PATHFILE);
         String output="";
         String turni="";
 
 
 
         //creazionifile
-        fileService.createFilesInPath(fileName, fileNameTurni, path);
+        fileService.createFilesInPath(fileName, fileNameTurni,fileNameExcel, path);
 
         //Estraggo la lista dei risultati migliori
         List<TurniGeneratiStatsEntity> bestResultList = turniGeneratiStatsEntityDao.getBestResult(run.getIdRun(), bestResult);
@@ -69,6 +72,9 @@ public class PrintStatsCommand implements ICommand {
             Files.write(Paths.get(path+"\\"+fileNameTurni), turni.getBytes(), StandardOpenOption.APPEND);
 
         }
+
+        //generazione excel del miglior risultato
+        fileService.printExcel(path+"\\"+fileNameExcel,turniGeneratiDao.getByIdCalendario(bestResultList.get(0).getIdCalTurni().longValue()));
 
 
     }
