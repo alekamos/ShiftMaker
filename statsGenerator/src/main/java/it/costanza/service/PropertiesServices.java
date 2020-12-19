@@ -1,8 +1,15 @@
 package it.costanza.service;
 
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 public class PropertiesServices {
@@ -54,8 +61,34 @@ public class PropertiesServices {
     }
 
 
+    public static Integer getAnno() throws IOException {
+        FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
 
 
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet foglio_0 = workbook.getSheetAt(0);
+        Date dateCellValue = foglio_0.getRow(0).getCell(1).getDateCellValue();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateCellValue);
+        return cal.get(Calendar.YEAR);
 
 
+    }
+
+
+    public static Integer getMese() throws IOException {
+        FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
+
+
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet foglio_0 = workbook.getSheetAt(0);
+        Date dateCellValue = foglio_0.getRow(0).getCell(1).getDateCellValue();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateCellValue);
+        return cal.get(Calendar.MONTH)+1;
+
+
+    }
 }

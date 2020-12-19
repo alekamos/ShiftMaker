@@ -40,10 +40,6 @@ public class FileService {
 
         String msg="";
 
-
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
-
         StatService statService = new StatService();
         ArrayList<Persona> personeStatisticizzate = statService.generaPersoneConStatistiche(dati, elencoPersone);
 
@@ -101,10 +97,9 @@ public class FileService {
         String msg="";
 
 
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
 
-        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
+
+        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(Const.CURRENT_ANNO, Const.CURRENT_MESE);
         SimpleDateFormat sdf = new SimpleDateFormat("dd");
 
 

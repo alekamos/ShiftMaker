@@ -72,8 +72,11 @@ public class LocalDbGenerator implements TurnoGenerator{
         //svuoto cache locale
         turnoLocalService.svuotaLocal();
 
+        //ordino l'array in maniera tale da mettere prima i giorni festivi
+        ArrayList<Turno> skeletonOttimizzato = turnoService.ordinaOttimizzaTurni(skeletonTurni);
 
-        for (Turno turno : skeletonTurni) {
+
+        for (Turno turno : skeletonOttimizzato) {
             int giri = 1;
             boolean personaDaPiazzare = true;
 

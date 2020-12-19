@@ -35,9 +35,9 @@ public class MakeTurniSmart {
         RunDao dao = new RunDao();
         PersonaDao personaLocalDao = new PersonaDao();
         RunEntity runEntity = new RunEntity();
-        runEntity.setAnnomese(PropertiesServices.getProperties("anno")+(PropertiesServices.getProperties("mese")));
+        runEntity.setAnnomese(String.valueOf(Const.CURRENT_ANNO+Const.CURRENT_MESE));
         runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
-        runEntity.setTipoRun("MakeTurniSmart"+numeroGiriTurni);
+        runEntity.setTipoRun("MakeTurniSmart_"+numeroGiriTurni);
         Long idRun = dao.salva(runEntity);
         System.out.println("idRun "+idRun);
 
@@ -65,6 +65,8 @@ public class MakeTurniSmart {
             long t1 = System.currentTimeMillis();
 
             try {
+                //Prima genero solo i weekend
+
 
                 commandAlgoritmo.generate();
 

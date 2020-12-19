@@ -36,13 +36,13 @@ public class TurnoGeneratorService {
             return service.getRandomPersona(persone);
 
 
-        if(service.isTurnoFerialeFestivo(turnoDaAssegnare).equals(Const.FERIALE)) {
+        if(!turnoDaAssegnare.isFestivo()) {
             ArrayList<Date> listaDate = DateService.getNEsimaSettimanaMensileFeriale(Const.CURRENT_ANNO, Const.CURRENT_MESE, DateService.getNumeroSettimanaFeriale(turnoDaAssegnare.getData()));
             List<PersonGroup> groupBySettimanaTurno = localDao.getGroupBySettimanaTurno(listaDate.get(0), listaDate.get(listaDate.size() - 1), turnoDaAssegnare.getTipoTurno());
             persona = groupBySettimanaTurno.get(index - 1).getPersona();
 
 
-        }else if (service.isTurnoFerialeFestivo(turnoDaAssegnare).equals(Const.FESTIVO)){
+        }else if (turnoDaAssegnare.isFestivo()){
             //occorre capire quanti turni festivi devono fare in media le persone
 
             Double mediaTurniFerXPersona = (double) Const.NUMERO_TURNI_FESTIVI/(double) persone.size();

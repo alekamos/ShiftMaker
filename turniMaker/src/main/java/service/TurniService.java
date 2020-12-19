@@ -10,6 +10,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -260,10 +262,9 @@ public class TurniService {
 
         Calendar cal = Calendar.getInstance();
 
-        int anno = Integer.parseInt(PropertiesServices.getProperties("anno"));
-        int mese = Integer.parseInt(PropertiesServices.getProperties("mese"));
 
-        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(anno, mese);
+
+        ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(Const.CURRENT_ANNO, Const.CURRENT_MESE);
         for (Date data : datesOfMonth) {
             cal.setTime(data);
 
@@ -272,15 +273,21 @@ public class TurniService {
             if (!weekendDate) {
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA));
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA));
+
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,false));
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,false));
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1,false));
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2,false));
+
+            }else{
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,true));
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,true));
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1,true));
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2,true));
             }
 
 
-            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1));
-            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2));
 
-
-            turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1));
-            turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2));
         }
 
         return turni;
@@ -325,7 +332,9 @@ public class TurniService {
      */
     public ArrayList<Persona> caricaPersone() throws IOException {
 
-
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        System.out.println("Current relative path is: " + s);
         FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
 
 
@@ -500,23 +509,6 @@ public class TurniService {
 
 
 
-
-    /**
-     * Mi controlla se il turno è un feriale o un turno festivo (sab dom o venerdì notte)
-     * @param turno
-     * @return
-     */
-    public static String isTurnoFerialeFestivo(Turno turno){
-        Date date = DateService.removeTime(turno.getData());
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-
-        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY ||  cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY && turno.getTipoTurno().equals("NOTTE"))
-            return Const.FESTIVO;
-        else
-            return Const.FERIALE;
-    }
-
     public Turno deepCopyTurno(Turno turno){
         Turno trn = new Turno();
         trn.setPersonaInTurno(turno.getPersonaInTurno());
@@ -553,7 +545,7 @@ public class TurniService {
         ArrayList<Turno> turniMese = caricaPatternTurniMese();
         for (Turno turno : turniMese) {
 
-            if(isTurnoFerialeFestivo(turno).equals(Const.FESTIVO))
+            if(turno.isFestivo())
                 turniFestivi.add(turno);
         }
         return turniFestivi;
@@ -565,7 +557,6 @@ public class TurniService {
      * @param turnoDaAssegnare
      * @return
      */
-    @Deprecated
     public ArrayList<Turno> getTurniWeekendDelTurno(Turno turnoDaAssegnare) {
 
 
@@ -652,15 +643,34 @@ public class TurniService {
 
     }
 
+    /**
+     * Questo metodo serve ad ottimizzare la generazione dei turni mettendo prima i festivi (che sono quelli con più vincoli, poi i feriali)
+     * @param skeletonTurni
+     * @return
+     */
+    public ArrayList<Turno> ordinaOttimizzaTurni(ArrayList<Turno> skeletonTurni) {
+
+
+        ArrayList<Turno> turniFeriali = new ArrayList<>();
+        ArrayList<Turno> turniFestivi = new ArrayList<>();
+
+        for (Turno turno : skeletonTurni) {
+            if(turno.isFestivo())
+                turniFestivi.add(turno);
+            else
+                turniFeriali.add(turno);
+        }
+
+        turniFestivi.addAll(turniFeriali);
+
+        return turniFestivi;
 
 
 
 
 
 
-
-
-
+    }
 }
 
 

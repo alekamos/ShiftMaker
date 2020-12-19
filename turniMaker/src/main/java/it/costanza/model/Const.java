@@ -47,13 +47,12 @@ public class Const {
     public static int CURRENT_ANNO = 0;
     public static int CURRENT_MESE = 0;
     public static int NUMERO_TURNI_FESTIVI = 0;
-    public static ArrayList<Turno> SKELETON_TURNI;
     public static ArrayList<Turno> TURNI_FESTIVI_WEEKEND;
     //cose da calcolare all'inizio
     static {
         try {
-            CURRENT_ANNO = Integer.parseInt(PropertiesServices.getProperties("anno"));
-            CURRENT_MESE = Integer.parseInt(PropertiesServices.getProperties("mese"));
+            CURRENT_ANNO = PropertiesServices.getAnno();
+            CURRENT_MESE = PropertiesServices.getMese();
             NUMERO_TURNI_FESTIVI = TurniService.getTurniWeekendMese().size();
             TURNI_FESTIVI_WEEKEND = TurniService.getTurniWeekendMese();
 

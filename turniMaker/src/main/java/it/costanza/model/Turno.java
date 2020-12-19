@@ -12,6 +12,7 @@ public class Turno {
     private String tipoTurno;
     private String ruoloTurno;
     private Persona personaInTurno;
+    private boolean isFestivo;
 
     public Turno(Date data, String tipoTurno, String ruoloTurno) {
         this.data = data;
@@ -19,11 +20,27 @@ public class Turno {
         this.ruoloTurno = ruoloTurno;
     }
 
+
+    public Turno(Date data, String tipoTurno, String ruoloTurno, boolean isFestivo) {
+        this.data = data;
+        this.tipoTurno = tipoTurno;
+        this.ruoloTurno = ruoloTurno;
+        this.isFestivo = isFestivo;
+    }
+
     public Turno(Date data, String tipoTurno, String ruoloTurno,Persona personaInTurno) {
         this.data = data;
         this.tipoTurno = tipoTurno;
         this.ruoloTurno = ruoloTurno;
         this.personaInTurno = personaInTurno;
+    }
+
+    public boolean isFestivo() {
+        return isFestivo;
+    }
+
+    public void setFestivo(boolean festivo) {
+        isFestivo = festivo;
     }
 
     public Turno() {

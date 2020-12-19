@@ -57,8 +57,11 @@ public class RunDao implements Crud<RunEntity> {
         Query<RunEntity> query = session.createQuery(cr);
         List<RunEntity> results = query.getResultList();
 
+        if(results!=null && results.size()>0)
+            return results.get(0);
+        else
+            return null;
 
-        return results.get(0);
 
 
 
