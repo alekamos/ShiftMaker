@@ -73,8 +73,8 @@ public class PrintStatsCommand implements ICommand {
 
         }
 
-        //generazione excel del miglior risultato
-        fileService.printExcel(path+"\\"+fileNameExcel,turniGeneratiDao.getByIdCalendario(bestResultList.get(0).getIdCalTurni().longValue()));
+        //generazione excel dei 10 risultati
+        fileService.printExcel(path+"\\"+fileNameExcel,bestResultList,persone);
 
 
     }
