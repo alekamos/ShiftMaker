@@ -654,6 +654,7 @@ public class TurniService {
 
     /**
      * Questo metodo serve ad ottimizzare la generazione dei turni mettendo prima i festivi (che sono quelli con più vincoli, poi i feriali)
+     * Mette all'inizio i giorni più diffiicli ovvero quelli con più indisponibilità
      * @param skeletonTurni
      * @return
      */
@@ -662,6 +663,12 @@ public class TurniService {
 
         ArrayList<Turno> turniFeriali = new ArrayList<>();
         ArrayList<Turno> turniFestivi = new ArrayList<>();
+
+
+
+
+
+
 
         for (Turno turno : skeletonTurni) {
             if(turno.isFestivo())

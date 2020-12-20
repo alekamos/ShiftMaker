@@ -54,11 +54,13 @@ public class MakeTurniSmart {
 
         //caricamento turni
         ArrayList<Turno> turniMese = turniService.caricaPatternTurniMese();
+        //ordino l'array in maniera tale da mettere prima i giorni festivi
+        ArrayList<Turno> skeletonOttimizzato = turniService.ordinaOttimizzaTurni(turniMese);
 
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
 
-        TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,turniMese,turniGiaAssergnati,runEntity);
+        TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,skeletonOttimizzato,turniGiaAssergnati,runEntity);
 
         long t10=System.currentTimeMillis();
         for (int i = 0; i < numeroGiriTurni; i++) {
