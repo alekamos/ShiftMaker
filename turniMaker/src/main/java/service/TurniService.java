@@ -230,13 +230,14 @@ public class TurniService {
     public boolean checkDisponibilita(Persona randomPersona, Turno turno) {
 
 
-        boolean result;
+        boolean result = true;
         ArrayList<Turno> turniIndisponibilita = randomPersona.getIndisponibilitaList();
 
-        if (turniIndisponibilita != null && turniIndisponibilita.contains(turno))
-            result = false;
-        else
-            result = true;
+        for (Turno singIndisp : turniIndisponibilita) {
+            if(singIndisp.getTipoTurno().equals(turno.getTipoTurno()))
+                result = false;
+        }
+
 
 
         return result;
