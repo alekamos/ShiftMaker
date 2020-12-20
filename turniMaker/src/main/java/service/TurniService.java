@@ -271,13 +271,22 @@ public class TurniService {
             //Se il turno non è del weekend ci vuole anche quello di ricerca
             boolean weekendDate = DateService.isWeekendDate(data);
             if (!weekendDate) {
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA));
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA));
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA,false));
+                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA,false));
 
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,false));
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,false));
-                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1,false));
-                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2,false));
+
+                //in questo caso dobbiamo distinguere i venerdì notte (festivi) dagli altri giorni
+                if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY) {
+                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1, true));
+                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2, true));
+                }else {
+                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1, false));
+                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2, false));
+                }
+
+
 
             }else{
                 turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,true));
