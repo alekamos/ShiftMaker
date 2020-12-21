@@ -3,12 +3,13 @@ package it.costanza.dao;
 import it.costanza.dao.Util.HibernateUtilH2;
 import it.costanza.entityDb.h2.CustomPersonGroup;
 import it.costanza.entityDb.h2.PersonGroup;
-import it.costanza.entityDb.h2.Persona;
 import it.costanza.entityDb.h2.TurniLocalEntity;
+import it.costanza.model.Persona;
 import it.costanza.model.Turno;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,22 +72,44 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
     }
 
 
-    public List<PersonGroup> getGroupBySettimanaTurno(Date dateMin, Date dateMax, String tipoTurno) {
+    public List<PersonGroup> getGroupBySettimanaTurno(Date dateMin, Date dateMax, String tipoTurno, ArrayList<Persona> personeDaEscludere) {
 
         Session session = HibernateUtilH2.getSessionFactory().openSession();
-        Query q = session.createNativeQuery("SELECT PERSONA, HIT FROM ( " +
+
+        String query = "SELECT PERSONA, HIT FROM ( " +
                 "SELECT COUNT(1) AS HIT,PERSONA_TURNO " +
                 "FROM TURNI_GENERATI " +
                 "WHERE DATA_TURNO >= :dateMin " +
                 "AND DATA_TURNO <= :dateMax " +
                 "AND TIPO_TURNO = :tipoTurno " +
                 "GROUP BY PERSONA_TURNO) " +
-                "RIGHT JOIN PERSONE ON PERSONA_TURNO = PERSONA " +
-                "ORDER BY HIT ASC, RAND()",PersonGroup.class);
+                "RIGHT JOIN PERSONE ON PERSONA_TURNO = PERSONA ";
+
+        if(personeDaEscludere.size()>0) {
+            query = query + " WHERE PERSONA NOT IN ( ";
+
+            for (int i = 0; i < personeDaEscludere.size(); i++) {
+                query = query + ":persona" + i;
+
+                if (i != personeDaEscludere.size() - 1)
+                    query = query + " , ";
+                else
+                    query = query + " )  ";
+            }
+        }
+
+        query = query + " ORDER BY HIT ASC, RAND()";
+
+
+        Query q = session.createNativeQuery(query,PersonGroup.class);
 
         q.setParameter("dateMin", dateMin);
         q.setParameter("dateMax", dateMax);
         q.setParameter("tipoTurno", tipoTurno);
+
+        for (int i = 0; i < personeDaEscludere.size(); i++) {
+            q.setParameter("persona"+i, personeDaEscludere.get(i).getNome());
+        }
 
         List<PersonGroup> out = q.getResultList();
 
@@ -183,35 +206,13 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
      * Viene effettuata una query che estrae tutte le persone in turno, estraendo la lista raggruppata dei turni fatti nel weekend in corso e la lista raggruppata di tutti i turni fatti nel weekend
      * @param turniWeekend turni del weekend in corso
      * @param totaleTurniFestivi turni totali festivi
+     * @param maxValue
+     * @param eslcusioniWe
      * @return
      */
-    public List<CustomPersonGroup> getCustomQueryTurniWe(ArrayList<Turno> turniWeekend, ArrayList<Turno> totaleTurniFestivi) {
+    public List<CustomPersonGroup> getCustomQueryTurniWe(ArrayList<Turno> turniWeekend, ArrayList<Turno> totaleTurniFestivi, Integer maxValue, ArrayList<Persona> eslcusioniWe) {
 
         int endIndex = 0;
-
-
-        /*
-        SELECT CURR.PERSONA,HIT_CURRENT,HIT_TOTAL FROM
-
-              (SELECT P.PERSONA,HIT_CURRENT FROM
-(SELECT COUNT(1) AS HIT_CURRENT,PERSONA_TURNO
-FROM TURNI_GENERATI
-WHERE RUOLO_TURNO = 'GIORNO' and data_turno = trunc(sysdate-1)
-OR RUOLO_TURNO = 'NOTTE' and data_turno = trunc(sysdate-2)
-GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE p
-ON P.PERSONA = PERSONA_TURNO) AS CURR,
-
-              (
-SELECT P.PERSONA,HIT_TOTAL FROM
-(SELECT COUNT(1) AS HIT_TOTAL,PERSONA_TURNO
-FROM TURNI_GENERATI
-WHERE RUOLO_TURNO = 'GIORNO' and data_turno > trunc(sysdate-5)
-OR RUOLO_TURNO = 'NOTTE' and data_turno > trunc(sysdate-5)
-GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE p
-ON P.PERSONA = PERSONA_TURNO) AS TOT
-WHERE CURR.PERSONA = TOT.PERSONA
-ORDER BY HIT_CURRENT DESC,HIT_TOTAL ASC
-        */
 
 
 
@@ -246,7 +247,23 @@ ORDER BY HIT_CURRENT DESC,HIT_TOTAL ASC
         }
 
 
-        query = query + "GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE p ON P.PERSONA = PERSONA_TURNO) AS TOT WHERE CURR.PERSONA = TOT.PERSONA ORDER BY HIT_CURRENT DESC,HIT_TOTAL DESC";
+        query = query + "GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE p ON P.PERSONA = PERSONA_TURNO) AS TOT  ";
+
+        query = query + " WHERE CURR.PERSONA = TOT.PERSONA ";
+
+        if(eslcusioniWe.size()>0)
+            query = query + " AND CURR.PERSONA NOT IN ( ";
+
+        for (int i = 0; i < eslcusioniWe.size(); i++) {
+            query = query + ":persona" + i;
+
+            if (i != eslcusioniWe.size() - 1)
+                query = query + " , ";
+            else
+                query = query + " )  ";
+        }
+
+        query = query + " ORDER BY HIT_CURRENT DESC,HIT_TOTAL DESC, RAND())";
 
         Session session = HibernateUtilH2.getSessionFactory().openSession();
         Query q = session.createNativeQuery(query,CustomPersonGroup.class);
@@ -260,6 +277,9 @@ ORDER BY HIT_CURRENT DESC,HIT_TOTAL ASC
             q.setParameter("tipo"+i+endIndex, totaleTurniFestivi.get(i).getTipoTurno());
             q.setParameter("date"+i+endIndex, totaleTurniFestivi.get(i).getData());
         }
+        for (int i = 0; i < eslcusioniWe.size(); i++) {
+            q.setParameter("persona"+i, eslcusioniWe.get(i).getNome());
+        }
 
 
         List<CustomPersonGroup> out = q.getResultList();
@@ -272,5 +292,86 @@ ORDER BY HIT_CURRENT DESC,HIT_TOTAL ASC
     }
 
 
+    public List<CustomPersonGroup> getCustomQueryTurniWeEscludiPersoneLimitMaxTurni(ArrayList<Turno> turniCurrWeOpposti, ArrayList<Turno> totaleTurniFestivi, Integer maxValue, ArrayList<Persona> personeEscluse) {
 
+        int endIndex = 0;
+
+
+
+        String query = "SELECT CURR.PERSONA AS PERSONA, nvl(HIT_CURRENT,0) AS HIT, nvl(HIT_TOTAL,0) AS TOTAL FROM (SELECT P.PERSONA,HIT_CURRENT FROM (SELECT COUNT(1) AS HIT_CURRENT,PERSONA_TURNO FROM TURNI_GENERATI WHERE ";
+
+        /**
+         * Turni del weekend in corso
+         */
+        for (int i = 0; i < turniCurrWeOpposti.size(); i++) {
+
+            query = query + " TIPO_TURNO = :tipo"+i+" and trunc(data_turno) = trunc( :date"+i+" ) ";
+            if(i!=turniCurrWeOpposti.size()-1)
+                query = query + " OR ";
+
+            endIndex=i;
+
+        }
+
+        query = query + "GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE p ON P.PERSONA = PERSONA_TURNO) AS CURR, ( SELECT P.PERSONA,HIT_TOTAL FROM (SELECT COUNT(1) AS HIT_TOTAL,PERSONA_TURNO FROM TURNI_GENERATI WHERE ";
+        //aumento di uno perchè partendo da 0 se no si sovrapporrebbero
+        endIndex++;
+        /**
+         * Turni totali di tutti i festivi
+         */
+        for (int i = 0; i < totaleTurniFestivi.size(); i++) {
+
+            query = query + " TIPO_TURNO = :tipo"+i+endIndex+" and trunc(data_turno) = trunc( :date"+i+endIndex+" ) ";
+            if(i!=totaleTurniFestivi.size()-1)
+                query = query + " OR ";
+
+        }
+
+
+        query = query + "GROUP BY PERSONA_TURNO) RIGHT JOIN PERSONE p ON P.PERSONA = PERSONA_TURNO) AS TOT WHERE CURR.PERSONA = TOT.PERSONA ";
+        query = query + "AND nvl(HIT_TOTAL,0) <= :maxTurniWeTot";
+
+        if(personeEscluse.size()>0)
+            query = query + " AND CURR.PERSONA NOT IN ( ";
+
+        for (int i = 0; i < personeEscluse.size(); i++) {
+            query = query + ":persona" + i;
+
+            if (i != personeEscluse.size() - 1)
+                query = query + " , ";
+            else
+                query = query + " )  ";
+        }
+
+
+
+
+        query = query + " ORDER BY HIT_CURRENT DESC,HIT_TOTAL DESC, rand() ";
+
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
+        Query q = session.createNativeQuery(query,CustomPersonGroup.class);
+
+        for (int i = 0; i < turniCurrWeOpposti.size(); i++) {
+            q.setParameter("tipo"+i, turniCurrWeOpposti.get(i).getTipoTurno());
+            q.setParameter("date"+i, turniCurrWeOpposti.get(i).getData());
+        }
+
+        for (int i = 0; i < totaleTurniFestivi.size(); i++) {
+            q.setParameter("tipo"+i+endIndex, totaleTurniFestivi.get(i).getTipoTurno());
+            q.setParameter("date"+i+endIndex, totaleTurniFestivi.get(i).getData());
+        }
+        for (int i = 0; i < personeEscluse.size(); i++) {
+            q.setParameter("persona"+i, personeEscluse.get(i).getNome());
+        }
+
+        q.setParameter("maxTurniWeTot", maxValue);
+
+        List<CustomPersonGroup> out = q.getResultList();
+
+
+
+        return out;
+
+
+    }
 }

@@ -76,6 +76,7 @@ public class LocalDbGenerator implements TurnoGenerator{
         for (Turno turno : skeletonTurni) {
             int giri = 1;
             boolean personaDaPiazzare = true;
+            ArrayList<Persona> personeDaEscludere = new ArrayList<>();
 
             while (personaDaPiazzare) {
 
@@ -91,7 +92,7 @@ public class LocalDbGenerator implements TurnoGenerator{
 
 
                     //scelgo una persona a casa
-                    Persona candidato = generatorService.getBestCandidateTurno(persone,turno,giri);
+                    Persona candidato = generatorService.getBestCandidateTurno(persone,turno,personeDaEscludere);
 
                     //controllo 1 la persona è disponibile
                     isDisponibile = turnoService.checkDisponibilita(candidato, turno);
@@ -130,7 +131,8 @@ public class LocalDbGenerator implements TurnoGenerator{
                         turnoLocalService.salvaLocal(finale);
                         personaDaPiazzare = false;
 
-                    }
+                    }else
+                        personeDaEscludere.add(candidato);
 
 
 
@@ -145,13 +147,6 @@ public class LocalDbGenerator implements TurnoGenerator{
                     turnoLocalService.salvaLocal(trnComplete);
                     turniFinale.add(trnComplete);
                     personaDaPiazzare = false;
-                }
-
-                //circuit breaker
-                giri++;
-                if (giri > persone.size()*3) {
-                    FailedGenerationTurno e = new FailedGenerationTurno("Turno fallito sul giorno" + turno.getData() + " " + turno.getTipoTurno() + " " + turno.getRuoloTurno());
-                    throw e;
                 }
 
             }

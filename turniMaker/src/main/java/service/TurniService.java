@@ -688,6 +688,19 @@ public class TurniService {
 
 
     }
+
+    public ArrayList<Turno> getTurniOppostiWe(ArrayList<Turno> turniCurrWeekend,Turno turnoDaAssegnare) {
+
+        ArrayList<Turno> output = new ArrayList<>();
+
+        for (Turno turno : turniCurrWeekend) {
+            if(!turno.getTipoTurno().equals(turnoDaAssegnare.getTipoTurno()))
+                output.add(turno);
+        }
+
+        return output;
+
+    }
 }
 
 
