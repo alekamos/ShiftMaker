@@ -346,7 +346,7 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
 
 
 
-        query = query + " ORDER BY HIT_CURRENT DESC,HIT_TOTAL DESC, rand() ";
+        query = query + " ORDER BY HIT_CURRENT DESC,HIT_TOTAL DESC, RAND() ";
 
         Session session = HibernateUtilH2.getSessionFactory().openSession();
         Query q = session.createNativeQuery(query,CustomPersonGroup.class);

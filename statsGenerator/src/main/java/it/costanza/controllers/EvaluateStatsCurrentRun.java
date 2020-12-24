@@ -25,7 +25,7 @@ public class EvaluateStatsCurrentRun {
 
         while (run==null){
             System.out.println("Still nothing wait 1s... ");
-            Thread.sleep(1000);
+            Thread.sleep(10000);
 
             run = runDao.getRunInCorso();
             if(i++>circuitBreaker)

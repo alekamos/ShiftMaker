@@ -77,8 +77,8 @@ public class EvaluateStatsCurrentRunCommand implements ICommand {
                 System.out.println("Elaborate stat Turno: " + turniGeneratiMonitorEntity.getIdCalTurni()+" progr: "+i+++"/"+turniDaStatistic.size()+" Elapsed: "+(System.currentTimeMillis()-t1)+" ms");
 
             }
-            System.out.println("Wait 2s..");
-            Thread.sleep(2000);
+            System.out.println("Wait 10s..");
+            Thread.sleep(10000);
 
 
             //riverifico se c'è qualcosa da fare

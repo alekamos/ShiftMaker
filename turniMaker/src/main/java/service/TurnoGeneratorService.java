@@ -55,14 +55,10 @@ public class TurnoGeneratorService {
             List<CustomPersonGroup> groupByWeekend = localDao.getCustomQueryTurniWeEscludiPersoneLimitMaxTurni(turniCurrWeOpposti,Const.TURNI_FESTIVI_WEEKEND,maxValue,eslcusioniWe);
 
 
-            if(groupByWeekend==null || groupByWeekend!=null && groupByWeekend.size()==0)
-                groupByWeekend = localDao.getCustomQueryTurniWe(turniCurrWeekend,Const.TURNI_FESTIVI_WEEKEND,maxValue,eslcusioniWe);
-
-
             //il criterio qui è scorrere la lista fino a trovare il candidato che ha lavorato 1 giorno già il weekend (chi ne ha fatti 2 è da escludere),
             //che non abbia ancora sforato il numero massimo maxValue di weekend per persona
-
-            persona = groupByWeekend.get(0).getPersona();
+            if(groupByWeekend.size()>0)
+                persona = groupByWeekend.get(0).getPersona();
         }
 
 

@@ -234,7 +234,8 @@ public class TurniService {
         ArrayList<Turno> turniIndisponibilita = randomPersona.getIndisponibilitaList();
 
         for (Turno singIndisp : turniIndisponibilita) {
-            if(singIndisp.getTipoTurno().equals(turno.getTipoTurno()))
+            if(DateService.isSameDay(singIndisp.getData(),turno.getData()) &&
+                    singIndisp.getTipoTurno().equals(turno.getTipoTurno()))
                 result = false;
         }
 
@@ -579,7 +580,8 @@ public class TurniService {
         Calendar cal = Calendar.getInstance();
         cal.setTime(turnoDaAssegnare.getData());
         int meseCorrente = cal.get(Calendar.MONTH);
-        ArrayList<Date> nEsimaSettimanaMensileFestiva = DateService.getNEsimaSettimanaMensileFestiva(Const.CURRENT_ANNO, Const.CURRENT_MESE, DateService.getWeekendNumberOfDay(turnoDaAssegnare.getData()));
+        int weekendNumberOfDay = DateService.getWeekendNumberOfDay(turnoDaAssegnare.getData());
+        ArrayList<Date> nEsimaSettimanaMensileFestiva = DateService.getNEsimaSettimanaMensileFestiva(Const.CURRENT_ANNO, Const.CURRENT_MESE, weekendNumberOfDay);
 
 
 

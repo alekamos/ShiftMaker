@@ -72,11 +72,12 @@ public class LocalDbGenerator implements TurnoGenerator{
         //svuoto cache locale
         turnoLocalService.svuotaLocal();
 
-
+        long t1 = 0;
         for (Turno turno : skeletonTurni) {
             int giri = 1;
             boolean personaDaPiazzare = true;
             ArrayList<Persona> personeDaEscludere = new ArrayList<>();
+
 
             while (personaDaPiazzare) {
 

@@ -62,6 +62,8 @@ public class MakeTurniSmart {
 
         TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,skeletonOttimizzato,turniGiaAssergnati,runEntity);
 
+
+        
         long t10=System.currentTimeMillis();
         for (int i = 0; i < numeroGiriTurni; i++) {
             long t1 = System.currentTimeMillis();
