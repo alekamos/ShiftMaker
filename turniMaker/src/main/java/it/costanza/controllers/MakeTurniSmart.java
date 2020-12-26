@@ -5,16 +5,18 @@ import it.costanza.controllers.command.generator.TurnoGenerator;
 import it.costanza.dao.PersonaDao;
 import it.costanza.dao.RunDao;
 import it.costanza.entityDb.mysql.RunEntity;
-import it.costanza.model.*;
-import service.*;
+import it.costanza.model.Const;
+import it.costanza.model.FailedGenerationTurno;
+import it.costanza.model.Persona;
+import it.costanza.model.Turno;
+import service.Assemblers;
+import service.PropertiesServices;
+import service.TurniService;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 
 public class MakeTurniSmart {
 

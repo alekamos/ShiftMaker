@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TurniService {
@@ -661,22 +660,40 @@ public class TurniService {
      * @param skeletonTurni
      * @return
      */
-    public ArrayList<Turno> ordinaOttimizzaTurni(ArrayList<Turno> skeletonTurni) {
+    public ArrayList<Turno> ordinaOttimizzaTurni(ArrayList<Turno> skeletonTurni) throws IOException {
 
 
         ArrayList<Turno> turniFeriali = new ArrayList<>();
         ArrayList<Turno> turniFestivi = new ArrayList<>();
 
 
+        ArrayList<GiornoExcel> turniIndispCount = contaIndisponibPerDay();
+        Collections.sort(turniIndispCount);
+
+//prendo l'ultimo elemento
+        int minIndisp = turniIndispCount.get(turniIndispCount.size()-1).getCountIndisp();
+
+//prima i turni critici, fino che ci sono indisponibilità superiori alla norma (ultimo elemento dell'array ordinato lui piazza)
+        for (int i = 0; i < turniIndispCount.size() && turniIndispCount.get(i).getCountIndisp()>minIndisp; i++) {
+
+            for (Turno turno : skeletonTurni) {
+                if(DateService.isSameDay(turniIndispCount.get(i).getDate(),turno.getData())) {
+                    if (turno.isFestivo())
+                        turniFestivi.add(turno);
+                    else
+                        turniFeriali.add(turno);
+                }
+            }
+        }
 
 
-
-
-
+        /**
+         * Qui devo mettere solo i turni rimanenti ovvero i turni che non sono ancora stati inseriti
+         */
         for (Turno turno : skeletonTurni) {
-            if(turno.isFestivo())
+            if(turno.isFestivo() && !turniFestivi.contains(turno))
                 turniFestivi.add(turno);
-            else
+            else if (!turno.isFestivo() && !turniFestivi.contains(turno))
                 turniFeriali.add(turno);
         }
 
@@ -690,6 +707,57 @@ public class TurniService {
 
 
     }
+
+    /**
+     * Conta il numero di indisponibilita per giornata
+     * @return
+     * @throws IOException
+     */
+    private ArrayList<GiornoExcel> contaIndisponibPerDay() throws IOException {
+
+        FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
+
+
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet riga = workbook.getSheetAt(0);
+
+
+        ArrayList<GiornoExcel> lista = new ArrayList<>();
+        //conto quando finiscono le celle
+        int maxCell=  riga.getRow(0).getLastCellNum();
+
+        //ciclo dalla prima all'ultioma cella per singola riga
+        for (int dayIndex = 1; dayIndex < maxCell; dayIndex++) {
+
+            int tmpCount = 0;
+            //mi creo l'iteretor che resetterò iogni volta
+            Iterator<Row> iterator = riga.iterator();
+            //ciclo tutte le righe
+            while (iterator.hasNext()) {
+                Row nextRow = iterator.next();
+
+                //se la cella non è la prima riga, è diversa da null, e non ha la stringa vuota (quindi contiene un indisponibilita) aumento il contatore
+                if(nextRow.getRowNum()>0 && nextRow.getCell(dayIndex)!=null && !"".equals(nextRow.getCell(dayIndex).getStringCellValue()))
+                    tmpCount++;
+
+            }
+
+            GiornoExcel data = new GiornoExcel();
+            data.setDate(riga.getRow(0).getCell(dayIndex).getDateCellValue());
+            data.setCountIndisp(tmpCount);
+            lista.add(data);
+
+        }
+
+        return lista;
+
+    }
+
+
+
+
+
+
 
     public ArrayList<Turno> getTurniOppostiWe(ArrayList<Turno> turniCurrWeekend,Turno turnoDaAssegnare) {
 

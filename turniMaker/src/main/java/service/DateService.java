@@ -8,7 +8,12 @@ import java.util.Iterator;
 public class DateService {
 
 
-
+    /**
+     * Cerca se è lo stesso giorno senza badare all'orario
+     * @param date1
+     * @param date2
+     * @return
+     */
     public static boolean isSameDay(Date date1, Date date2) {
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(date1);
