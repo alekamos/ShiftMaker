@@ -29,11 +29,18 @@ public class MakeTurniSmart {
 
         TurniService turniService = new TurniService();
         ArrayList<Turno> turniGiaAssergnati;
+        boolean lancioExt = false;
 
-
+        RunEntity runEntity=null;
         int numeroGiriTurni = 0;
-        if(args!=null && args.length>0)
+        if(args!=null && args.length>0) {
             numeroGiriTurni = Integer.parseInt(args[0]);
+            runEntity = new RunEntity();
+            runEntity.setIdRun(Long.parseLong(args[1]));
+            lancioExt = true;
+
+
+        }
 
         //Configurazioni
         if(numeroGiriTurni==0)
@@ -42,12 +49,15 @@ public class MakeTurniSmart {
         //salvo il run sul db
         RunDao dao = new RunDao();
         PersonaDao personaLocalDao = new PersonaDao();
-        RunEntity runEntity = new RunEntity();
-        runEntity.setAnnomese(String.valueOf(Const.CURRENT_ANNO+Const.CURRENT_MESE));
-        runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
-        runEntity.setTipoRun("MakeTurniSmart_"+numeroGiriTurni);
-        Long idRun = dao.salva(runEntity);
-        System.out.println("idRun "+idRun);
+        Long idRun = 0l;
+        if(runEntity==null) {
+            runEntity = new RunEntity();
+            runEntity.setAnnomese(String.valueOf(Const.CURRENT_ANNO + Const.CURRENT_MESE));
+            runEntity.setDataInizioRun(new Timestamp(new Date().getTime()));
+            runEntity.setTipoRun("MakeTurniSmart_" + numeroGiriTurni);
+            idRun = dao.salva(runEntity);
+            System.out.println("idRun generato" + idRun);
+        }
 
 
         //caricamento persone
@@ -63,10 +73,13 @@ public class MakeTurniSmart {
         //caricamento turni
         ArrayList<Turno> turniMese = turniService.caricaPatternTurniMese();
         //ordino l'array in maniera tale da mettere prima i giorni festivi
-        ArrayList<Turno> skeletonOttimizzato = turniService.ordinaOttimizzaTurni(turniMese);
 
         //caricamento turni gia assegnati
         turniGiaAssergnati = turniService.caricaTurniSchedulati();
+
+        ArrayList<Turno> skeletonOttimizzato = turniService.ordinaOttimizzaTurni(turniMese,turniGiaAssergnati);
+
+
 
         TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,skeletonOttimizzato,turniGiaAssergnati,runEntity);
 
@@ -88,9 +101,13 @@ public class MakeTurniSmart {
             System.out.println(i+" Concluso in: "+(System.currentTimeMillis()-t1)+"ms");
         }
 
-        runEntity.setDataFineRun(new Timestamp(new Date().getTime()));
-        runEntity.setIdRun(idRun);
-        dao.update(runEntity);
+
+        if(!lancioExt) {
+            runEntity.setDataFineRun(new Timestamp(new Date().getTime()));
+            runEntity.setIdRun(idRun);
+            dao.update(runEntity);
+
+        }
 
 
 

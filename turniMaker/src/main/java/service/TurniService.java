@@ -426,7 +426,7 @@ public class TurniService {
     }
 
     /**
-     * Carica i turni già schedulati dal file excel
+     * Carica i turni già schedulati dal file excel assegna anche se il turno è feriale o festivo in base al giorno
      * @return
      * @throws IOException
      */
@@ -435,6 +435,7 @@ public class TurniService {
         ArrayList<Turno> turniSchedulatiOut = new ArrayList<>();
 
         FileInputStream file = new FileInputStream("commonFiles/dati.xlsx");
+        Calendar cal = Calendar.getInstance();
 
 
 
@@ -457,6 +458,10 @@ public class TurniService {
                     turno.setRuoloTurno(Const.RUOLO_RICERCA);
                     turno.setData(nextRow.getCell(0).getDateCellValue());
                     turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+
+
+
+
                     turniSchedulatiOut.add(turno);
                 }
                 i++;
@@ -467,7 +472,13 @@ public class TurniService {
                     turno.setRuoloTurno(Const.RUOLO_REPARTO_1);
                     turno.setData(nextRow.getCell(0).getDateCellValue());
                     turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+
+                    cal.setTime(turno.getData());
+                    if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)
+                        turno.setFestivo(true);
                     turniSchedulatiOut.add(turno);
+
+
                 }
                 i++;
                 //GIORNO reparto 1
@@ -477,6 +488,10 @@ public class TurniService {
                     turno.setRuoloTurno(Const.RUOLO_REPARTO_2);
                     turno.setData(nextRow.getCell(0).getDateCellValue());
                     turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+
+                    cal.setTime(turno.getData());
+                    if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)
+                        turno.setFestivo(true);
                     turniSchedulatiOut.add(turno);
                 }
                 i++;
@@ -497,6 +512,10 @@ public class TurniService {
                     turno.setRuoloTurno(Const.RUOLO_REPARTO_1);
                     turno.setData(nextRow.getCell(0).getDateCellValue());
                     turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+
+                    cal.setTime(turno.getData());
+                    if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY)
+                        turno.setFestivo(true);
                     turniSchedulatiOut.add(turno);
                 }
 
@@ -508,6 +527,10 @@ public class TurniService {
                     turno.setRuoloTurno(Const.RUOLO_REPARTO_2);
                     turno.setData(nextRow.getCell(0).getDateCellValue());
                     turno.setPersonaInTurno(new Persona(nextRow.getCell(i).getStringCellValue()));
+
+                    cal.setTime(turno.getData());
+                    if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY)
+                        turno.setFestivo(true);
                     turniSchedulatiOut.add(turno);
                 }
 
@@ -673,7 +696,7 @@ public class TurniService {
      * @param skeletonTurni
      * @return
      */
-    public ArrayList<Turno> ordinaOttimizzaTurni(ArrayList<Turno> skeletonTurni) throws IOException {
+    public ArrayList<Turno> ordinaOttimizzaTurni(ArrayList<Turno> skeletonTurni,ArrayList<Turno> turniSchedulati) throws IOException {
 
 
         ArrayList<Turno> turniFeriali = new ArrayList<>();
@@ -683,15 +706,25 @@ public class TurniService {
         ArrayList<GiornoExcel> turniIndispCount = contaIndisponibPerDay();
         Collections.sort(turniIndispCount);
 
-//prendo l'ultimo elemento
+        //prendo l'ultimo elemento
         int minIndisp = turniIndispCount.get(turniIndispCount.size()-1).getCountIndisp();
 
-//prima i turni critici, fino che ci sono indisponibilità superiori alla norma (ultimo elemento dell'array ordinato lui piazza)
+        //prima i turni già schedulati così sa già prima cosa deve fare nei calcoli
+        for (Turno turno : turniSchedulati) {
+            if(turno.isFestivo() && !turniFestivi.contains(turno))
+                turniFestivi.add(turno);
+            else if (!turno.isFestivo() && !turniFeriali.contains(turno))
+                turniFeriali.add(turno);
+        }
+
+
+        //prima i turni critici, fino che ci sono indisponibilità superiori alla norma (ultimo elemento dell'array ordinato lui piazza)
         for (int i = 0; i < turniIndispCount.size() && turniIndispCount.get(i).getCountIndisp()>minIndisp; i++) {
 
             for (Turno turno : skeletonTurni) {
                 if(DateService.isSameDay(turniIndispCount.get(i).getDate(),turno.getData())) {
-                    if (turno.isFestivo())
+                    //se è un festivo e non è già stato aggiunto prima tra i turni schedulati
+                    if (turno.isFestivo() && !turniFestivi.contains(turno))
                         turniFestivi.add(turno);
                 }
             }

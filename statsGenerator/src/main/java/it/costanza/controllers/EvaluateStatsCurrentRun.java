@@ -30,9 +30,6 @@ public class EvaluateStatsCurrentRun {
             run = runDao.getRunInCorso();
             if(i++>circuitBreaker)
                 return;
-
-
-
         }
 
         System.out.println("Run PARTITO in corso: " + run.getIdRun());

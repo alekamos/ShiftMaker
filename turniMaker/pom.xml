@@ -47,6 +47,7 @@
   </dependencies>
 
   <build>
+    <finalName>shiftMaker</finalName>
     <pluginManagement>
       <plugins>
         <plugin>
