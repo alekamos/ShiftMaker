@@ -61,7 +61,7 @@
             <finalName>statsGenerator</finalName>
             <archive>
               <manifest>
-                <mainClass>it.costanza.controllers.MakeTurni</mainClass>
+                <mainClass>it.costanza.controllers.EvaluateStatsCurrentRun</mainClass>
               </manifest>
             </archive>
           </configuration>

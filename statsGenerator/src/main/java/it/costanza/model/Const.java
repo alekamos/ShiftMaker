@@ -37,11 +37,8 @@ public class Const {
     public static int CURRENT_ANNO = 0;
     public static int CURRENT_MESE = 0;
     public static double  K_TURNI = 1;
-    public static double  K_GIORNO = 1;
     public static double  K_NOTTE = 1;
     public static double  K_WE = 1;
-    public static double  K_PRES_FES = 1;
-    public static double  K_SD_FES = 1;
     public static double  K_SD_FER = 1;
 
 
@@ -51,13 +48,6 @@ public class Const {
         try {
             CURRENT_ANNO = PropertiesServices.getAnno();
             CURRENT_MESE = PropertiesServices.getMese();
-            K_TURNI = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_TURNI));
-            K_GIORNO = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_GIORNO));
-            K_NOTTE = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_NOTTE));
-            K_WE = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_WE));
-            K_PRES_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_PRES_FES));
-            K_SD_FES = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_FES));
-            K_SD_FER = Double.parseDouble(PropertiesServices.getProperties(Const.PESO_SD_PRES_FER));
         } catch (IOException e) {
             e.printStackTrace();
         }

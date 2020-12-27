@@ -24,14 +24,20 @@ public class MakeTurniSmart {
     public static void main(String[] args) throws IOException, FailedGenerationTurno {
 
 
+        long t0 = System.currentTimeMillis();
+
 
         TurniService turniService = new TurniService();
         ArrayList<Turno> turniGiaAssergnati;
 
 
+        int numeroGiriTurni = 0;
+        if(args!=null && args.length>0)
+            numeroGiriTurni = Integer.parseInt(args[0]);
 
         //Configurazioni
-        int numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
+        if(numeroGiriTurni==0)
+            numeroGiriTurni = Integer.parseInt(PropertiesServices.getProperties("numeroGiri"));
 
         //salvo il run sul db
         RunDao dao = new RunDao();
@@ -65,15 +71,13 @@ public class MakeTurniSmart {
         TurnoGenerator commandAlgoritmo = new LocalDbGenerator(persone,skeletonOttimizzato,turniGiaAssergnati,runEntity);
 
 
-        
-        long t10=System.currentTimeMillis();
+        System.out.println("Operazioni preliminare concluse in: "+(System.currentTimeMillis()-t0)+"ms");
+
         for (int i = 0; i < numeroGiriTurni; i++) {
             long t1 = System.currentTimeMillis();
 
             try {
                 //Prima genero solo i weekend
-
-
                 commandAlgoritmo.generate();
 
 
@@ -91,7 +95,7 @@ public class MakeTurniSmart {
 
 
         long t11=System.currentTimeMillis();
-        System.out.println("Run concluso in :" +(t11-t10) +" ms");
+        System.out.println("Run concluso in :" +(t11-t0) +" ms");
 
 
 

@@ -91,7 +91,7 @@ public class StatService {
         Double sdPresenzaWe = MathService.getDeviazioneStandard(presenzaWend, mediaPresenzaWe );
 
         Double sdPresenzaSettimanale = Math.sqrt(Math.pow(sdPresenza1, 2) + Math.pow(sdPresenza2, 2) + Math.pow(sdPresenza3, 2) + Math.pow(sdPresenza4, 2)+ Math.pow(sdPresenza5, 2));
-        Double score = Math.sqrt(Const.K_TURNI * Math.pow(sdTurni, 2) + Const.K_WE * Math.pow(sdTurniWe, 2) + Const.K_GIORNO * Math.pow(sdTurniGg, 2) + Const.K_NOTTE * Math.pow(sdTurniNotte, 2) + Const.K_SD_FER * Math.pow(sdPresenzaSettimanale, 2));
+        Double score = Math.sqrt(Const.K_TURNI * Math.pow(sdTurni, 2) + Const.K_WE * Math.pow(sdTurniWe, 2) + Const.K_NOTTE * Math.pow(sdTurniNotte, 2) + Const.K_SD_FER * Math.pow(sdPresenzaSettimanale, 2));
 
         TurniGeneratiStatsEntity run = new TurniGeneratiStatsEntity();
 

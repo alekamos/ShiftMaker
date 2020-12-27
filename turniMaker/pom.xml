@@ -57,14 +57,39 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
           <configuration>
-            <finalName>turniRiaMaker</finalName>
             <archive>
               <manifest>
-                <mainClass>it.costanza.controllers.MakeTurni</mainClass>
+                <addClasspath>true</addClasspath>
+                <mainClass>it.costanza.controllers.MakeTurniSmart</mainClass>
               </manifest>
             </archive>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.4</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <finalName>final</finalName>
+                <transformers>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                    <manifestEntries>
+                      <Main-Class>it.costanza.controllers.MakeTurniSmart</Main-Class>
+                      <Build-Number>20201227</Build-Number>
+                    </manifestEntries>
+                  </transformer>
+                </transformers>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>

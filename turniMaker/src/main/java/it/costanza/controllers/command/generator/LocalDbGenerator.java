@@ -8,13 +8,12 @@ import it.costanza.model.Const;
 import it.costanza.model.FailedGenerationTurno;
 import it.costanza.model.Persona;
 import it.costanza.model.Turno;
-import service.Assemblers;
-import service.TurniLocalService;
-import service.TurniService;
-import service.TurnoGeneratorService;
+import service.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class LocalDbGenerator implements TurnoGenerator{
 
@@ -93,7 +92,8 @@ public class LocalDbGenerator implements TurnoGenerator{
 
 
                     //scelgo una persona a casa
-                    Persona candidato = generatorService.getBestCandidateTurno(persone,turno,personeDaEscludere);
+                    Persona candidato = generatorService.getBestCandidateTurno(persone,turno,personeDaEscludere,turniFinale);
+
 
                     //controllo 1 la persona è disponibile
                     isDisponibile = turnoService.checkDisponibilita(candidato, turno);
@@ -105,10 +105,10 @@ public class LocalDbGenerator implements TurnoGenerator{
                     }
 
                     //controllo che non sia gia in turno come altro reparto ma tra gli assegnati
+
                     if (isDisponibile && isNotGiaInTurno) {
                         isNotGiaInTurnoAssegnati = turnoService.checkIsNotGiaInTurnoTraIPrenotati(candidato, turno, turniAssegnati);
                     }
-
 
                     if (isDisponibile && isNotGiaInTurno && isNotGiaInTurnoAssegnati) {
                         //controllo che il turno precedente non abbia fatto notte o giorno

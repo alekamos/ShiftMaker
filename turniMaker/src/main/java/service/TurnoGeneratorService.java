@@ -18,22 +18,38 @@ public class TurnoGeneratorService {
 
 
     /**
-     * Decide il miglior candidato sulla base dei turni che fa in settimana,  se l'index è 1 prende il primo (il milgiore) se , 2 il secondo e via discorrendo
+     * Decide il miglior candidato sulla base dei turni che fa in settimana
      * @param persone
      * @param turnoDaAssegnare
      * @return
      */
-    public Persona getBestCandidateTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare,ArrayList<Persona> eslcusioniWe) throws FailedGenerationTurno {
+    public Persona getBestCandidateTurno(ArrayList<Persona> persone, Turno turnoDaAssegnare,ArrayList<Persona> esclusioniPersone,ArrayList<Turno> turniAssegnati) throws FailedGenerationTurno {
 
         TurniLocalDao localDao = new TurniLocalDao();
         TurniService service = new TurniService();
         String persona = "";
 
+//Escludo eventuali persone dai turni proibiti
+        ArrayList<Turno> turniDaEscludere = service.getTurniDaEscludere(turnoDaAssegnare);
+        List<PersonGroup> personeEscluse = localDao.getPersoneInTurniProibiti(turniDaEscludere);
+        for (PersonGroup personGroup : personeEscluse) {
+            esclusioniPersone.add(new Persona(personGroup.getPersona()));
+        }
 
 
+
+
+/**
+ * Caso in cui il turno è non ferstivo, in questo caso si sceglie il miglior cadindato ovvero una lista ordinata tra quelli che hanno fatto giorno e notte durante la settimana per tenere un buon equilibrio
+ * Vengono escluse le persone che hanno già fatto turni i giorni precedenti o successivi
+ */
         if(!turnoDaAssegnare.isFestivo()) {
             ArrayList<Date> listaDate = DateService.getNEsimaSettimanaMensileFeriale(Const.CURRENT_ANNO, Const.CURRENT_MESE, DateService.getNumeroSettimanaFeriale(turnoDaAssegnare.getData()));
-            List<PersonGroup> groupBySettimanaTurno = localDao.getGroupBySettimanaTurno(listaDate.get(0), listaDate.get(listaDate.size() - 1), turnoDaAssegnare.getTipoTurno(),eslcusioniWe);
+            List<PersonGroup> groupBySettimanaTurno = localDao.getGroupBySettimanaTurno(listaDate.get(0), listaDate.get(listaDate.size() - 1), turnoDaAssegnare.getTipoTurno(),esclusioniPersone);
+
+            if(groupBySettimanaTurno.size()==0)
+                throw new FailedGenerationTurno("Nessuno disponibile su : "+turnoDaAssegnare.getData()+" "+turnoDaAssegnare.getTipoTurno()+" "+turnoDaAssegnare.getRuoloTurno());
+
             persona = groupBySettimanaTurno.get(0).getPersona();
 
 
@@ -47,12 +63,13 @@ public class TurnoGeneratorService {
             ArrayList<Turno> turniCurrWeekend = service.getTurniWeekendDelTurno(turnoDaAssegnare);
 
             /**
-             * Primo tentativo mi cerco quelli che, non hanno ancora completato il target turni mensile
+             * cerco quelli che, non hanno ancora completato il target turni mensile
              * Hanno nel we lavorato già una volta ma nel turno opposto (se sto cercando una notte mi cerco tra i giorni, se sto cercando tra i giorni mi cerco una notte)
              */
             ArrayList<Turno> turniCurrWeOpposti = service.getTurniOppostiWe(turniCurrWeekend,turnoDaAssegnare);
 
-            List<CustomPersonGroup> groupByWeekend = localDao.getCustomQueryTurniWeEscludiPersoneLimitMaxTurni(turniCurrWeOpposti,Const.TURNI_FESTIVI_WEEKEND,maxValue,eslcusioniWe);
+
+            List<CustomPersonGroup> groupByWeekend = localDao.getCustomQueryTurniWeEscludiPersoneLimitMaxTurni(turniCurrWeOpposti,Const.TURNI_FESTIVI_WEEKEND,maxValue,esclusioniPersone);
 
 
             //il criterio qui è scorrere la lista fino a trovare il candidato che ha lavorato 1 giorno già il weekend (chi ne ha fatti 2 è da escludere),

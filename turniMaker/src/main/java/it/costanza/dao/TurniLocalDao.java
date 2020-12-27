@@ -374,4 +374,45 @@ public class TurniLocalDao implements Crud<TurniLocalEntity> {
 
 
     }
+
+    public List<PersonGroup> getPersoneInTurniProibiti(ArrayList<Turno> turniDaEscludere) {
+
+        int endIndex = 0;
+
+
+
+        String query = "SELECT DISTINCT(PERSONA_TURNO) as PERSONA, 0 AS HIT FROM TURNI_GENERATI WHERE ";
+
+        /**
+         * Turni del weekend proibiti
+         */
+        for (int i = 0; i < turniDaEscludere.size(); i++) {
+
+            query = query + " TIPO_TURNO = :tipo"+i+" and trunc(data_turno) = trunc( :date"+i+" ) ";
+            if(i!=turniDaEscludere.size()-1)
+                query = query + " OR ";
+
+            endIndex=i;
+
+        }
+
+
+        Session session = HibernateUtilH2.getSessionFactory().openSession();
+        Query q = session.createNativeQuery(query,PersonGroup.class);
+
+        for (int i = 0; i < turniDaEscludere.size(); i++) {
+            q.setParameter("tipo"+i, turniDaEscludere.get(i).getTipoTurno());
+            q.setParameter("date"+i, turniDaEscludere.get(i).getData());
+        }
+
+
+
+        List<PersonGroup> out = q.getResultList();
+
+
+
+        return out;
+
+
+    }
 }

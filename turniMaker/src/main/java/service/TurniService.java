@@ -261,43 +261,56 @@ public class TurniService {
 
         ArrayList<Turno> turni = new ArrayList<>();
 
-        Calendar cal = Calendar.getInstance();
+
 
 
 
         ArrayList<Date> datesOfMonth = DateService.getDatesOfMonth(Const.CURRENT_ANNO, Const.CURRENT_MESE);
         for (Date data : datesOfMonth) {
-            cal.setTime(data);
 
-            //Se il turno non è del weekend ci vuole anche quello di ricerca
-            boolean weekendDate = DateService.isWeekendDate(data);
-            if (!weekendDate) {
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA,false));
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA,false));
 
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,false));
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,false));
+            turni.addAll(generaSkeletonTurniGiorno(data));
 
-                //in questo caso dobbiamo distinguere i venerdì notte (festivi) dagli altri giorni
-                if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY) {
-                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1, true));
-                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2, true));
-                }else {
-                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1, false));
-                    turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2, false));
-                }
+
+        }
+
+        return turni;
+    }
 
 
 
-            }else{
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,true));
-                turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,true));
-                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1,true));
-                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2,true));
+
+    public static ArrayList<Turno> generaSkeletonTurniGiorno(Date data) {
+
+        ArrayList<Turno> turni = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(data);
+
+        //Se il turno non è del weekend ci vuole anche quello di ricerca
+        boolean weekendDate = DateService.isWeekendDate(data);
+        if (!weekendDate) {
+            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_RICERCA,false));
+            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_URGENTISTA,false));
+
+            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,false));
+            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,false));
+
+            //in questo caso dobbiamo distinguere i venerdì notte (festivi) dagli altri giorni
+            if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY) {
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1, true));
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2, true));
+            }else {
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1, false));
+                turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2, false));
             }
 
 
 
+        }else{
+            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_1,true));
+            turni.add(new Turno(data, Const.GIORNO, Const.RUOLO_REPARTO_2,true));
+            turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_1,true));
+            turni.add(new Turno(data, Const.NOTTE, Const.RUOLO_REPARTO_2,true));
         }
 
         return turni;
@@ -680,8 +693,6 @@ public class TurniService {
                 if(DateService.isSameDay(turniIndispCount.get(i).getDate(),turno.getData())) {
                     if (turno.isFestivo())
                         turniFestivi.add(turno);
-                    else
-                        turniFeriali.add(turno);
                 }
             }
         }
@@ -693,7 +704,7 @@ public class TurniService {
         for (Turno turno : skeletonTurni) {
             if(turno.isFestivo() && !turniFestivi.contains(turno))
                 turniFestivi.add(turno);
-            else if (!turno.isFestivo() && !turniFestivi.contains(turno))
+            else if (!turno.isFestivo() && !turniFeriali.contains(turno))
                 turniFeriali.add(turno);
         }
 
@@ -769,6 +780,66 @@ public class TurniService {
         }
 
         return output;
+
+    }
+
+    /**
+     * Serve per la generazione del cadidato, mi esclude i turni in cui non deve essere presente il candidato
+     * Es: se sto scegliendo giorno X giorno, devo escludere gli altri turni del giorno corrente, la notte precedente
+     * Sono i controlli che si fanno post generazione del candidato in pratica
+     * @param turnoDaAssegnare
+     * @return
+     */
+    public ArrayList<Turno> getTurniDaEscludere(Turno turnoDaAssegnare) {
+
+        ArrayList<Turno> output = new ArrayList<>();
+
+
+        //Gli altri turni del giorno
+        //Non è un problema tenere il turno stesso tanto non è assegnato, questo mi garantisce che una persona ci sia una sola volta al giorno
+        Turno t1 = new Turno();
+        Turno t2 = new Turno();
+        t1.setData(turnoDaAssegnare.getData());
+        t2.setData(turnoDaAssegnare.getData());
+        t1.setTipoTurno(Const.GIORNO);
+        t2.setTipoTurno(Const.NOTTE);
+
+        output.add(t1);
+        output.add(t2);
+
+
+        //se è giorno il giorno dopo può fare sia giorno che notte
+        //Se notte il giorno dopo non può fare ne notte ne giorno
+        //se notte il giorno prima non può fare notte(è su uno smonto)
+        if(turnoDaAssegnare.getTipoTurno().equals(Const.NOTTE)) {
+            Turno t3 = new Turno();
+            Turno t4 = new Turno();
+            Turno t5 = new Turno();
+            t3.setData(DateService.aumentaTogliGiorno(turnoDaAssegnare.getData(),1));
+            t4.setData(DateService.aumentaTogliGiorno(turnoDaAssegnare.getData(),1));
+            t3.setTipoTurno(Const.GIORNO);
+            t4.setTipoTurno(Const.NOTTE);
+
+            t5.setData(DateService.aumentaTogliGiorno(turnoDaAssegnare.getData(),-1));
+            t5.setTipoTurno(Const.NOTTE);
+
+            output.add(t3);
+            output.add(t4);
+            output.add(t5);
+        }
+
+        //se giorno il giorno prima non può fare notte
+        if(turnoDaAssegnare.getTipoTurno().equals(Const.GIORNO)) {
+            Turno t6 = new Turno();
+            t6.setData(DateService.aumentaTogliGiorno(turnoDaAssegnare.getData(),-1));
+            t6.setTipoTurno(Const.NOTTE);
+
+            output.add(t6);
+
+        }
+
+        return output;
+
 
     }
 }
