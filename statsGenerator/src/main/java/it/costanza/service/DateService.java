@@ -1,5 +1,8 @@
 package it.costanza.service;
 
+import it.costanza.model.Const;
+import it.costanza.model.Turno;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,15 +21,7 @@ public class DateService {
                 && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static boolean isWeekendDate(Date dataCorrenteInput) {
-        Calendar dataCorrente = Calendar.getInstance();
-        dataCorrente.setTime(dataCorrenteInput);
-        if (dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
-            return true;
-        else
-            return false;
 
-    }
 
     public static boolean isInRageDate(Date inizio,Date fine,Date testDate) {
 
@@ -155,20 +150,32 @@ public class DateService {
         }
 
 
-            return nesimaSettimanaMensile;
+        return nesimaSettimanaMensile;
 
     }
 
     public static ArrayList<Date> getNEsimaSettimanaMensileFestiva(int anno, int mese,int weekNumber) {
         ArrayList<Date> nesimaSettimanaMensile = getNesimaSettimanaMensile(anno, mese, weekNumber);
         Calendar cal = Calendar.getInstance();
+        ArrayList<Integer> listaElementiDaRimuovere = new ArrayList<>();
 
         for (int j = 0; j < nesimaSettimanaMensile.size(); j++) {
             cal.setTime(nesimaSettimanaMensile.get(j));
             if (cal.get(Calendar.DAY_OF_WEEK)!=Calendar.SATURDAY && cal.get(Calendar.DAY_OF_WEEK)!=Calendar.SUNDAY)
-                nesimaSettimanaMensile.remove(j);
+                listaElementiDaRimuovere.add(j);
+
 
         }
+
+        //rimozione elementi
+        for (int i = listaElementiDaRimuovere.size()-1; i >= 0; i--) {
+            int simpleInt = listaElementiDaRimuovere.get(i);
+            nesimaSettimanaMensile.remove(simpleInt);
+        }
+
+
+
+
 
         return nesimaSettimanaMensile;
 

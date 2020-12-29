@@ -6,12 +6,9 @@ import it.costanza.entityDb.mysql.TurniGeneratiMonitorEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
 import it.costanza.model.*;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -182,7 +179,7 @@ public class StatService {
                         numeroTurniNotte++;
 
                 //controllo numero turni weekend
-                if (DateService.isWeekendDate(turno.getDataTurno()))
+                if (isTurnoWeekend(turno))
                     if (personaInTurnoSameAsPersonaElem)
                         numeroTurniWe++;
 
@@ -236,10 +233,11 @@ public class StatService {
 
 
             for (int j = 0; j < presenzaFestiva.length; j++) {
-                if (presenzaFestiva[j]>0)
+                if (presenzaFestiva[j] > 0)
                     counterPresenzaWe++;
 
             }
+
             personeOut.get(i).setPresenzaFestiva(counterPresenzaWe);
 
         }
@@ -294,4 +292,27 @@ public class StatService {
 
 
     }
+
+    public static boolean isTurnoWeekend(TurniGeneratiEntity turno) {
+        Date dataCorrenteInput = turno.getDataTurno();
+        Calendar dataCorrente = Calendar.getInstance();
+        dataCorrente.setTime(dataCorrenteInput);
+        if (dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+            return true;
+        else if (dataCorrente.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && turno.getTipoTurno().equals(Const.NOTTE))
+            return true;
+        else
+            return false;
+
+    }
+
+
+
+
+
+
+
+
+
+
 }

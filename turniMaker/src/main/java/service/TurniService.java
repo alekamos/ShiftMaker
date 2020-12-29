@@ -690,6 +690,51 @@ public class TurniService {
 
     }
 
+
+    /**
+     * Questo metodo serve ad ottimizzare la generazione dei turni mettendo prima i festivi (che sono quelli con più vincoli, poi i feriali)
+     * Mette all'inizio i giorni più diffiicli ovvero quelli con più indisponibilità
+     * @param skeletonTurni
+     * @return
+     */
+    public ArrayList<Turno> ordinaOttimizzaTurniSenzaIndisponibilita(ArrayList<Turno> skeletonTurni,ArrayList<Turno> turniSchedulati) throws IOException {
+
+
+        ArrayList<Turno> turniFeriali = new ArrayList<>();
+        ArrayList<Turno> turniFestivi = new ArrayList<>();
+
+
+        //prima i turni già schedulati così sa già prima cosa deve fare nei calcoli
+        for (Turno turno : turniSchedulati) {
+            if(turno.isFestivo() && !turniFestivi.contains(turno))
+                turniFestivi.add(turno);
+            else if (!turno.isFestivo() && !turniFeriali.contains(turno))
+                turniFeriali.add(turno);
+        }
+
+
+        /**
+         * Qui devo mettere solo i turni rimanenti ovvero i turni che non sono ancora stati inseriti
+         */
+        for (Turno turno : skeletonTurni) {
+            if(turno.isFestivo() && !turniFestivi.contains(turno))
+                turniFestivi.add(turno);
+            else if (!turno.isFestivo() && !turniFeriali.contains(turno))
+                turniFeriali.add(turno);
+        }
+
+        turniFestivi.addAll(turniFeriali);
+
+        return turniFestivi;
+
+
+
+
+
+
+    }
+
+
     /**
      * Questo metodo serve ad ottimizzare la generazione dei turni mettendo prima i festivi (che sono quelli con più vincoli, poi i feriali)
      * Mette all'inizio i giorni più diffiicli ovvero quelli con più indisponibilità
@@ -719,7 +764,7 @@ public class TurniService {
 
 
         //prima i turni critici, fino che ci sono indisponibilità superiori alla norma (ultimo elemento dell'array ordinato lui piazza)
-        for (int i = 0; i < turniIndispCount.size() && turniIndispCount.get(i).getCountIndisp()>minIndisp; i++) {
+        for (int i = 0; i < turniIndispCount.size() && turniIndispCount.get(i).getCountIndisp()>=minIndisp+2; i++) {
 
             for (Turno turno : skeletonTurni) {
                 if(DateService.isSameDay(turniIndispCount.get(i).getDate(),turno.getData())) {

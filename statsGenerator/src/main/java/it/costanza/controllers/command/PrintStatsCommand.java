@@ -59,19 +59,20 @@ public class PrintStatsCommand implements ICommand {
         List<TurniGeneratiStatsEntity> bestResultList = turniGeneratiStatsEntityDao.getBestResult(run.getIdRun(), bestResult);
 
 
+        if(bestResult>bestResultList.size())
+            bestResult=bestResultList.size();
+            for (int i = 0; i < bestResult; i++) {
 
-        for (int i = 0; i < bestResult; i++) {
 
+                //per ogniuno di questi mi vado a prendere il calendario dati
+                List<TurniGeneratiEntity> calendario = turniGeneratiDao.getByIdCalendario(bestResultList.get(i).getIdCalTurni().longValue());
 
-            //per ogniuno di questi mi vado a prendere il calendario dati
-            List<TurniGeneratiEntity> calendario = turniGeneratiDao.getByIdCalendario(bestResultList.get(i).getIdCalTurni().longValue());
+                output=fileService.stampaStatistiche(bestResultList.get(i),calendario,persone);
+                Files.write(Paths.get(path+"\\"+fileName), output.getBytes(), StandardOpenOption.APPEND);
+                turni=fileService.stampaTurni(calendario);
+                Files.write(Paths.get(path+"\\"+fileNameTurni), turni.getBytes(), StandardOpenOption.APPEND);
 
-            output=fileService.stampaStatistiche(bestResultList.get(i),calendario,persone);
-            Files.write(Paths.get(path+"\\"+fileName), output.getBytes(), StandardOpenOption.APPEND);
-            turni=fileService.stampaTurni(calendario);
-            Files.write(Paths.get(path+"\\"+fileNameTurni), turni.getBytes(), StandardOpenOption.APPEND);
-
-        }
+            }
 
         //generazione excel dei 10 risultati
         fileService.printExcel(path+"\\"+fileNameExcel,bestResultList,persone);
