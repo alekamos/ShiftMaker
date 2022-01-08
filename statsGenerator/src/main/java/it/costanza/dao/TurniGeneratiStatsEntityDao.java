@@ -1,6 +1,7 @@
 package it.costanza.dao;
 
 import it.costanza.dao.Util.HibernateUtilMySql;
+import it.costanza.entityDb.mysql.TurniGeneratiEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
 import it.costanza.entityDb.mysql.TurniGeneratiStatsEntity;
 import it.costanza.model.Const;
@@ -84,4 +85,29 @@ public class TurniGeneratiStatsEntityDao implements Crud<TurniGeneratiStatsEntit
 
 
     }
+
+
+    public List<TurniGeneratiStatsEntity> getByIdCalendario(Long idCalTurni) {
+
+        Session session = HibernateUtilMySql.getSessionFactory().openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<TurniGeneratiStatsEntity> critQuery = cb.createQuery(TurniGeneratiStatsEntity.class);
+        Root<TurniGeneratiStatsEntity> rootQuery = critQuery.from(TurniGeneratiStatsEntity.class);
+
+
+
+
+        critQuery.select(rootQuery).where(cb.equal(rootQuery.get("turniGeneratiMonitorByIdCalTurni"),idCalTurni));
+
+        Query<TurniGeneratiStatsEntity> query = session.createQuery(critQuery);
+        List<TurniGeneratiStatsEntity> results = query.getResultList();
+
+
+        return results;
+
+
+
+
+    }
+
 }
