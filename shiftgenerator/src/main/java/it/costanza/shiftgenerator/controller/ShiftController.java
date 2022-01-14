@@ -1,15 +1,15 @@
 package it.costanza.shiftgenerator.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import it.costanza.shiftgenerator.command.ShiftCommand;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-
+import java.io.InputStream;
 
 
 @RestController
@@ -20,13 +20,11 @@ public class ShiftController {
 
 
     @ApiOperation(value = "Generate shift calendar", notes = "Generate shift calendar by type of calendar and input data (excel see example)", tags={ "Operation" })
-    @RequestMapping(value = "/generate", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String custom(
-            @ApiParam(
-                    name =  "inputData",
-                    type = "File",
-            value = "excel contains data for generation, names, resources, calenadar, resource availability etc ")
-            @RequestParam File excelFile,
+
+            @ApiParam(value="excel data",type = "file") @RequestParam MultipartFile excelFile,
+
             @ApiParam(
                     name =  "type",
                     type = "String",
@@ -44,6 +42,10 @@ public class ShiftController {
             )
 
     {
+
+        ShiftCommand command = new ShiftCommand(excelFile,type,mail);
+        command.execute();
+
         return "yeah!";
     }
 }
