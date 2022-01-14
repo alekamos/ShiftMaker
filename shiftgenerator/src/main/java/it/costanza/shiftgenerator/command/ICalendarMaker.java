@@ -1,8 +1,6 @@
 package it.costanza.shiftgenerator.command;
 
-import model.ShiftCalendar;
-
-import java.util.Calendar;
+import it.costanza.shiftgenerator.model.ShiftCalendar;
 
 public interface ICalendarMaker {
 
